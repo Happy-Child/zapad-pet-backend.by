@@ -1,9 +1,11 @@
+import * as config from 'config';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { ValidationPipe } from '@nestjs/common';
 import * as cookieParser from 'cookie-parser';
 import * as helmet from 'helmet';
+import { DEFAULT_APP_API_PORT } from '@app/constants/constants/apps.constants';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
@@ -17,7 +19,7 @@ async function bootstrap() {
     }),
   );
 
-  await app.listen(3000);
+  await app.listen(config.APPS.API.PORT || DEFAULT_APP_API_PORT);
 }
 
 bootstrap();

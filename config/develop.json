@@ -1,0 +1,16 @@
+{
+  "APPS": {
+    "API": {
+      "PORT": 3001
+    }
+  },
+  "POSTGRES": {
+    "HOST": "localhost",
+    "USERNAME": "postgres",
+    "PASSWORD": "",
+    "PORT": 5432,
+    "DB": "pet_project",
+    "RETRY_ATTEMPTS": 15,
+    "RETRY_DELAY": 10000
+  }
+}
