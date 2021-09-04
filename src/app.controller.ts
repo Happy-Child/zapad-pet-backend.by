@@ -1,6 +1,6 @@
 import { Controller, Post, Body } from '@nestjs/common';
 import { IsEmail, IsInt } from 'class-validator';
-import { Exclude, Transform } from "class-transformer";
+import { Exclude, Transform } from 'class-transformer';
 
 class ExampleClass {
   @IsInt()
