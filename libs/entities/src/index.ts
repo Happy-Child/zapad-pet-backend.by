@@ -1,4 +1,4 @@
-export * from './base.entity';
+export * from './user.entity';
 export * from './file.entity';
 export * from './region.entity';
 export * from './district.entity';
@@ -11,3 +11,4 @@ export * from './password-recovery.entity';
 export * from './o2m-client-to-station-workers.entity';
 export * from './o2m-district-to-engineers.entity';
 export * from './o2m-bid-images.entity';
+export * from './client.entity';

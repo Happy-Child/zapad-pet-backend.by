@@ -1,6 +1,7 @@
 import { Column, Entity, JoinColumn, OneToOne } from 'typeorm';
-import { BaseEntity, Station } from '@app/entities';
+import { Station } from '@app/entities';
 import { plainToClass } from 'class-transformer';
+import { BaseEntity } from '@app/entities/base.entity';
 
 @Entity({ name: 'aggr_station_bid_status_count' })
 export class AggrStationBidStatusCount extends BaseEntity {

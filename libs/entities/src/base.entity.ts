@@ -1,5 +1,4 @@
 import {
-  Entity,
   PrimaryGeneratedColumn,
   CreateDateColumn,
   UpdateDateColumn,
@@ -7,7 +6,7 @@ import {
 } from 'typeorm';
 import { Exclude, Expose } from 'class-transformer';
 
-@Entity()
+@Expose()
 export class BaseEntity {
   @Expose()
   @PrimaryGeneratedColumn()

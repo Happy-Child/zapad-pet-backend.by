@@ -4,15 +4,15 @@ services:
 
   postgres:
     image: postgres:11.5-alpine
-    container_name: 744-postgres
+    container_name: first_pet_project
     environment:
       - POSTGRES_USER=postgres
-      - POSTGRES_DB=pet_project
+      - POSTGRES_DB=first_pet_project
       - POSTGRES_PASSWORD=
     ports:
       - "127.0.0.1:24012:5432"
     volumes:
-      - postgres_data:/var/lib/postgresql/data/
+      - first_pet_project_postgres_data:/var/lib/postgresql/data/
 
 volumes:
-  postgres_data:
+  first_pet_project_postgres_data:
