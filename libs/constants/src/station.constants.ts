@@ -1,0 +1,1 @@
+export const STATION_NUMBER_LENGTH = 10;

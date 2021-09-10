@@ -1,0 +1,8 @@
+export enum BID_TODO_STATUS {
+  PENDING = 'PENDING',
+  IN_WORK = 'IN_WORK',
+  COMPLETED = 'COMPLETED',
+  DELETED = 'DELETED',
+}
+
+export const BID_TODO_MAX_LENGTH = 500;

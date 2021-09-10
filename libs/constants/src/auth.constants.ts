@@ -1,0 +1,3 @@
+export const EMAIL_TOKEN_LENGTH = 250;
+
+export const PASSWORD_RECOVERY_TOKEN_LENGTH = 250;

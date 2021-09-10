@@ -1,0 +1,1 @@
+export const VARCHAR_DEFAULT_LENGTH = 256;

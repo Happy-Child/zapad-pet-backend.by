@@ -5,7 +5,7 @@ import { NestExpressApplication } from '@nestjs/platform-express';
 import { ValidationPipe } from '@nestjs/common';
 import * as cookieParser from 'cookie-parser';
 import * as helmet from 'helmet';
-import { DEFAULT_APP_API_PORT } from '@app/constants/constants/apps.constants';
+import { DEFAULT_APP_API_PORT } from '@app/constants';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
