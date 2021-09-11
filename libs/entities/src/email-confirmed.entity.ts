@@ -5,7 +5,12 @@ import { VARCHAR_DEFAULT_LENGTH } from '@app/constants';
 
 @Entity({ name: 'email_confirmed' })
 export class EmailConfirmed extends BaseEntity {
-  @Column({ nullable: false })
+  @Column({
+    type: 'varchar',
+    length: VARCHAR_DEFAULT_LENGTH,
+    nullable: false,
+    unique: true,
+  })
   email: string;
 
   @Column({

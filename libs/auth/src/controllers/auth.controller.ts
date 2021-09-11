@@ -11,6 +11,7 @@ import {
 } from '@nestjs/common';
 import {
   CommonAuthService,
+  EmailConfirmedService,
   SignInService,
   SignUpService,
 } from '@app/auth/services';
@@ -21,6 +22,7 @@ import {
 } from '@app/auth/dtos/sign-in.dtos';
 import { COOKIE } from '@app/constants';
 import { getCookieExpiration } from '@app/auth/helpers/cookies.helpers';
+import { EmailConfirmationRequestBodyDTO } from '@app/auth/dtos/email-confirmation.dtos';
 
 @Controller('auth')
 export class AuthController {
@@ -28,6 +30,7 @@ export class AuthController {
     private readonly signUpService: SignUpService,
     private readonly signInService: SignInService,
     private readonly commonAuthService: CommonAuthService,
+    private readonly emailConfirmedService: EmailConfirmedService,
   ) {}
 
   @HttpCode(HttpStatus.CREATED)
@@ -50,6 +53,16 @@ export class AuthController {
     res.send(new SignInResponseBodyDTO(response));
   }
 
+  @HttpCode(HttpStatus.OK)
+  @Post('/email-confirmation')
+  async emailConfirmation(
+    @Body() body: EmailConfirmationRequestBodyDTO,
+  ): Promise<true> {
+    await this.emailConfirmedService.emailConfirmation(body);
+    return true;
+  }
+
+  // move to users module
   @Delete('/delete/:id')
   async delete(@Param('id', ParseIntPipe) id: number): Promise<true> {
     await this.commonAuthService.deleteUser(id);

@@ -60,6 +60,12 @@
       ],
       "@app/helpers/*": [
         "libs/helpers/src/*"
+      ],
+      "@app/dtos": [
+        "libs/dtos/src"
+      ],
+      "@app/dtos/*": [
+        "libs/dtos/src/*"
       ]
     }
   }

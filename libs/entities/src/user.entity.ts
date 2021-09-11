@@ -31,7 +31,7 @@ export class User extends BaseEntity {
     nullable: false,
     default: false,
   })
-  @Expose()
+  @Exclude()
   emailConfirmed: boolean;
 
   @Column()

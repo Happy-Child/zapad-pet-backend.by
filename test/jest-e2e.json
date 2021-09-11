@@ -26,6 +26,8 @@
     "@app/pug/(.*)": "<rootDir>/../libs/pug/src/$1",
     "@app/pug": "<rootDir>/../libs/pug/src",
     "@app/helpers/(.*)": "<rootDir>/../libs/helpers/src/$1",
-    "@app/helpers": "<rootDir>/../libs/helpers/src"
+    "@app/helpers": "<rootDir>/../libs/helpers/src",
+    "@app/dtos/(.*)": "<rootDir>/../libs/dtos/src/$1",
+    "@app/dtos": "<rootDir>/../libs/dtos/src"
   }
 }
