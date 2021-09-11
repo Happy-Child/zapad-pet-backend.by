@@ -28,4 +28,33 @@ declare module 'config' {
   export const FRONT_URLS: {
     CONFIRMED_REGISTRATION: string;
   };
+
+  export const COOKIES_OPTIONS: {
+    readonly SECURE: boolean;
+    readonly SAME_SITE: boolean | 'lax' | 'strict' | 'none';
+  };
+
+  export const JWT: {
+    readonly ALGORITHM:
+      | 'HS256'
+      | 'HS384'
+      | 'HS512'
+      | 'RS256'
+      | 'RS384'
+      | 'none'
+      | 'RS512'
+      | 'ES256'
+      | 'ES384'
+      | 'ES512'
+      | 'PS256'
+      | 'PS384'
+      | 'PS512';
+    readonly EXPIRATION: string;
+    readonly SECRET_KEY: string;
+  };
+
+  export const RSA: {
+    readonly PRIVATE_KEY_PATH: string;
+    readonly PUBLIC_KEY_PATH: string;
+  };
 }

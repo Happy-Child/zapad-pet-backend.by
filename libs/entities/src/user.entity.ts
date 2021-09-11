@@ -1,11 +1,12 @@
 import { Entity, Column } from 'typeorm';
 import { BaseEntity } from '@app/entities/base.entity';
 import { USER_ROLES, VARCHAR_DEFAULT_LENGTH } from '@app/constants';
-import { Exclude, plainToClass } from 'class-transformer';
+import { Exclude, Expose, plainToClass } from 'class-transformer';
 
 @Entity({ name: 'user' })
 export class User extends BaseEntity {
   @Column({ type: 'varchar', length: VARCHAR_DEFAULT_LENGTH, nullable: false })
+  @Expose()
   name: string;
 
   @Column({
@@ -14,6 +15,7 @@ export class User extends BaseEntity {
     nullable: false,
     unique: true,
   })
+  @Expose()
   email: string;
 
   @Column({
@@ -21,6 +23,7 @@ export class User extends BaseEntity {
     enum: USER_ROLES,
     nullable: false,
   })
+  @Expose()
   role: USER_ROLES;
 
   @Column({
@@ -28,6 +31,7 @@ export class User extends BaseEntity {
     nullable: false,
     default: false,
   })
+  @Expose()
   emailConfirmed: boolean;
 
   @Column()
@@ -36,6 +40,9 @@ export class User extends BaseEntity {
 
   constructor(data: Partial<User>) {
     super();
-    Object.assign(this, plainToClass(User, data));
+    Object.assign(
+      this,
+      plainToClass(User, data, { excludeExtraneousValues: true }),
+    );
   }
 }

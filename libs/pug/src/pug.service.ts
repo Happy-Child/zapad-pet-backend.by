@@ -7,7 +7,7 @@ import { GetPugTemplateVariablesType } from '@app/pug/pug.types';
 export class PugService {
   private readonly pathToTemplates: string = 'libs/pug/src/templates';
 
-  compileFile<T>(
+  compileFile(
     filename: PUG_TEMPLATES_NAMES,
     variablesOrOptions: GetPugTemplateVariablesType<typeof filename>,
   ): string {

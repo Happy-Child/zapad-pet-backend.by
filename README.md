@@ -45,29 +45,22 @@ $ npm run start:dev
 $ npm run start:prod
 ```
 
-## Test
+## Generate RSA keys for jwt
 
 ```bash
-# unit tests
-$ npm run test
+# generate private key
+$ openssl genrsa -out private.pem 2048
 
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+# generate public key
+$ openssl rsa -in private.pem -outform PEM -pubout -out public.pem
 ```
 
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](LICENSE).
+Set path to keys in `config/local.json`
+```
+{
+  "RSA": {
+    "PRIVATE_KEY_PATH": "path/to/private.pem",
+    "PUBLIC_KEY_PATH": "path/to/public.pem"
+  }
+}
+```

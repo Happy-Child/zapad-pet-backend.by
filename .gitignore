@@ -37,3 +37,4 @@ lerna-debug.log*
 config/local.json
 .env
 .example.env
+config/keys

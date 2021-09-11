@@ -1,6 +1,6 @@
 import { Entity, Column } from 'typeorm';
 import { BaseEntity } from '@app/entities/base.entity';
-import { USER_ROLES, VARCHAR_DEFAULT_LENGTH } from '@app/constants';
+import { VARCHAR_DEFAULT_LENGTH } from '@app/constants';
 import { plainToClass } from 'class-transformer';
 
 @Entity({ name: 'region' })

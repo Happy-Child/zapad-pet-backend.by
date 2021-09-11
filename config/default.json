@@ -23,5 +23,18 @@
   },
   "FRONT_URLS": {
     "CONFIRMED_REGISTRATION": "http://localhost:3000/confirmed-registration"
+  },
+  "COOKIES_OPTIONS": {
+    "SECURE": true,
+    "SAME_SITE": "none"
+  },
+  "JWT": {
+    "ALGORITHM": "RS256",
+    "EXPIRATION": "1d",
+    "SECRET_KEY": "some-fucking-pet-project"
+  },
+  "RSA": {
+    "PRIVATE_KEY_PATH": "",
+    "PUBLIC_KEY_PATH": ""
   }
 }
