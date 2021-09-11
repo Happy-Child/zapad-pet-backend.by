@@ -46,6 +46,33 @@
       "compilerOptions": {
         "tsConfigPath": "libs/decorators/tsconfig.lib.json"
       }
+    },
+    "mail-sender": {
+      "type": "library",
+      "root": "libs/mail-sender",
+      "entryFile": "index",
+      "sourceRoot": "libs/mail-sender/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/mail-sender/tsconfig.lib.json"
+      }
+    },
+    "pug": {
+      "type": "library",
+      "root": "libs/pug",
+      "entryFile": "index",
+      "sourceRoot": "libs/pug/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/pug/tsconfig.lib.json"
+      }
+    },
+    "helpers": {
+      "type": "library",
+      "root": "libs/helpers",
+      "entryFile": "index",
+      "sourceRoot": "libs/helpers/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/helpers/tsconfig.lib.json"
+      }
     }
   },
   "compilerOptions": {

@@ -20,6 +20,12 @@
     "@app/auth/(.*)": "<rootDir>/../libs/auth/src/$1",
     "@app/auth": "<rootDir>/../libs/auth/src",
     "@app/decorators/(.*)": "<rootDir>/../libs/decorators/src/$1",
-    "@app/decorators": "<rootDir>/../libs/decorators/src"
+    "@app/decorators": "<rootDir>/../libs/decorators/src",
+    "@app/mail-sender/(.*)": "<rootDir>/../libs/mail-sender/src/$1",
+    "@app/mail-sender": "<rootDir>/../libs/mail-sender/src",
+    "@app/pug/(.*)": "<rootDir>/../libs/pug/src/$1",
+    "@app/pug": "<rootDir>/../libs/pug/src",
+    "@app/helpers/(.*)": "<rootDir>/../libs/helpers/src/$1",
+    "@app/helpers": "<rootDir>/../libs/helpers/src"
   }
 }

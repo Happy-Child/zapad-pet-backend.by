@@ -42,6 +42,24 @@
       ],
       "@app/decorators/*": [
         "libs/decorators/src/*"
+      ],
+      "@app/mail-sender": [
+        "libs/mail-sender/src"
+      ],
+      "@app/mail-sender/*": [
+        "libs/mail-sender/src/*"
+      ],
+      "@app/pug": [
+        "libs/pug/src"
+      ],
+      "@app/pug/*": [
+        "libs/pug/src/*"
+      ],
+      "@app/helpers": [
+        "libs/helpers/src"
+      ],
+      "@app/helpers/*": [
+        "libs/helpers/src/*"
       ]
     }
   }

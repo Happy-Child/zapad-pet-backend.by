@@ -6,7 +6,7 @@ import { VARCHAR_DEFAULT_LENGTH } from '@app/constants';
 @Entity({ name: 'email_confirmed' })
 export class EmailConfirmed extends BaseEntity {
   @Column({ nullable: false })
-  userId: number;
+  email: string;
 
   @Column({
     type: 'varchar',

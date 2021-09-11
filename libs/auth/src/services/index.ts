@@ -3,3 +3,4 @@ export * from './password-recovery.service';
 export * from './sign-in.service';
 export * from './sign-up.service';
 export * from './common.service';
+export * from './sending-mail.service';
