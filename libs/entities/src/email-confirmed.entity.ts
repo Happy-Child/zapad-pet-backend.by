@@ -1,7 +1,7 @@
 import { Entity, Column } from 'typeorm';
 import { BaseEntity } from '@app/entities/base.entity';
 import { plainToClass } from 'class-transformer';
-import { EMAIL_TOKEN_LENGTH } from '@app/constants';
+import { VARCHAR_DEFAULT_LENGTH } from '@app/constants';
 
 @Entity({ name: 'email_confirmed' })
 export class EmailConfirmed extends BaseEntity {
@@ -10,7 +10,7 @@ export class EmailConfirmed extends BaseEntity {
 
   @Column({
     type: 'varchar',
-    length: EMAIL_TOKEN_LENGTH,
+    length: VARCHAR_DEFAULT_LENGTH,
     nullable: false,
     unique: true,
   })

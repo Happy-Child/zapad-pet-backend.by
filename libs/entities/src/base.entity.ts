@@ -2,7 +2,6 @@ import {
   PrimaryGeneratedColumn,
   CreateDateColumn,
   UpdateDateColumn,
-  DeleteDateColumn,
 } from 'typeorm';
 import { Exclude, Expose } from 'class-transformer';
 
@@ -19,8 +18,4 @@ export class BaseEntity {
   @Exclude()
   @UpdateDateColumn({ type: 'timestamptz' })
   updatedAt: Date;
-
-  @Exclude()
-  @DeleteDateColumn({ type: 'timestamptz' })
-  deletedAt: Date;
 }

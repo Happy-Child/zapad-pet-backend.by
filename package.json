@@ -33,6 +33,7 @@
     "@nestjs/typeorm": "^8.0.2",
     "@types/cookie-parser": "^1.4.2",
     "@types/helmet": "^4.0.0",
+    "bcrypt": "^5.0.1",
     "class-transformer": "^0.4.0",
     "class-validator": "^0.13.1",
     "config": "^3.3.6",
@@ -49,6 +50,7 @@
     "@nestjs/cli": "^8.0.0",
     "@nestjs/schematics": "^8.0.0",
     "@nestjs/testing": "^8.0.0",
+    "@types/bcrypt": "^5.0.0",
     "@types/express": "^4.17.13",
     "@types/jest": "^26.0.24",
     "@types/node": "^16.0.0",
@@ -90,7 +92,9 @@
     "moduleNameMapper": {
       "^@app/exceptions(|/.*)$": "<rootDir>/libs/exceptions/src/$1",
       "^@app/constants(|/.*)$": "<rootDir>/libs/constants/src/$1",
-      "^@app/entities(|/.*)$": "<rootDir>/libs/entities/src/$1"
+      "^@app/entities(|/.*)$": "<rootDir>/libs/entities/src/$1",
+      "^@app/auth(|/.*)$": "<rootDir>/libs/auth/src/$1",
+      "^@app/decorators(|/.*)$": "<rootDir>/libs/decorators/src/$1"
     }
   }
 }

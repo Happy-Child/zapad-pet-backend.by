@@ -2,6 +2,7 @@ declare module 'config' {
   export const APPS: {
     API: {
       PORT: number;
+      PREFIX: string;
     };
   };
 

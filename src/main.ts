@@ -7,8 +7,13 @@ import * as cookieParser from 'cookie-parser';
 import * as helmet from 'helmet';
 import { DEFAULT_APP_API_PORT } from '@app/constants';
 
+const port = config.APPS.API.PORT || DEFAULT_APP_API_PORT;
+const appPrefix = `${config.APPS.API.PREFIX}/v1`;
+
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
+
+  app.setGlobalPrefix(appPrefix);
 
   app.use(cookieParser());
   app.use(helmet());
@@ -19,7 +24,7 @@ async function bootstrap() {
     }),
   );
 
-  await app.listen(config.APPS.API.PORT || DEFAULT_APP_API_PORT);
+  await app.listen(port);
 }
 
 bootstrap();

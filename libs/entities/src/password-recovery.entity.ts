@@ -1,7 +1,7 @@
 import { Entity, Column } from 'typeorm';
 import { BaseEntity } from '@app/entities/base.entity';
 import { plainToClass } from 'class-transformer';
-import { PASSWORD_RECOVERY_TOKEN_LENGTH } from '@app/constants';
+import { VARCHAR_DEFAULT_LENGTH } from '@app/constants';
 
 @Entity({ name: 'password_recovery' })
 export class PasswordRecovery extends BaseEntity {
@@ -10,7 +10,7 @@ export class PasswordRecovery extends BaseEntity {
 
   @Column({
     type: 'varchar',
-    length: PASSWORD_RECOVERY_TOKEN_LENGTH,
+    length: VARCHAR_DEFAULT_LENGTH,
     nullable: false,
     unique: true,
   })

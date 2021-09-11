@@ -1,7 +1,7 @@
 import { Entity, Column } from 'typeorm';
 import { BaseEntity } from '@app/entities/base.entity';
 import { USER_ROLES, VARCHAR_DEFAULT_LENGTH } from '@app/constants';
-import { plainToClass } from 'class-transformer';
+import { Exclude, plainToClass } from 'class-transformer';
 
 @Entity({ name: 'user' })
 export class User extends BaseEntity {
@@ -29,6 +29,10 @@ export class User extends BaseEntity {
     default: false,
   })
   emailConfirmed: boolean;
+
+  @Column()
+  @Exclude()
+  password: string;
 
   constructor(data: Partial<User>) {
     super();

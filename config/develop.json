@@ -1,7 +1,8 @@
 {
   "APPS": {
     "API": {
-      "PORT": 3001
+      "PORT": 3001,
+      "PREFIX": "api"
     }
   },
   "POSTGRES": {

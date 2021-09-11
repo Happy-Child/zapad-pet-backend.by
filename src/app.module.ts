@@ -5,6 +5,7 @@ import { APP_INTERCEPTOR } from '@nestjs/core';
 import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { POSTGRES } from 'config';
 import * as Entities from '@app/entities';
+import { AuthModule } from '@app/auth';
 
 const entities = Object.values(Entities);
 const migrations = [];
@@ -28,7 +29,11 @@ const ormconfig = {
 } as TypeOrmModuleOptions;
 
 @Module({
-  imports: [TypeOrmModule.forRoot(ormconfig), ExceptionsModule.forRoot()],
+  imports: [
+    TypeOrmModule.forRoot(ormconfig),
+    ExceptionsModule.forRoot(),
+    AuthModule,
+  ],
   providers: [
     {
       provide: APP_INTERCEPTOR,

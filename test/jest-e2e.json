@@ -16,6 +16,10 @@
     "@app/constants/(.*)": "<rootDir>/../libs/constants/src/$1",
     "@app/constants": "<rootDir>/../libs/constants/src",
     "@app/entities/(.*)": "<rootDir>/../libs/entities/src/$1",
-    "@app/entities": "<rootDir>/../libs/entities/src"
+    "@app/entities": "<rootDir>/../libs/entities/src",
+    "@app/auth/(.*)": "<rootDir>/../libs/auth/src/$1",
+    "@app/auth": "<rootDir>/../libs/auth/src",
+    "@app/decorators/(.*)": "<rootDir>/../libs/decorators/src/$1",
+    "@app/decorators": "<rootDir>/../libs/decorators/src"
   }
 }
