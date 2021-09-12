@@ -17,10 +17,15 @@ import * as fs from 'fs';
 import * as config from 'config';
 import { JwtModule } from '@nestjs/jwt';
 import { JwtStrategy } from '@app/auth/strategies/jwt.strategy';
+import { PasswordRecoveryRepository } from '@app/auth/repositories/password-recovery.repository';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([UserRepository, EmailConfirmedRepository]),
+    TypeOrmModule.forFeature([
+      UserRepository,
+      EmailConfirmedRepository,
+      PasswordRecoveryRepository,
+    ]),
     JwtModule.register({
       privateKey: fs.readFileSync(config.RSA.PRIVATE_KEY_PATH).toString(),
       publicKey: fs.readFileSync(config.RSA.PUBLIC_KEY_PATH).toString(),

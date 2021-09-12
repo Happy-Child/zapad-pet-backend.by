@@ -1,10 +1,18 @@
-import { Entity, Column, OneToOne, JoinColumn, OneToMany } from 'typeorm';
+import {
+  Entity,
+  Column,
+  OneToOne,
+  JoinColumn,
+  OneToMany,
+  ManyToOne,
+} from 'typeorm';
 import { BaseEntity } from '@app/entities/base.entity';
 import { STATION_NUMBER_LENGTH } from '@app/constants';
 import { plainToClass } from 'class-transformer';
 import { User } from '@app/entities/user.entity';
 import { District } from '@app/entities/district.entity';
 import { Bid } from '@app/entities/bid.entity';
+import { Client } from '@app/entities/client.entity';
 
 @Entity({ name: 'station' })
 export class Station extends BaseEntity {
@@ -16,7 +24,7 @@ export class Station extends BaseEntity {
   })
   number: string;
 
-  @Column({ nullable: false })
+  @Column({ nullable: true })
   stationWorkerId: number;
 
   @OneToOne(() => User)
@@ -25,6 +33,16 @@ export class Station extends BaseEntity {
     referencedColumnName: 'id',
   })
   stationWorker: User;
+
+  @Column({ nullable: false })
+  clientId: number;
+
+  @ManyToOne(() => Client)
+  @JoinColumn({
+    name: 'clientId',
+    referencedColumnName: 'id',
+  })
+  client: Client;
 
   @Column({ nullable: false })
   districtId: number;
@@ -36,7 +54,7 @@ export class Station extends BaseEntity {
   })
   district: District;
 
-  @OneToMany(() => Bid, (bid) => bid.id)
+  @OneToMany(() => Bid, (bid) => bid.station)
   bids: Bid[];
 
   constructor(data: Partial<Station>) {

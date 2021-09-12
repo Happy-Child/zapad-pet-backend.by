@@ -27,6 +27,7 @@ declare module 'config' {
 
   export const FRONT_URLS: {
     CONFIRMED_REGISTRATION: string;
+    CREATE_NEW_PASSWORD: string;
   };
 
   export const COOKIES_OPTIONS: {

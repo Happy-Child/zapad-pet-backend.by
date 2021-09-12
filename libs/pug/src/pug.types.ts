@@ -1,7 +1,12 @@
 import { PUG_TEMPLATES_NAMES } from '@app/pug/pug.constants';
-import { ConfirmingRegistrationVariables } from '@app/pug/pug.interfaces';
+import {
+  ConfirmingRegistrationVariables,
+  PasswordRecoveryVariables,
+} from '@app/pug/pug.interfaces';
 
 export type GetPugTemplateVariablesType<T extends PUG_TEMPLATES_NAMES> =
   T extends PUG_TEMPLATES_NAMES.CONFIRMING_REGISTRATION
     ? ConfirmingRegistrationVariables
+    : T extends PUG_TEMPLATES_NAMES.CREATE_NEW_PASSWORD
+    ? PasswordRecoveryVariables
     : void;

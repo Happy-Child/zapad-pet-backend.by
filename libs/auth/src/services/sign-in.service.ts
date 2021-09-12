@@ -17,14 +17,7 @@ export class SignInService {
   ) {}
 
   async signIn(body: SignInRequestBodyDTO): Promise<SignInResponseBodyDTO> {
-    const user = await this.userRepository.findByEmail(body.email);
-
-    if (!user) {
-      throw new UnprocessableEntity([
-        { field: 'email', message: AUTH_ERRORS.USER_NOT_FOUND },
-      ]);
-    }
-
+    const user = await this.userRepository.findByEmailOrFail(body.email);
     if (!user.emailConfirmed) {
       throw new UnprocessableEntity([
         { field: 'email', message: AUTH_ERRORS.EMAIL_NOT_CONFIRMED },
@@ -35,7 +28,6 @@ export class SignInService {
       body.password,
       user.password,
     );
-
     if (!passwordIsCompare) {
       throw new UnprocessableEntity([
         { field: 'password', message: AUTH_ERRORS.INVALID_PASSWORD },
@@ -44,6 +36,6 @@ export class SignInService {
 
     const accessToken = this.jwtService.sign({ sub: user.id, role: user.role });
 
-    return { user, accessToken };
+    return new SignInResponseBodyDTO({ user, accessToken });
   }
 }

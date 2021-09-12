@@ -5,12 +5,18 @@ import { UnprocessableEntity } from '@app/exceptions';
 import { AUTH_ERRORS } from '@app/constants';
 import { getHashByPassword } from '@app/auth/helpers/password.helpers';
 import { SendingMailService } from '@app/auth/services/sending-mail.service';
+import { generateRandomToken } from '@app/helpers';
+import { EmailConfirmedRepository } from '@app/auth/repositories/email-confirmed.repository';
+import { Connection } from 'typeorm';
+import { EmailConfirmed, User } from '@app/entities';
 
 @Injectable()
 export class SignUpService {
   constructor(
     private readonly userRepository: UserRepository,
     private readonly sendingMailService: SendingMailService,
+    private readonly emailConfirmedRepository: EmailConfirmedRepository,
+    private readonly connection: Connection,
   ) {}
 
   async signUp(body: SignUpRequestBodyDTO): Promise<boolean> {
@@ -39,7 +45,13 @@ export class SignUpService {
       role: body.role,
       password: passwordHash,
     });
-    await this.sendingMailService.sendEmailConfirmingRegistration(user);
-    await this.userRepository.save(user);
+
+    const token = await generateRandomToken();
+    await this.sendingMailService.sendEmailConfirmingSignUp({ user, token });
+
+    await this.connection.transaction(async (manager) => {
+      await manager.save(EmailConfirmed, { email: user.email, token });
+      await manager.save(User, user);
+    });
   }
 }

@@ -45,7 +45,7 @@ export class Bid extends BaseEntity {
   @Column({ nullable: false })
   stationId: number;
 
-  @ManyToOne(() => Station)
+  @ManyToOne(() => Station, (station) => station.bids)
   @JoinColumn({
     name: 'stationId',
     referencedColumnName: 'id',

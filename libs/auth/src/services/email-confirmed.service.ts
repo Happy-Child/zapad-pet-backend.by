@@ -4,12 +4,15 @@ import { EmailConfirmedRepository } from '@app/auth/repositories/email-confirmed
 import { UnprocessableEntity } from '@app/exceptions';
 import { AUTH_ERRORS } from '@app/constants';
 import { UserRepository } from '@app/auth/repositories/user.repository';
+import { Connection } from 'typeorm';
+import { EmailConfirmed, User } from '@app/entities';
 
 @Injectable()
 export class EmailConfirmedService {
   constructor(
     private readonly emailConfirmedRepository: EmailConfirmedRepository,
     private readonly userRepository: UserRepository,
+    private readonly connection: Connection,
   ) {}
 
   async emailConfirmation(
@@ -24,23 +27,20 @@ export class EmailConfirmedService {
       ]);
     }
 
-    const user = await this.userRepository.findByEmail(
+    const user = await this.userRepository.findByEmailOrFail(
       emailConfirmationData.email,
     );
-    if (!user) {
-      throw new UnprocessableEntity([
-        { field: 'email', message: AUTH_ERRORS.USER_NOT_FOUND },
-      ]);
-    }
     if (user.emailConfirmed) {
       throw new UnprocessableEntity([
         { field: 'email', message: AUTH_ERRORS.EMAIL_IS_ALREADY_CONFIRMED },
       ]);
     }
 
-    await this.emailConfirmedRepository.delete({
-      id: emailConfirmationData.id,
+    await this.connection.transaction(async (manager) => {
+      await manager.delete(EmailConfirmed, {
+        id: emailConfirmationData.id,
+      });
+      await manager.save(User, { ...user, emailConfirmed: true });
     });
-    await this.userRepository.save({ ...user, emailConfirmed: true });
   }
 }

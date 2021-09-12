@@ -22,7 +22,8 @@
     "PASS": "password"
   },
   "FRONT_URLS": {
-    "CONFIRMED_REGISTRATION": "http://localhost:3000/confirmed-registration"
+    "CONFIRMED_REGISTRATION": "http://localhost:3000/confirmed-registration",
+    "CREATE_NEW_PASSWORD": "http://localhost:3000/create-new-password"
   },
   "COOKIES_OPTIONS": {
     "SECURE": true,
