@@ -2,10 +2,10 @@ import { Injectable } from '@nestjs/common';
 import { EmailConfirmationRequestBodyDTO } from '@app/auth/dtos/email-confirmation.dtos';
 import { EmailConfirmedRepository } from '@app/auth/repositories/email-confirmed.repository';
 import { UnprocessableEntity } from '@app/exceptions';
-import { AUTH_ERRORS } from '@app/constants';
-import { UserRepository } from '@app/auth/repositories/user.repository';
+import { UserRepository } from '@app/repositories/user.repository';
 import { Connection } from 'typeorm';
 import { EmailConfirmed, User } from '@app/entities';
+import { AUTH_ERRORS } from '@app/auth/constants/errors.constants';
 
 @Injectable()
 export class EmailConfirmedService {

@@ -1,10 +1,11 @@
 import { IsEmail, IsString, Length, Matches } from 'class-validator';
+import {} from '@app/auth/constants/common.constants';
+import { User } from '@app/entities';
+import { Expose, plainToClass } from 'class-transformer';
 import {
   PASSWORD_LENGTH,
   PASSWORD_REGEX,
-} from '@app/auth/constants/auth.constants';
-import { User } from '@app/entities';
-import { Expose, plainToClass } from 'class-transformer';
+} from '@app/auth/constants/password.constants';
 
 export class SignInRequestBodyDTO {
   @IsEmail()

@@ -1,7 +1,7 @@
 import { EntityRepository, Repository } from 'typeorm';
 import { PasswordRecovery } from '@app/entities';
 import { UnprocessableEntity } from '@app/exceptions';
-import { AUTH_ERRORS } from '@app/constants';
+import { AUTH_ERRORS } from '@app/auth/constants/errors.constants';
 
 @EntityRepository(PasswordRecovery)
 export class PasswordRecoveryRepository extends Repository<PasswordRecovery> {

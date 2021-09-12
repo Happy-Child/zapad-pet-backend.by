@@ -66,6 +66,12 @@
       ],
       "@app/dtos/*": [
         "libs/dtos/src/*"
+      ],
+      "@app/repositories": [
+        "libs/repositories/src"
+      ],
+      "@app/repositories/*": [
+        "libs/repositories/src/*"
       ]
     }
   }

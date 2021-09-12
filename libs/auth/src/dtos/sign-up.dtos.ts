@@ -1,4 +1,4 @@
-import { AUTH_ERRORS, CLIENT_MEMBERS_ROLES, USER_ROLES } from '@app/constants';
+import { CLIENT_MEMBERS_ROLES, USER_ROLES } from '@app/constants';
 import {
   IsEmail,
   IsEnum,
@@ -9,11 +9,12 @@ import {
   ValidateIf,
 } from 'class-validator';
 import { Match } from '@app/auth/decorators/match.decorator';
+import { USER_NAME_LENGTH } from '@app/auth/constants/common.constants';
 import {
   PASSWORD_LENGTH,
   PASSWORD_REGEX,
-  USER_NAME_LENGTH,
-} from '@app/auth/constants/auth.constants';
+} from '@app/auth/constants/password.constants';
+import { AUTH_ERRORS } from '@app/auth/constants/errors.constants';
 
 export class SignUpRequestBodyDTO {
   @IsString()

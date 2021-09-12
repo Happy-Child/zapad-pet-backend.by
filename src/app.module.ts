@@ -1,11 +1,11 @@
 import { ClassSerializerInterceptor, Module } from '@nestjs/common';
-import { AppController } from './app.controller';
 import { ExceptionsModule } from '@app/exceptions';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { POSTGRES } from 'config';
 import * as Entities from '@app/entities';
 import { AuthModule } from '@app/auth';
+import { UsersModule } from './modules/users/users.module';
 
 const entities = Object.values(Entities);
 const migrations = [];
@@ -33,6 +33,7 @@ const ormconfig = {
     TypeOrmModule.forRoot(ormconfig),
     ExceptionsModule.forRoot(),
     AuthModule,
+    UsersModule,
   ],
   providers: [
     {
@@ -40,6 +41,5 @@ const ormconfig = {
       useClass: ClassSerializerInterceptor,
     },
   ],
-  controllers: [AppController],
 })
 export class AppModule {}

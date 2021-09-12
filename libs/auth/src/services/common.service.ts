@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { UserRepository } from '@app/auth/repositories/user.repository';
+import { UserRepository } from '@app/repositories/user.repository';
 import { UnprocessableEntity } from '@app/exceptions';
-import { AUTH_ERRORS } from '@app/constants';
 import { EmailConfirmed, PasswordRecovery, User } from '@app/entities';
 import { Connection } from 'typeorm';
+import { AUTH_ERRORS } from '@app/auth/constants/errors.constants';
 
 @Injectable()
 export class CommonAuthService {

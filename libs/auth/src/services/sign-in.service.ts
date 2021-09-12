@@ -3,11 +3,11 @@ import {
   SignInRequestBodyDTO,
   SignInResponseBodyDTO,
 } from '@app/auth/dtos/sign-in.dtos';
-import { UserRepository } from '@app/auth/repositories/user.repository';
+import { UserRepository } from '@app/repositories/user.repository';
 import { UnprocessableEntity } from '@app/exceptions';
-import { AUTH_ERRORS } from '@app/constants';
 import { comparePasswords } from '@app/auth/helpers/password.helpers';
 import { JwtService } from '@nestjs/jwt';
+import { AUTH_ERRORS } from '@app/auth/constants/errors.constants';
 
 @Injectable()
 export class SignInService {

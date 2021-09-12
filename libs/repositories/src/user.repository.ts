@@ -1,7 +1,7 @@
 import { EntityRepository, Repository } from 'typeorm';
 import { User } from '@app/entities';
 import { UnprocessableEntity } from '@app/exceptions';
-import { AUTH_ERRORS } from '@app/constants';
+import { AUTH_ERRORS } from '@app/auth/constants/errors.constants';
 
 @EntityRepository(User)
 export class UserRepository extends Repository<User> {
@@ -17,5 +17,12 @@ export class UserRepository extends Repository<User> {
       ]);
     }
     return user;
+  }
+
+  async findUsersByEmails(emails: string[]): Promise<User[]> {
+    return this.createQueryBuilder('u')
+      .where('u.email IN (:...emails)', { emails })
+      .orderBy('u.id')
+      .getMany();
   }
 }

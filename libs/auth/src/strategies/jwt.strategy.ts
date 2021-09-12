@@ -3,10 +3,10 @@ import { PassportStrategy } from '@nestjs/passport';
 import { JWT, RSA } from 'config';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { readFile } from '@app/helpers';
-import { UserRepository } from '@app/auth/repositories/user.repository';
+import { UserRepository } from '@app/repositories/user.repository';
 import { Unauthorized } from '@app/exceptions';
 import { JwtPayloadDTO } from '@app/auth/dtos/jwt-strategy.dtos';
-import { COOKIE } from '@app/auth/constants/auth.constants';
+import { COOKIE } from '@app/auth/constants/cookies.constants';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {

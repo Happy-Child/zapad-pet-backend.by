@@ -1,14 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { SignUpRequestBodyDTO } from '@app/auth/dtos/sign-up.dtos';
-import { UserRepository } from '@app/auth/repositories/user.repository';
+import { UserRepository } from '@app/repositories/user.repository';
 import { UnprocessableEntity } from '@app/exceptions';
-import { AUTH_ERRORS } from '@app/constants';
 import { getHashByPassword } from '@app/auth/helpers/password.helpers';
 import { SendingMailService } from '@app/auth/services/sending-mail.service';
 import { generateRandomToken } from '@app/helpers';
 import { EmailConfirmedRepository } from '@app/auth/repositories/email-confirmed.repository';
 import { Connection } from 'typeorm';
 import { EmailConfirmed, User } from '@app/entities';
+import { AUTH_ERRORS } from '@app/auth/constants/errors.constants';
 
 @Injectable()
 export class SignUpService {

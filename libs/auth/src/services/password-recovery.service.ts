@@ -4,7 +4,7 @@ import {
   PasswordRecoveryRequestBodyDTO,
   PasswordRecoveryResponseBodyDTO,
 } from '@app/auth/dtos/password-recovery.dtos';
-import { UserRepository } from '@app/auth/repositories/user.repository';
+import { UserRepository } from '@app/repositories/user.repository';
 import { PasswordRecoveryRepository } from '@app/auth/repositories/password-recovery.repository';
 import { SendingMailService } from '@app/auth/services/sending-mail.service';
 import { getHashByPassword } from '@app/auth/helpers/password.helpers';

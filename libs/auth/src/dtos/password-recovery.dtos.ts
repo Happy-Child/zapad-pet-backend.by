@@ -1,12 +1,12 @@
 import { IsEmail, IsString, Length, Matches } from 'class-validator';
 import { TokenRequestDTO } from '@app/dtos';
+import { Match } from '@app/auth/decorators/match.decorator';
+import { Expose, plainToClass } from 'class-transformer';
 import {
   PASSWORD_LENGTH,
   PASSWORD_REGEX,
-} from '@app/auth/constants/auth.constants';
-import { Match } from '@app/auth/decorators/match.decorator';
-import { AUTH_ERRORS } from '@app/constants';
-import { Expose, plainToClass } from 'class-transformer';
+} from '@app/auth/constants/password.constants';
+import { AUTH_ERRORS } from '@app/auth/constants/errors.constants';
 
 export class PasswordRecoveryRequestBodyDTO {
   @IsEmail()

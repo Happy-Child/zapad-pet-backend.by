@@ -6,13 +6,20 @@ export const prepareErrorsFromPipes = (
 ): ErrorDetailItem[] => {
   const result: ErrorDetailItem[] = [];
 
-  rawErrors.forEach(({ property, constraints }) => {
-    Object.keys(constraints).forEach((key) => {
-      result.push({
-        field: property,
-        message: constraints[key].replace(property, '').trim(),
+  rawErrors.forEach(({ property, constraints, children }) => {
+    if (constraints) {
+      Object.keys(constraints).forEach((key) => {
+        result.push({
+          field: property,
+          message: constraints[key].replace(property, '').trim(),
+        });
       });
-    });
+    }
+
+    if (children) {
+      const preparedChildrenErrors = prepareErrorsFromPipes(children);
+      result.push(...preparedChildrenErrors);
+    }
   });
 
   return result;

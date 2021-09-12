@@ -25,7 +25,7 @@ import {
   PasswordRecoveryRequestBodyDTO,
   PasswordRecoveryResponseBodyDTO,
 } from '@app/auth/dtos/password-recovery.dtos';
-import { COOKIE } from '@app/auth/constants/auth.constants';
+import { COOKIE } from '@app/auth/constants/cookies.constants';
 
 @Controller('auth')
 export class AuthController {
