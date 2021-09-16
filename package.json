@@ -24,7 +24,8 @@
     "migrate:create": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:create -n",
     "migrate:run": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:run",
     "migrate:generate": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:generate -n",
-    "migrate:revert": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:revert"
+    "migrate:revert": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:revert",
+    "prepare": "husky install"
   },
   "dependencies": {
     "@nestjs/common": "^8.0.0",
@@ -71,6 +72,7 @@
     "eslint": "^7.30.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-prettier": "^3.4.0",
+    "husky": "^7.0.2",
     "jest": "27.0.6",
     "prettier": "^2.3.2",
     "supertest": "^6.1.3",
