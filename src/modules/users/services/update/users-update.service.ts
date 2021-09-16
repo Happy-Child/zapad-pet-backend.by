@@ -4,6 +4,20 @@ import { UsersUpdateRequestBodyDTO } from '../../dtos/update.dtos';
 import { CheckGeneralUsersDataService } from '../common/check-general-users-data.service';
 import { getFilteredUsersToUpdate } from '../../helpers/update.helpers';
 
+// Расширенная проверка
+
+// CHECK_CLIENT_ID:
+// 1. Если работник станиции привязан в станции - то ошибка
+
+// CHECK_DISTRICT_ID:
+// 1. Инжинер. ХЗ
+// 2. Руководитель района. ХЗ
+
+// name
+// email - needed confirmation
+// clientId - :CHECK_CLIENT_ID - STATION_WORKER
+// districtId - :CHECK_DISTRICT_ID - CLIENT_MEMBERS
+
 @Injectable()
 export class UsersUpdateService {
   constructor(

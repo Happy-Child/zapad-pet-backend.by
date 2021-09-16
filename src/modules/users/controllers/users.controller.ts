@@ -5,19 +5,9 @@ import { UsersCreateService } from '../services/create/users-create.service';
 import { UsersDeleteRequestQueryDTO } from '../dtos/delete.dtos';
 import { UsersUpdateService } from '../services/update/users-update.service';
 
-// Расширенная проверка
-
-// CHECK_CLIENT_ID:
-// 1. Если работник станиции привязан в станции - то ошибка
-
-// CHECK_DISTRICT_ID:
-// 1. Инжинер. ХЗ
-// 2. Руководитель района. ХЗ
-
-// name
-// email - needed confirmation
-// clientId - :CHECK_CLIENT_ID - STATION_WORKER
-// districtId - :CHECK_DISTRICT_ID - CLIENT_MEMBERS
+// PIPES:
+// create value = email
+// update value = id
 
 @Controller('users')
 export class UsersController {

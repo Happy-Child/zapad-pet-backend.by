@@ -2,7 +2,7 @@ import {
   DEFAULT_COUNT_ATTEMPTS_TO_SEND_MESSAGE,
   TIME_SECONDS,
 } from '@app/constants';
-import * as moment from 'moment';
+import moment from 'moment';
 
 interface CheckTimeAllowedSendMail {
   time: Date;

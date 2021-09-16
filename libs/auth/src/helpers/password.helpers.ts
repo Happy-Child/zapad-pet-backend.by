@@ -1,4 +1,4 @@
-import * as bcrypt from 'bcrypt';
+import bcrypt from 'bcrypt';
 import { PASSWORD_SALT_ROUNDS } from '@app/auth/constants/password.constants';
 
 export const comparePasswords = (

@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { UserRepository } from '@app/repositories';
 import { UnprocessableEntity } from '@app/exceptions';
-import { USERS_ERRORS } from '../../constants/errors.constants';
 import { ClientRepository } from '../../repositories/client.repository';
 import { DistrictRepository } from '../../repositories/district.repository';
 import { getUsersWithNotExistsClientsOrDistricts } from '../../helpers/common.helpers';
@@ -10,6 +9,7 @@ import {
   UsersCreateStationWorker,
   UsersCreateEngineer,
 } from '../../interfaces/create.interfaces';
+import { AUTH_ERRORS } from '@app/auth/constants/errors.constants';
 
 @Injectable()
 export class CheckGeneralUsersDataService {
@@ -28,7 +28,7 @@ export class CheckGeneralUsersDataService {
       existingUsers.map(({ email }) => ({
         value: email,
         field: 'email',
-        message: USERS_ERRORS.EMAIL_IS_EXIST,
+        message: AUTH_ERRORS.EMAIL_IS_EXIST,
       })),
     );
   }
@@ -52,7 +52,7 @@ export class CheckGeneralUsersDataService {
         stationWorkersWithNotExistingClients.map(({ clientId }) => ({
           value: clientId,
           field: 'clientId',
-          message: USERS_ERRORS.CLIENT_NOT_EXIST,
+          message: AUTH_ERRORS.CLIENT_NOT_EXIST,
         })),
       );
     }
@@ -94,7 +94,7 @@ export class CheckGeneralUsersDataService {
         clientMembersWithNotExistingClients.map(({ districtId }) => ({
           value: districtId,
           field: 'districtId',
-          message: USERS_ERRORS.DISTRICT_NOT_EXIST,
+          message: AUTH_ERRORS.DISTRICT_NOT_EXIST,
         })),
       );
     }

@@ -13,11 +13,11 @@ import { EmailConfirmedRepository } from '@app/auth/repositories/email-confirmed
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { MailSenderModule } from '@app/mail-sender';
 import { PugModule } from '@app/pug';
-import * as fs from 'fs';
-import * as config from 'config';
+import config from 'config';
 import { JwtModule } from '@nestjs/jwt';
 import { JwtStrategy } from '@app/auth/strategies/jwt.strategy';
 import { PasswordRecoveryRepository } from '@app/auth/repositories/password-recovery.repository';
+import { readFile } from '@app/helpers';
 
 @Module({
   imports: [
@@ -27,8 +27,8 @@ import { PasswordRecoveryRepository } from '@app/auth/repositories/password-reco
       PasswordRecoveryRepository,
     ]),
     JwtModule.register({
-      privateKey: fs.readFileSync(config.RSA.PRIVATE_KEY_PATH).toString(),
-      publicKey: fs.readFileSync(config.RSA.PUBLIC_KEY_PATH).toString(),
+      privateKey: readFile(config.RSA.PRIVATE_KEY_PATH).toString(),
+      publicKey: readFile(config.RSA.PUBLIC_KEY_PATH).toString(),
       signOptions: {
         algorithm: config.JWT.ALGORITHM,
         expiresIn: config.JWT.EXPIRATION,

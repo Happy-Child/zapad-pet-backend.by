@@ -1,7 +1,7 @@
-import * as nodemailer from 'nodemailer';
+import nodemailer from 'nodemailer';
 import { Provider } from '@nestjs/common';
 import { MAIL_SENDER_PROVIDER_NAME } from '@app/mail-sender';
-import * as config from 'config';
+import config from 'config';
 import { SendMailOptions } from '@app/mail-sender/mail-sender.types';
 
 export class MailSenderConnector {

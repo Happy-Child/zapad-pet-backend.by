@@ -1,24 +1,37 @@
-import { USER_ROLES } from '@app/constants';
 import { getFilteredGeneralUsers } from '@app/helpers';
 import {
   UsersUpdateDistrictLeader,
   UsersUpdateGeneralUser,
   UsersUpdateUserEngineer,
 } from '../interfaces/update.interfaces';
+import { UsersUpdateRolesType } from '../types/update.types';
 
 interface GetFilteredUsersToUpdate {
   districtLeaders: UsersUpdateDistrictLeader[];
   engineers: UsersUpdateUserEngineer[];
   others: UsersUpdateGeneralUser[];
 }
+interface RawUser {
+  role?: UsersUpdateRolesType;
+}
 export const getFilteredUsersToUpdate = (
-  rawUsers: { role: USER_ROLES }[],
+  rawUsers: RawUser[],
 ): GetFilteredUsersToUpdate => {
-  const { districtLeaders, engineers, stationWorkers, accountants } =
-    getFilteredGeneralUsers(rawUsers);
+  const usersWithRoles: Required<RawUser>[] = [];
+  const others: UsersUpdateGeneralUser[] = [];
+
+  rawUsers.forEach((user) => {
+    if (user.role) usersWithRoles.push(user as Required<RawUser>);
+    else others.push(user as UsersUpdateGeneralUser);
+  });
+
+  const { districtLeaders, engineers } = getFilteredGeneralUsers(
+    usersWithRoles as Required<RawUser>[],
+  );
+
   return {
     districtLeaders,
     engineers,
-    others: [...stationWorkers, ...accountants],
+    others,
   } as unknown as GetFilteredUsersToUpdate;
 };

@@ -1,7 +1,7 @@
 import { CLIENT_MEMBERS_ROLES, USER_ROLES } from '@app/constants';
 import {
   IsEmail,
-  IsEnum,
+  IsIn,
   IsInt,
   IsString,
   Length,
@@ -15,6 +15,8 @@ import {
   PASSWORD_REGEX,
 } from '@app/auth/constants/password.constants';
 import { AUTH_ERRORS } from '@app/auth/constants/errors.constants';
+import { SIGN_UP_ALLOWED_ROLES } from '@app/auth/constants/roles.constants';
+import { SignUpRolesType } from '@app/auth/types/roles.types';
 
 export class SignUpRequestBodyDTO {
   @IsString()
@@ -24,14 +26,18 @@ export class SignUpRequestBodyDTO {
   @IsEmail()
   email: string;
 
-  @IsEnum(USER_ROLES)
-  role: USER_ROLES;
+  @IsIn(SIGN_UP_ALLOWED_ROLES, { message: AUTH_ERRORS.INVALID_ROLE })
+  role: SignUpRolesType;
 
-  @ValidateIf((data) => data.role === USER_ROLES.STATION_WORKER)
+  @ValidateIf((data) => data.role === USER_ROLES.STATION_WORKER, {
+    message: AUTH_ERRORS.CLIENT_ID_IS_REQUIRED,
+  })
   @IsInt()
   clientId?: number;
 
-  @ValidateIf((data) => CLIENT_MEMBERS_ROLES.includes(data.role))
+  @ValidateIf((data) => CLIENT_MEMBERS_ROLES.includes(data.role), {
+    message: AUTH_ERRORS.DISTRICT_ID_IS_REQUIRED,
+  })
   @IsInt()
   districtId?: number;
 

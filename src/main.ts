@@ -1,10 +1,10 @@
-import * as config from 'config';
+import config from 'config';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { ValidationPipe } from '@nestjs/common';
-import * as cookieParser from 'cookie-parser';
-import * as helmet from 'helmet';
+import cookieParser from 'cookie-parser';
+import helmet from 'helmet';
 import { DEFAULT_APP_API_PORT } from '@app/constants';
 
 const port = config.APPS.API.PORT || DEFAULT_APP_API_PORT;

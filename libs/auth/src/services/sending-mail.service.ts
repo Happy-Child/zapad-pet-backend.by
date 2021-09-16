@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { MailSenderService } from '@app/mail-sender';
 import { PUG_TEMPLATES_NAMES, PugService } from '@app/pug';
 import { User } from '@app/entities';
-import * as config from 'config';
+import config from 'config';
 
 @Injectable()
 export class SendingMailService {
