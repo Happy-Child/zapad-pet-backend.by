@@ -25,7 +25,8 @@
     "migrate:run": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:run",
     "migrate:generate": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:generate -n",
     "migrate:revert": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:revert",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "type-check": "tsc"
   },
   "dependencies": {
     "@nestjs/common": "^8.0.0",
