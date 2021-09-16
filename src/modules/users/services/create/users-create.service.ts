@@ -42,7 +42,6 @@ export class UsersCreateService {
     await this.usersCheckBeforeCreateService.checkStationWorkersOrFail(
       stationWorkers,
     );
-    // FINAL CREATE (relation and other)
     // transaction(() => { this.generalCreateUser(); ...other })
   }
 
@@ -52,7 +51,6 @@ export class UsersCreateService {
     await this.usersCheckBeforeCreateService.checkDistrictLeadersOrFail(
       districtLeaders,
     );
-    // FINAL CREATE (relation and other)
     // transaction(() => { this.generalCreateUser(); ...other })
   }
 
@@ -60,7 +58,6 @@ export class UsersCreateService {
     engineers: UsersCreateEngineer[],
   ): Promise<void> {
     await this.usersCheckBeforeCreateService.checkEngineersOrFail(engineers);
-    // FINAL CREATE (relation and other)
     // transaction(() => { this.generalCreateUser(); ...other })
   }
 

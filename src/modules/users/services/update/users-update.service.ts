@@ -12,9 +12,15 @@ export class UsersUpdateService {
   ) {}
 
   async update({ users }: UsersUpdateRequestBodyDTO) {
+    // ОТФИЛЬТРОВАТЬ ПО МАССИВАМ ЛЮДЕЙ У КОТОРЫХ ИЗМЕНИЛОИСЬ ПОЛЯ
+    // EMAIL
+    // DISTRICT ID
+    // ЧТОБЫ ЕСЛИ У НАС БЫЛ EMAIL "test@mail.ru" И ОН ЛЕТИТ СНОВА - НЕ ПРОВЕРЯТЬ ЕГО НА СУЩ. И НЕ КИДАТЬ ОШИБКУ
+
     const emails = users.map(({ email }) => email);
     await this.checkGeneralUsersDataService.checkUsersEmailsOrFail(emails);
 
+    // DO LOW CODE IF DISTRICT ID WAS CHANGED
     const { districtLeaders, engineers, others } =
       getFilteredUsersToUpdate(users);
 

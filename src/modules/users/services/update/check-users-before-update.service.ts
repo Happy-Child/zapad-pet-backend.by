@@ -23,8 +23,12 @@ export class CheckUsersBeforeUpdateService {
     await this.checkGeneralUsersDataService.checkDistrictLeadersOrFail(
       districtLeaders,
     );
-    // CHECK IF NOT EXISTS ACTIVE BIDS?
+    // IF CHANGE DISTRICT ID - CHECK IF PREV DISTRICT NOT HAW ACTIVE BIDS & NEXT DISTRICT EMPTY
+    // REMOVE THIS LEADER FROM PREV DISTRICT - IN OTHER SERVICE?
     // CHECK OTHER
+
+    // GLOBAL - МЕТОД ПРОВЕРКИ НЕ ОБНОВЛЯЕМ ЛИ МЫ НА ЭТО ЖЕ ЗНАЧЕНИЕ.
+    // Т.Е. БЫЛО ИМЯ "ЕГОР", ЛЕТИТ ИМЯ "ЕГОР" - ЭТО ПОЛЕ НЕ ОБНОВЛЯТЬ
   }
 
   public async checkEngineersOrFail(
