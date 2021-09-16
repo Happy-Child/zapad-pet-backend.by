@@ -1,39 +1,52 @@
 import { ClientRepository } from '../repositories/client.repository';
 import { DistrictRepository } from '../repositories/district.repository';
-import { getUniqueFieldsArrayByFieldName } from '@app/helpers/array.helpers';
-import { UsersCreateDataDTO } from '../dtos/users-create.dtos';
+import { getArrayUniqueFieldsByFieldName } from '@app/helpers/array.helpers';
+import {
+  UserStationWorkerFields,
+  UserEngineerFields,
+  UserDistrictLeaderFields,
+} from '@app/interfaces';
 
-interface CheckStationWorkersOrClientMembersOrFailProps {
+interface GetUsersWithNotExistsClientsOrDistrictsProps<
+  T = UserStationWorkerFields | UserEngineerFields | UserDistrictLeaderFields,
+> {
   fieldName: 'clientId' | 'districtId';
-  users: UsersCreateDataDTO[];
+  users: T[];
   repository: ClientRepository | DistrictRepository;
 }
-export const checkStationWorkersOrClientMembers = async ({
+export const getUsersWithNotExistsClientsOrDistricts = async <
+  T = UserStationWorkerFields | UserEngineerFields | UserDistrictLeaderFields,
+>({
   fieldName,
   users,
   repository,
-}: CheckStationWorkersOrClientMembersOrFailProps): Promise<
-  void | (string | number)[]
-> => {
-  const searchedEntitiesIds =
-    getUniqueFieldsArrayByFieldName<UsersCreateDataDTO>(fieldName, users);
+}: GetUsersWithNotExistsClientsOrDistrictsProps<T>): Promise<T[]> => {
+  const searchedClientsOrDistrictsIds = getArrayUniqueFieldsByFieldName<{
+    clientId?: number;
+    districtId?: number;
+  }>(fieldName, users);
 
-  const existingEntities = await repository
+  const existingClientsOrDistricts = await repository
     .createQueryBuilder('u')
-    .where('u.id IN (:...ids)', { ids: searchedEntitiesIds })
+    .where('u.id IN (:...ids)', { ids: searchedClientsOrDistrictsIds })
     .orderBy('u.id')
     .getMany();
 
-  if (existingEntities.length === searchedEntitiesIds.length) return;
+  if (
+    existingClientsOrDistricts.length === searchedClientsOrDistrictsIds.length // If all clients or districts exists
+  )
+    return [];
 
-  const existingEntitiesIds = existingEntities.map(({ id }) => id);
-
-  const usersWithNotExistingEntities = users.filter(
-    (user) => !existingEntitiesIds.includes(user[fieldName]),
+  const existingClientsOrDistrictsIds = existingClientsOrDistricts.map(
+    ({ id }) => id,
   );
 
-  return getUniqueFieldsArrayByFieldName<UsersCreateDataDTO>(
-    fieldName,
-    usersWithNotExistingEntities,
-  );
+  const usersWithNotExistingClientsOrDistricts = users.filter((user) => {
+    const clientOrDistrictId = user[fieldName];
+    const curClientOrDistrictIdExist =
+      existingClientsOrDistrictsIds.includes(clientOrDistrictId);
+    return !curClientOrDistrictIdExist;
+  });
+
+  return usersWithNotExistingClientsOrDistricts;
 };

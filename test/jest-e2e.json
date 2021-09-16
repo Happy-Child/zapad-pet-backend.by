@@ -30,6 +30,8 @@
     "@app/dtos/(.*)": "<rootDir>/../libs/dtos/src/$1",
     "@app/dtos": "<rootDir>/../libs/dtos/src",
     "@app/repositories/(.*)": "<rootDir>/../libs/repositories/src/$1",
-    "@app/repositories": "<rootDir>/../libs/repositories/src"
+    "@app/repositories": "<rootDir>/../libs/repositories/src",
+    "@app/interfaces/(.*)": "<rootDir>/../libs/interfaces/src/$1",
+    "@app/interfaces": "<rootDir>/../libs/interfaces/src"
   }
 }

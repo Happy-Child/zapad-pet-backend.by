@@ -72,6 +72,12 @@
       ],
       "@app/repositories/*": [
         "libs/repositories/src/*"
+      ],
+      "@app/interfaces": [
+        "libs/interfaces/src"
+      ],
+      "@app/interfaces/*": [
+        "libs/interfaces/src/*"
       ]
     }
   }

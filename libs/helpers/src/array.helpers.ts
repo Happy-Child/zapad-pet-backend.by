@@ -1,4 +1,4 @@
-export const getUniqueFieldsArrayByFieldName = <T>(
+export const getArrayUniqueFieldsByFieldName = <T>(
   fieldName: keyof T,
   array: T[],
 ): T[keyof T][] => {
