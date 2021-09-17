@@ -12,7 +12,7 @@ export class PasswordRecovery extends BaseEntity {
     unique: true,
   })
   @Expose()
-  email: string;
+  email!: string;
 
   @Column({
     type: 'varchar',
@@ -21,15 +21,15 @@ export class PasswordRecovery extends BaseEntity {
     unique: true,
   })
   @Expose()
-  token: string;
+  token!: string;
 
   @Column({ nullable: false })
   @Expose()
-  attemptCount: number;
+  attemptCount!: number;
 
   @UpdateDateColumn({ type: 'timestamptz' })
   @Expose()
-  updatedAt: Date;
+  updatedAt!: Date;
 
   constructor(data: Partial<PasswordRecovery>) {
     super();

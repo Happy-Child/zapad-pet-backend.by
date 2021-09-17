@@ -6,41 +6,41 @@ import { BaseEntity } from '@app/entities/base.entity';
 @Entity({ name: 'aggr_station_bid_status_count' })
 export class AggrStationBidStatusCount extends BaseEntity {
   @Column({ nullable: false })
-  stationId: number;
+  stationId!: number;
 
   @OneToOne(() => Station)
   @JoinColumn({
     name: 'stationId',
     referencedColumnName: 'id',
   })
-  station: Station;
+  station!: Station;
 
   @Column({ nullable: false, default: 0 })
-  pendingInWork: number;
+  pendingInWork!: number;
 
   @Column({ nullable: false, default: 0 })
-  inWork: number;
+  inWork!: number;
 
   @Column({ nullable: false, default: 0 })
-  editing: number;
+  editing!: number;
 
   @Column({ nullable: false, default: 0 })
-  completed: number;
+  completed!: number;
 
   @Column({ nullable: false, default: 0 })
-  rejected: number;
+  rejected!: number;
 
   @Column({ nullable: false, default: 0 })
-  pendingVerificationStationWorker: number;
+  pendingVerificationStationWorker!: number;
 
   @Column({ nullable: false, default: 0 })
-  pendingVerificationDistrictLeader: number;
+  pendingVerificationDistrictLeader!: number;
 
   @Column({ nullable: false, default: 0 })
-  notAcceptedStationWorker: number;
+  notAcceptedStationWorker!: number;
 
   @Column({ nullable: false, default: 0 })
-  notAcceptedDistrictLeader: number;
+  notAcceptedDistrictLeader!: number;
 
   constructor(data: Partial<AggrStationBidStatusCount>) {
     super();

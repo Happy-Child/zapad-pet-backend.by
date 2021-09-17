@@ -85,7 +85,7 @@ export class PasswordRecoveryService {
       });
 
       const updatedPasswordRecoveryData =
-        await this.passwordRecoveryRepository.findOne(id);
+        (await this.passwordRecoveryRepository.findOne(id)) as PasswordRecovery;
 
       return new PasswordRecoveryResponseBodyDTO({
         attemptCount: updatedPasswordRecoveryData.attemptCount,

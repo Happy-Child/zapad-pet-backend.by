@@ -43,9 +43,7 @@ export class CheckGeneralUsersDataService {
         repository: this.clientRepository,
       });
 
-    const throwError =
-      stationWorkersWithNotExistingClients instanceof Array &&
-      stationWorkersWithNotExistingClients.length;
+    const throwError = stationWorkersWithNotExistingClients.length;
 
     if (throwError) {
       throw new UnprocessableEntity(
@@ -85,9 +83,7 @@ export class CheckGeneralUsersDataService {
         repository: this.districtRepository,
       });
 
-    const throwError =
-      clientMembersWithNotExistingClients instanceof Array &&
-      clientMembersWithNotExistingClients.length;
+    const throwError = clientMembersWithNotExistingClients.length;
 
     if (throwError) {
       throw new UnprocessableEntity(

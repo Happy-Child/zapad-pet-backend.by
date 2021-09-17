@@ -7,7 +7,7 @@ import { Exclude, Expose, plainToClass } from 'class-transformer';
 export class User extends BaseEntity {
   @Column({ type: 'varchar', length: VARCHAR_DEFAULT_LENGTH, nullable: false })
   @Expose()
-  name: string;
+  name!: string;
 
   @Column({
     type: 'varchar',
@@ -16,7 +16,7 @@ export class User extends BaseEntity {
     unique: true,
   })
   @Expose()
-  email: string;
+  email!: string;
 
   @Column({
     type: 'enum',
@@ -24,7 +24,7 @@ export class User extends BaseEntity {
     nullable: false,
   })
   @Expose()
-  role: USER_ROLES;
+  role!: USER_ROLES;
 
   @Column({
     type: 'boolean',
@@ -32,11 +32,11 @@ export class User extends BaseEntity {
     default: false,
   })
   @Exclude()
-  emailConfirmed: boolean;
+  emailConfirmed!: boolean;
 
   @Column()
   @Exclude()
-  password: string;
+  password!: string;
 
   constructor(data: Partial<User>) {
     super();

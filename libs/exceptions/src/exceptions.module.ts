@@ -1,6 +1,6 @@
 import { APP_FILTER, APP_PIPE } from '@nestjs/core';
 import { DynamicModule, Module, Provider } from '@nestjs/common';
-import { ValidationPipe } from '@app/exceptions/pipes/validation.pipe';
+import { AppValidationPipe } from '@app/exceptions/pipes/app-validation.pipe';
 import { CommonFilter } from '@app/exceptions/filters/common.filter';
 import { ExceptionModuleConfig } from '@app/exceptions/exceptions.interfaces';
 import { DEFAULT_EXCEPTION_MODULE_CONFIG } from '@app/exceptions/exceptions.constants';
@@ -20,7 +20,7 @@ export class ExceptionsModule {
     if (withValidationPipes) {
       providers.push({
         provide: APP_PIPE,
-        useClass: ValidationPipe,
+        useClass: AppValidationPipe,
       });
     }
 

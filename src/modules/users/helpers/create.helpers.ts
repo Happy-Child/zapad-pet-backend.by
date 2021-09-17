@@ -1,10 +1,10 @@
-import { USER_ROLES } from '@app/constants';
 import {
   UsersCreateDistrictLeader,
   UsersCreateStationWorker,
   UsersCreateEngineer,
 } from '../interfaces/create.interfaces';
 import { getFilteredGeneralUsers } from '@app/helpers';
+import { ClientMembersOrStationWorkerRolesType } from '@app/types';
 
 interface GetFilteredUsersToCreate {
   districtLeaders: UsersCreateDistrictLeader[];
@@ -12,7 +12,7 @@ interface GetFilteredUsersToCreate {
   stationWorkers: UsersCreateStationWorker[];
 }
 export const getFilteredUsersToCreate = (
-  rawUsers: { role: USER_ROLES }[],
+  rawUsers: { role: ClientMembersOrStationWorkerRolesType }[],
 ): GetFilteredUsersToCreate => {
   const { districtLeaders, engineers, stationWorkers } =
     getFilteredGeneralUsers(rawUsers);

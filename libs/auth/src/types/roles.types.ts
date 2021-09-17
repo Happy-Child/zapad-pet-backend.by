@@ -1,7 +1,3 @@
-import { USER_ROLES } from '@app/constants';
+import { AllowedRolesType } from '@app/types';
 
-export type SignUpRolesType =
-  | USER_ROLES.ENGINEER
-  | USER_ROLES.DISTRICT_LEADER
-  | USER_ROLES.STATION_WORKER
-  | USER_ROLES.ACCOUNTANT;
+export type SignUpRolesType = AllowedRolesType;

@@ -1,5 +1,7 @@
 {
   "compilerOptions": {
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
     "esModuleInterop": true,
     "module": "commonjs",
     "declaration": true,
@@ -79,6 +81,12 @@
       ],
       "@app/interfaces/*": [
         "libs/interfaces/src/*"
+      ],
+      "@app/types": [
+        "libs/types/src"
+      ],
+      "@app/types/*": [
+        "libs/types/src/*"
       ]
     }
   }

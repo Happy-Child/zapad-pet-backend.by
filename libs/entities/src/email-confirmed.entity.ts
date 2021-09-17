@@ -11,7 +11,7 @@ export class EmailConfirmed extends BaseEntity {
     nullable: false,
     unique: true,
   })
-  email: string;
+  email!: string;
 
   @Column({
     type: 'varchar',
@@ -19,7 +19,7 @@ export class EmailConfirmed extends BaseEntity {
     nullable: false,
     unique: true,
   })
-  token: string;
+  token!: string;
 
   constructor(data: Partial<EmailConfirmed>) {
     super();

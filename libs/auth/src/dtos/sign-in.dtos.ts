@@ -9,22 +9,22 @@ import {
 
 export class SignInRequestBodyDTO {
   @IsEmail()
-  email: string;
+  email!: string;
 
   @IsString()
   @Length(PASSWORD_LENGTH.MIN, PASSWORD_LENGTH.MAX)
   @Matches(PASSWORD_REGEX)
-  password: string;
+  password!: string;
 }
 
 export class SignInResponseBodyDTO {
   @Expose()
-  user: User;
+  user!: User;
 
   @Expose()
-  accessToken: string;
+  accessToken!: string;
 
-  constructor(data: Partial<SignInResponseBodyDTO>) {
+  constructor(data: SignInResponseBodyDTO) {
     Object.assign(
       this,
       plainToClass(SignInResponseBodyDTO, data, {

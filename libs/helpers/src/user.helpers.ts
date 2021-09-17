@@ -5,6 +5,7 @@ import {
   GeneralUserEngineer,
   GeneralUserStationWorker,
 } from '@app/interfaces';
+import { AllowedRolesType } from '@app/types';
 
 interface GetFilteredGeneralUsers {
   districtLeaders: GeneralUserDistrictLeader[];
@@ -13,7 +14,7 @@ interface GetFilteredGeneralUsers {
   accountants: GeneralUserAccountant[];
 }
 export const getFilteredGeneralUsers = (
-  rawUsers: { role: USER_ROLES }[],
+  rawUsers: { role: AllowedRolesType }[],
 ): GetFilteredGeneralUsers => {
   const result: GetFilteredGeneralUsers = {
     districtLeaders: [],

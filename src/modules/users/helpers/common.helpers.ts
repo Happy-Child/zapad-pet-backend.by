@@ -1,30 +1,27 @@
 import { ClientRepository } from '../repositories/client.repository';
 import { DistrictRepository } from '../repositories/district.repository';
 import { getArrayUniqueFieldsByFieldName } from '@app/helpers/array.helpers';
-import {
-  UserStationWorkerFields,
-  UserEngineerFields,
-  UserDistrictLeaderFields,
-} from '@app/interfaces';
+import { UserClientMemberOrStationWorkerFields } from '@app/interfaces';
 
 interface GetUsersWithNotExistsClientsOrDistrictsProps<
-  T = UserStationWorkerFields | UserEngineerFields | UserDistrictLeaderFields,
+  T extends UserClientMemberOrStationWorkerFields,
 > {
   fieldName: 'clientId' | 'districtId';
   users: T[];
   repository: ClientRepository | DistrictRepository;
 }
 export const getUsersWithNotExistsClientsOrDistricts = async <
-  T = UserStationWorkerFields | UserEngineerFields | UserDistrictLeaderFields,
+  T extends UserClientMemberOrStationWorkerFields,
 >({
   fieldName,
   users,
   repository,
 }: GetUsersWithNotExistsClientsOrDistrictsProps<T>): Promise<T[]> => {
-  const searchedClientsOrDistrictsIds = getArrayUniqueFieldsByFieldName<{
-    clientId?: number;
-    districtId?: number;
-  }>(fieldName, users);
+  const searchedClientsOrDistrictsIds =
+    getArrayUniqueFieldsByFieldName<UserClientMemberOrStationWorkerFields>(
+      fieldName,
+      users,
+    );
 
   const existingClientsOrDistricts = await repository
     .createQueryBuilder('u')
@@ -42,7 +39,7 @@ export const getUsersWithNotExistsClientsOrDistricts = async <
   );
 
   const usersWithNotExistingClientsOrDistricts = users.filter((user) => {
-    const clientOrDistrictId = user[fieldName];
+    const clientOrDistrictId = user[fieldName] as number;
     const curClientOrDistrictIdExist =
       existingClientsOrDistrictsIds.includes(clientOrDistrictId);
     return !curClientOrDistrictIdExist;

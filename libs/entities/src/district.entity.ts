@@ -13,7 +13,7 @@ export class District extends BaseEntity {
     nullable: false,
     unique: true,
   })
-  name: string;
+  name!: string;
 
   @Column({
     type: 'varchar',
@@ -21,27 +21,27 @@ export class District extends BaseEntity {
     nullable: false,
     unique: true,
   })
-  slug: string;
+  slug!: string;
 
   @Column({ nullable: false })
-  regionId: number;
+  regionId!: number;
 
   @ManyToOne(() => Region)
   @JoinColumn({
     name: 'regionId',
     referencedColumnName: 'id',
   })
-  region: Region;
+  region!: Region;
 
   @Column({ nullable: true })
-  districtLeaderId: number;
+  districtLeaderId!: number;
 
   @OneToOne(() => User)
   @JoinColumn({
     name: 'districtLeaderId',
     referencedColumnName: 'id',
   })
-  districtLeader: User;
+  districtLeader!: User;
 
   constructor(data: Partial<District>) {
     super();

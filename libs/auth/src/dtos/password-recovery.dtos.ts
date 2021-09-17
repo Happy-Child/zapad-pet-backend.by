@@ -10,20 +10,20 @@ import { AUTH_ERRORS } from '@app/auth/constants/errors.constants';
 
 export class PasswordRecoveryRequestBodyDTO {
   @IsEmail()
-  email: string;
+  email!: string;
 }
 
 export class PasswordRecoveryResponseBodyDTO {
   @Expose()
-  wasSent: boolean;
+  wasSent!: boolean;
 
   @Expose()
-  attemptCount: number;
+  attemptCount!: number;
 
   @Expose()
-  updatedAt: Date;
+  updatedAt!: Date;
 
-  constructor(data: Partial<PasswordRecoveryResponseBodyDTO>) {
+  constructor(data: PasswordRecoveryResponseBodyDTO) {
     Object.assign(
       this,
       plainToClass(PasswordRecoveryResponseBodyDTO, data, {
@@ -37,10 +37,10 @@ export class CreateNewPasswordRequestBodyDTO extends TokenRequestDTO {
   @IsString()
   @Length(PASSWORD_LENGTH.MIN, PASSWORD_LENGTH.MAX)
   @Matches(PASSWORD_REGEX)
-  password: string;
+  password!: string;
 
   @IsString()
   @Length(PASSWORD_LENGTH.MIN, PASSWORD_LENGTH.MAX)
   @Match('password', { message: AUTH_ERRORS.CONFIRMATION_PASSWORD_NOT_MATCH })
-  passwordConfirmation: string;
+  passwordConfirmation!: string;
 }

@@ -32,6 +32,8 @@
     "@app/repositories/(.*)": "<rootDir>/../libs/repositories/src/$1",
     "@app/repositories": "<rootDir>/../libs/repositories/src",
     "@app/interfaces/(.*)": "<rootDir>/../libs/interfaces/src/$1",
-    "@app/interfaces": "<rootDir>/../libs/interfaces/src"
+    "@app/interfaces": "<rootDir>/../libs/interfaces/src",
+    "@app/types/(.*)": "<rootDir>/../libs/types/src/$1",
+    "@app/types": "<rootDir>/../libs/types/src"
   }
 }

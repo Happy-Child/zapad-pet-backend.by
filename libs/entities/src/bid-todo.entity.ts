@@ -12,7 +12,7 @@ export class BidTodo extends BaseEntity {
     length: BID_TODO_MAX_LENGTH,
     nullable: false,
   })
-  text: string;
+  text!: string;
 
   @Column({
     type: 'enum',
@@ -20,17 +20,17 @@ export class BidTodo extends BaseEntity {
     nullable: false,
     default: BID_TODO_STATUS.PENDING,
   })
-  status: BID_TODO_STATUS;
+  status!: BID_TODO_STATUS;
 
   @Column({ nullable: false })
-  bidId: number;
+  bidId!: number;
 
   @ManyToOne(() => Bid)
   @JoinColumn({
     name: 'bidId',
     referencedColumnName: 'id',
   })
-  bid: Bid;
+  bid!: Bid;
 
   constructor(data: Partial<BidTodo>) {
     super();

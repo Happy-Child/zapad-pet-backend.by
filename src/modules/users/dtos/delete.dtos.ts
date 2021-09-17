@@ -1,3 +1,3 @@
 export class UsersDeleteRequestQueryDTO {
-  ids: number[];
+  ids!: number[];
 }

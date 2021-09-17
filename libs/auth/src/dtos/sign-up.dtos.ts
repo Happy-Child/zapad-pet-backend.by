@@ -21,13 +21,13 @@ import { SignUpRolesType } from '@app/auth/types/roles.types';
 export class SignUpRequestBodyDTO {
   @IsString()
   @Length(USER_NAME_LENGTH.MIN, USER_NAME_LENGTH.MAX)
-  name: string;
+  name!: string;
 
   @IsEmail()
-  email: string;
+  email!: string;
 
   @IsIn(SIGN_UP_ALLOWED_ROLES, { message: AUTH_ERRORS.INVALID_ROLE })
-  role: SignUpRolesType;
+  role!: SignUpRolesType;
 
   @ValidateIf((data) => data.role === USER_ROLES.STATION_WORKER, {
     message: AUTH_ERRORS.CLIENT_ID_IS_REQUIRED,
@@ -44,10 +44,10 @@ export class SignUpRequestBodyDTO {
   @IsString()
   @Length(PASSWORD_LENGTH.MIN, PASSWORD_LENGTH.MAX)
   @Matches(PASSWORD_REGEX)
-  password: string;
+  password!: string;
 
   @IsString()
   @Length(PASSWORD_LENGTH.MIN, PASSWORD_LENGTH.MAX)
   @Match('password', { message: AUTH_ERRORS.CONFIRMATION_PASSWORD_NOT_MATCH })
-  passwordConfirmation: string;
+  passwordConfirmation!: string;
 }

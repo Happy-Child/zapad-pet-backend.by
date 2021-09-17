@@ -5,10 +5,6 @@ import { UsersCreateService } from '../services/create/users-create.service';
 import { UsersDeleteRequestQueryDTO } from '../dtos/delete.dtos';
 import { UsersUpdateService } from '../services/update/users-update.service';
 
-// PIPES:
-// create value = email
-// update value = id
-
 @Controller('users')
 export class UsersController {
   constructor(

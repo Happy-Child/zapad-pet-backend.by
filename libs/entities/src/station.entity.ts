@@ -22,40 +22,40 @@ export class Station extends BaseEntity {
     nullable: false,
     unique: true,
   })
-  number: string;
+  number!: string;
 
   @Column({ nullable: true })
-  stationWorkerId: number;
+  stationWorkerId!: number;
 
   @OneToOne(() => User)
   @JoinColumn({
     name: 'stationWorkerId',
     referencedColumnName: 'id',
   })
-  stationWorker: User;
+  stationWorker!: User;
 
   @Column({ nullable: false })
-  clientId: number;
+  clientId!: number;
 
   @ManyToOne(() => Client)
   @JoinColumn({
     name: 'clientId',
     referencedColumnName: 'id',
   })
-  client: Client;
+  client!: Client;
 
   @Column({ nullable: false })
-  districtId: number;
+  districtId!: number;
 
   @OneToOne(() => District)
   @JoinColumn({
     name: 'districtId',
     referencedColumnName: 'id',
   })
-  district: District;
+  district!: District;
 
   @OneToMany(() => Bid, (bid) => bid.station)
-  bids: Bid[];
+  bids!: Bid[];
 
   constructor(data: Partial<Station>) {
     super();

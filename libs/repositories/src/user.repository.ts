@@ -5,8 +5,9 @@ import { AUTH_ERRORS } from '@app/auth/constants/errors.constants';
 
 @EntityRepository(User)
 export class UserRepository extends Repository<User> {
-  async findByEmail(email: string): Promise<User> {
-    return this.findOne({ email });
+  async findByEmail(email: string): Promise<User | null> {
+    const user = await this.findOne({ email });
+    return user || null;
   }
 
   async findByEmailOrFail(email: string): Promise<User> {

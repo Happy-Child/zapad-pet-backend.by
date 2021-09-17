@@ -1,5 +1,3 @@
-import { USER_ROLES } from '@app/constants';
+import { ClientMembersRolesType } from '@app/types';
 
-export type UsersUpdateRolesType =
-  | USER_ROLES.ENGINEER
-  | USER_ROLES.DISTRICT_LEADER;
+export type UsersUpdateRolesType = ClientMembersRolesType;

@@ -9,13 +9,13 @@ import { Exclude, Expose } from 'class-transformer';
 export class BaseEntity {
   @Expose()
   @PrimaryGeneratedColumn()
-  id: number;
+  id!: number;
 
   @Exclude()
   @CreateDateColumn({ type: 'timestamptz' })
-  createdAt: Date;
+  createdAt!: Date;
 
   @Exclude()
   @UpdateDateColumn({ type: 'timestamptz' })
-  updatedAt: Date;
+  updatedAt!: Date;
 }

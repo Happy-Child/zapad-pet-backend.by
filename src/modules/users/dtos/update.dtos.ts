@@ -18,7 +18,7 @@ import { CLIENT_MEMBERS_ROLES } from '@app/constants';
 
 export class UsersUpdateItemDTO {
   @IsInt()
-  id: string;
+  id!: string;
 
   @IsOptional()
   @IsString()
@@ -52,5 +52,5 @@ export class UsersUpdateRequestBodyDTO {
   })
   @ValidateNested({ each: true })
   @Type(() => UsersUpdateItemDTO)
-  users: UsersUpdateItemDTO[];
+  users!: UsersUpdateItemDTO[];
 }

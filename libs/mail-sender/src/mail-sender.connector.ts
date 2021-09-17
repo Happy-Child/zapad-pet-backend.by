@@ -5,7 +5,7 @@ import config from 'config';
 import { SendMailOptions } from '@app/mail-sender/mail-sender.types';
 
 export class MailSenderConnector {
-  private transporter: nodemailer.Transporter;
+  private transporter!: nodemailer.Transporter;
 
   connect(): void {
     this.transporter = nodemailer.createTransport({

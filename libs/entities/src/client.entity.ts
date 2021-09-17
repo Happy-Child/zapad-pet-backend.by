@@ -12,10 +12,10 @@ export class Client extends BaseEntity {
     nullable: false,
     unique: true,
   })
-  name: string;
+  name!: string;
 
   @OneToMany(() => Station, (station) => station.client)
-  stations: Station[];
+  stations!: Station[];
 
   constructor(data: Partial<Client>) {
     super();

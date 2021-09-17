@@ -25,7 +25,7 @@ export class Bid extends BaseEntity {
     nullable: false,
     default: BID_STATUS.PENDING_IN_WORK,
   })
-  status: BID_STATUS;
+  status!: BID_STATUS;
 
   @Column({
     type: 'enum',
@@ -33,79 +33,79 @@ export class Bid extends BaseEntity {
     nullable: false,
     default: BID_PRIORITY.MEDIUM,
   })
-  priority: BID_PRIORITY;
+  priority!: BID_PRIORITY;
 
   @Column({
     type: 'varchar',
     length: VARCHAR_DEFAULT_LENGTH,
     nullable: true,
   })
-  description: string;
+  description!: string | null;
 
   @Column({ nullable: false })
-  stationId: number;
+  stationId!: number;
 
   @ManyToOne(() => Station, (station) => station.bids)
   @JoinColumn({
     name: 'stationId',
     referencedColumnName: 'id',
   })
-  station: Station;
+  station!: Station;
 
   @Column({ nullable: true })
-  engineerId: number;
+  engineerId!: number | null;
 
   @ManyToOne(() => User)
   @JoinColumn({
     name: 'engineerId',
     referencedColumnName: 'id',
   })
-  engineer: User;
+  engineer!: User;
 
   @Column({ nullable: true })
-  rejectedUserId: number;
+  rejectedUserId!: number | null;
 
   @ManyToOne(() => User)
   @JoinColumn({
     name: 'rejectedUserId',
     referencedColumnName: 'id',
   })
-  rejectedUser: User;
+  rejectedUser!: User;
 
   @Column({ nullable: true })
-  confirmedStationWorkerId: number;
+  confirmedStationWorkerId!: number | null;
 
   @ManyToOne(() => User)
   @JoinColumn({
     name: 'confirmedStationWorkerId',
     referencedColumnName: 'id',
   })
-  confirmedStationWorker: User;
+  confirmedStationWorker!: User;
 
   @Column({ nullable: true })
-  finalPhotoId: number;
+  finalPhotoId!: number | null;
 
   @OneToOne(() => File)
   @JoinColumn({
     name: 'finalPhotoId',
     referencedColumnName: 'id',
   })
-  finalPhoto: File;
+  finalPhoto!: File;
 
   @OneToMany(() => BidTodo, (todo) => todo.bid)
-  todos: BidTodo[];
+  todos!: BidTodo[];
 
   @CreateDateColumn({ type: 'timestamptz', nullable: false })
-  deadlineAt: Date;
+  deadlineAt!: Date;
 
   @CreateDateColumn({ type: 'timestamptz', nullable: true })
-  startWorkAt: Date;
+  startWorkAt!: Date | null;
 
   @CreateDateColumn({ type: 'timestamptz', nullable: true })
-  endWorkAt: Date;
+  endWorkAt!: Date | null;
 
   @CreateDateColumn({ type: 'timestamptz', nullable: true })
-  confirmSuccessAt: Date;
+  confirmSuccessAt!: Date | null;
 
   constructor(data: Partial<Bid>) {
     super();

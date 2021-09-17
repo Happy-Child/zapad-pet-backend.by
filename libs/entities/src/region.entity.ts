@@ -11,7 +11,7 @@ export class Region extends BaseEntity {
     nullable: false,
     unique: true,
   })
-  name: string;
+  name!: string;
 
   @Column({
     type: 'varchar',
@@ -19,7 +19,7 @@ export class Region extends BaseEntity {
     nullable: false,
     unique: true,
   })
-  slug: string;
+  slug!: string;
 
   constructor(data: Partial<Region>) {
     super();

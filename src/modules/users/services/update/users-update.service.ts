@@ -31,8 +31,8 @@ export class UsersUpdateService {
     // DISTRICT ID
     // ЧТОБЫ ЕСЛИ У НАС БЫЛ EMAIL "test@mail.ru" И ОН ЛЕТИТ СНОВА - НЕ ПРОВЕРЯТЬ ЕГО НА СУЩ. И НЕ КИДАТЬ ОШИБКУ
 
-    const emails = users.map(({ email }) => email);
-    await this.checkGeneralUsersDataService.checkUsersEmailsOrFail(emails);
+    // const emails = users.map(({ email }) => email);
+    // await this.checkGeneralUsersDataService.checkUsersEmailsOrFail(emails);
 
     // DO LOW CODE IF DISTRICT ID WAS CHANGED
     const { districtLeaders, engineers, others } =
