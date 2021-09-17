@@ -1,1 +1,1 @@
-export * from './global.dtos';
+export * from './general.dtos';

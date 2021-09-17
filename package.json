@@ -116,7 +116,9 @@
       "^@app/dtos(|/.*)$": "<rootDir>/libs/dtos/src/$1",
       "^@app/repositories(|/.*)$": "<rootDir>/libs/repositories/src/$1",
       "^@app/interfaces(|/.*)$": "<rootDir>/libs/interfaces/src/$1",
-      "^@app/types(|/.*)$": "<rootDir>/libs/types/src/$1"
+      "^@app/types(|/.*)$": "<rootDir>/libs/types/src/$1",
+      "^@app/validators(|/.*)$": "<rootDir>/libs/validators/src/$1",
+      "^@app/files(|/.*)$": "<rootDir>/libs/files/src/$1"
     }
   }
 }

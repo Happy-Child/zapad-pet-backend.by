@@ -34,6 +34,10 @@
     "@app/interfaces/(.*)": "<rootDir>/../libs/interfaces/src/$1",
     "@app/interfaces": "<rootDir>/../libs/interfaces/src",
     "@app/types/(.*)": "<rootDir>/../libs/types/src/$1",
-    "@app/types": "<rootDir>/../libs/types/src"
+    "@app/types": "<rootDir>/../libs/types/src",
+    "@app/validators/(.*)": "<rootDir>/../libs/validators/src/$1",
+    "@app/validators": "<rootDir>/../libs/validators/src",
+    "@app/files/(.*)": "<rootDir>/../libs/files/src/$1",
+    "@app/files": "<rootDir>/../libs/files/src"
   }
 }

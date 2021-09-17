@@ -1,0 +1,1 @@
+export const COUNT_ATTEMPTS_TO_SEND_MESSAGE = 3;

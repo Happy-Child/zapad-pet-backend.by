@@ -1,9 +1,10 @@
 import { Controller, Post, Body, Patch, Delete, Query } from '@nestjs/common';
-import { UsersCreateRequestBodyDTO } from '../dtos/create.dtos';
-import { UsersUpdateRequestBodyDTO } from '../dtos/update.dtos';
-import { UsersCreateService } from '../services/create/users-create.service';
-import { UsersDeleteRequestQueryDTO } from '../dtos/delete.dtos';
-import { UsersUpdateService } from '../services/update/users-update.service';
+import {
+  UsersCreateRequestBodyDTO,
+  UsersUpdateRequestBodyDTO,
+  UsersDeleteRequestQueryDTO,
+} from '../dtos';
+import { UsersCreateService, UsersUpdateService } from '../services';
 
 @Controller('users')
 export class UsersController {

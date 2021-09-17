@@ -1,19 +1,19 @@
 import { Injectable } from '@nestjs/common';
-import { UsersCreateRequestBodyDTO } from '../../dtos/create.dtos';
-import { CheckUsersBeforeCreateService } from './check-users-before-create.service';
-import { getFilteredUsersToCreate } from '../../helpers/create.helpers';
+import { UsersCreateRequestBodyDTO } from '../../dtos';
+import { UsersCheckBeforeCreateService } from './users-check-before-create.service';
+import { UsersCheckGeneralDataService } from '../common';
+import { getFilteredUsersToCreate } from '../../helpers/users-create.helpers';
 import {
   UsersCreateDistrictLeader,
   UsersCreateStationWorker,
   UsersCreateEngineer,
-} from '../../interfaces/create.interfaces';
-import { CheckGeneralUsersDataService } from '../common/check-general-users-data.service';
+} from '../../interfaces';
 
 @Injectable()
 export class UsersCreateService {
   constructor(
-    private readonly checkGeneralUsersDataService: CheckGeneralUsersDataService,
-    private readonly usersCheckBeforeCreateService: CheckUsersBeforeCreateService,
+    private readonly checkGeneralUsersDataService: UsersCheckGeneralDataService,
+    private readonly usersCheckBeforeCreateService: UsersCheckBeforeCreateService,
   ) {}
 
   async create({ users }: UsersCreateRequestBodyDTO) {

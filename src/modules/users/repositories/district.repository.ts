@@ -1,5 +1,5 @@
 import { EntityRepository, Repository } from 'typeorm';
-import { District } from '@app/entities';
+import { District } from 'src/modules/districts';
 
 @EntityRepository(District)
 export class DistrictRepository extends Repository<District> {}

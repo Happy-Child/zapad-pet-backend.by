@@ -88,6 +88,18 @@
       ],
       "@app/types/*": [
         "libs/types/src/*"
+      ],
+      "@app/validators": [
+        "libs/validators/src"
+      ],
+      "@app/validators/*": [
+        "libs/validators/src/*"
+      ],
+      "@app/files": [
+        "libs/files/src"
+      ],
+      "@app/files/*": [
+        "libs/files/src/*"
       ]
     }
   }

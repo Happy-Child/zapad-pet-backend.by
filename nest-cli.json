@@ -109,6 +109,24 @@
       "compilerOptions": {
         "tsConfigPath": "libs/types/tsconfig.lib.json"
       }
+    },
+    "validators": {
+      "type": "library",
+      "root": "libs/validators",
+      "entryFile": "index",
+      "sourceRoot": "libs/validators/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/validators/tsconfig.lib.json"
+      }
+    },
+    "files": {
+      "type": "library",
+      "root": "libs/files",
+      "entryFile": "index",
+      "sourceRoot": "libs/files/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/files/tsconfig.lib.json"
+      }
     }
   },
   "compilerOptions": {

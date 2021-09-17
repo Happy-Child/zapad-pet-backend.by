@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { CheckUsersBeforeUpdateService } from './check-users-before-update.service';
-import { UsersUpdateRequestBodyDTO } from '../../dtos/update.dtos';
-import { CheckGeneralUsersDataService } from '../common/check-general-users-data.service';
-import { getFilteredUsersToUpdate } from '../../helpers/update.helpers';
+import { UsersCheckBeforeUpdateService } from './users-check-before-update.service';
+import { UsersUpdateRequestBodyDTO } from '../../dtos';
+import { UsersCheckGeneralDataService } from '../common';
+import { getFilteredUsersToUpdate } from '../../helpers/users-update.helpers';
 
 // Расширенная проверка
 
@@ -21,8 +21,8 @@ import { getFilteredUsersToUpdate } from '../../helpers/update.helpers';
 @Injectable()
 export class UsersUpdateService {
   constructor(
-    private readonly usersCheckBeforeUpdateService: CheckUsersBeforeUpdateService,
-    private readonly checkGeneralUsersDataService: CheckGeneralUsersDataService,
+    private readonly usersCheckBeforeUpdateService: UsersCheckBeforeUpdateService,
+    private readonly checkGeneralUsersDataService: UsersCheckGeneralDataService,
   ) {}
 
   async update({ users }: UsersUpdateRequestBodyDTO) {

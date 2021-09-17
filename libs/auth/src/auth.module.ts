@@ -1,30 +1,31 @@
+import config from 'config';
 import { Module } from '@nestjs/common';
-import {
-  SignInService,
-  SignUpService,
-  EmailConfirmedService,
-  PasswordRecoveryService,
-  CommonAuthService,
-  SendingMailService,
-} from './services';
 import { AuthController } from './controllers/auth.controller';
-import { UserRepository } from '@app/repositories/user.repository';
-import { EmailConfirmedRepository } from '@app/auth/repositories/email-confirmed.repository';
+import {
+  AuthEmailConfirmedRepository,
+  AuthUserRepository,
+  AuthPasswordRecoveryRepository,
+} from '@app/auth/repositories';
+import {
+  AuthSignInService,
+  AuthSignUpService,
+  AuthPasswordRecoveryService,
+  AuthSendingMailService,
+  AuthEmailConfirmedService,
+} from '@app/auth/services';
+import { AuthJwtStrategy } from '@app/auth/strategies';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { MailSenderModule } from '@app/mail-sender';
 import { PugModule } from '@app/pug';
-import config from 'config';
 import { JwtModule } from '@nestjs/jwt';
-import { JwtStrategy } from '@app/auth/strategies/jwt.strategy';
-import { PasswordRecoveryRepository } from '@app/auth/repositories/password-recovery.repository';
 import { readFile } from '@app/helpers';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([
-      UserRepository,
-      EmailConfirmedRepository,
-      PasswordRecoveryRepository,
+      AuthUserRepository,
+      AuthEmailConfirmedRepository,
+      AuthPasswordRecoveryRepository,
     ]),
     JwtModule.register({
       privateKey: readFile(config.RSA.PRIVATE_KEY_PATH).toString(),
@@ -38,13 +39,12 @@ import { readFile } from '@app/helpers';
     PugModule,
   ],
   providers: [
-    SignInService,
-    SignUpService,
-    EmailConfirmedService,
-    PasswordRecoveryService,
-    CommonAuthService,
-    SendingMailService,
-    JwtStrategy,
+    AuthSignInService,
+    AuthSignUpService,
+    AuthEmailConfirmedService,
+    AuthPasswordRecoveryService,
+    AuthSendingMailService,
+    AuthJwtStrategy,
   ],
   controllers: [AuthController],
 })
