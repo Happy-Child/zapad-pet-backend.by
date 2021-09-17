@@ -15,14 +15,13 @@ export = {
   database: POSTGRES.DB,
   retryAttempts: POSTGRES.RETRY_ATTEMPTS,
   retryDelay: POSTGRES.RETRY_DELAY,
-  migrationsRun: true,
+  migrationsRun: false,
   migrations,
   entities,
-  autoLoadModels: true,
-  synchronize: true,
+  synchronize: false,
   logging: false,
   logger: 'simple-console',
   cli: {
-    migrationsDir: 'migrations',
+    migrationsDir: './migration',
   },
 } as TypeOrmModuleOptions;

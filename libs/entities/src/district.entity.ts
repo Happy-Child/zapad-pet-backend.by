@@ -24,12 +24,12 @@ export class District extends BaseEntity {
   slug!: string;
 
   @Column({ nullable: false })
-  regionId!: number;
+  regionSlug!: string;
 
   @ManyToOne(() => Region)
   @JoinColumn({
-    name: 'regionId',
-    referencedColumnName: 'id',
+    name: 'regionSlug',
+    referencedColumnName: 'slug',
   })
   region!: Region;
 

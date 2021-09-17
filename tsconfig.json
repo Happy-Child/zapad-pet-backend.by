@@ -2,6 +2,7 @@
   "compilerOptions": {
     "strict": true,
     "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
     "esModuleInterop": true,
     "module": "commonjs",
     "declaration": true,

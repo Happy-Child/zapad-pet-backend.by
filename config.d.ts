@@ -1,4 +1,6 @@
 declare module 'config' {
+  import { Algorithm } from 'jsonwebtoken';
+
   export const APPS: {
     API: {
       PORT: number;
@@ -36,20 +38,7 @@ declare module 'config' {
   };
 
   export const JWT: {
-    readonly ALGORITHM:
-      | 'HS256'
-      | 'HS384'
-      | 'HS512'
-      | 'RS256'
-      | 'RS384'
-      | 'none'
-      | 'RS512'
-      | 'ES256'
-      | 'ES384'
-      | 'ES512'
-      | 'PS256'
-      | 'PS384'
-      | 'PS512';
+    readonly ALGORITHM: Algorithm;
     readonly EXPIRATION: string;
     readonly SECRET_KEY: string;
   };

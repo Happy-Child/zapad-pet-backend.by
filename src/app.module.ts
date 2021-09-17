@@ -8,7 +8,7 @@ import ormconfig from '../ormconfig';
 
 @Module({
   imports: [
-    TypeOrmModule.forRoot(ormconfig),
+    TypeOrmModule.forRoot({ ...ormconfig, migrationsRun: true }),
     ExceptionsModule.forRoot(),
     AuthModule,
     UsersModule,
