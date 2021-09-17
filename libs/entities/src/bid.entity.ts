@@ -60,7 +60,7 @@ export class Bid extends BaseEntity {
     name: 'engineerId',
     referencedColumnName: 'id',
   })
-  engineer!: User;
+  engineer!: User | null;
 
   @Column({ nullable: true })
   rejectedUserId!: number | null;
@@ -70,7 +70,7 @@ export class Bid extends BaseEntity {
     name: 'rejectedUserId',
     referencedColumnName: 'id',
   })
-  rejectedUser!: User;
+  rejectedUser!: User | null;
 
   @Column({ nullable: true })
   confirmedStationWorkerId!: number | null;
@@ -80,7 +80,7 @@ export class Bid extends BaseEntity {
     name: 'confirmedStationWorkerId',
     referencedColumnName: 'id',
   })
-  confirmedStationWorker!: User;
+  confirmedStationWorker!: User | null;
 
   @Column({ nullable: true })
   finalPhotoId!: number | null;
@@ -90,7 +90,7 @@ export class Bid extends BaseEntity {
     name: 'finalPhotoId',
     referencedColumnName: 'id',
   })
-  finalPhoto!: File;
+  finalPhoto!: File | null;
 
   @OneToMany(() => BidTodo, (todo) => todo.bid)
   todos!: BidTodo[];

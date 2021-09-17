@@ -32,7 +32,7 @@ export class Station extends BaseEntity {
     name: 'stationWorkerId',
     referencedColumnName: 'id',
   })
-  stationWorker!: User;
+  stationWorker!: User | null;
 
   @Column({ nullable: false })
   clientId!: number;

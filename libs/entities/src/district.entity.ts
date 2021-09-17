@@ -34,14 +34,14 @@ export class District extends BaseEntity {
   region!: Region;
 
   @Column({ nullable: true })
-  districtLeaderId!: number;
+  districtLeaderId!: number | null;
 
   @OneToOne(() => User)
   @JoinColumn({
     name: 'districtLeaderId',
     referencedColumnName: 'id',
   })
-  districtLeader!: User;
+  districtLeader!: User | null;
 
   constructor(data: Partial<District>) {
     super();
