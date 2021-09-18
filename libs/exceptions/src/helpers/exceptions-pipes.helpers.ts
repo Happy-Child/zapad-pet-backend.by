@@ -1,5 +1,5 @@
 import { ValidationError } from 'class-validator';
-import { ErrorDetailItem } from '@app/exceptions';
+import { ErrorDetailItem } from '@app/exceptions/interfaces';
 
 export const prepareErrorsFromPipes = (
   rawErrors: ValidationError[],

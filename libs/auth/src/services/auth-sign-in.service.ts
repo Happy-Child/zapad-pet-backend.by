@@ -1,13 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import {
-  SignInRequestBodyDTO,
-  SignInResponseBodyDTO,
-  AuthUserRepository,
-  comparePasswords,
-  AUTH_ERRORS,
-} from '@app/auth';
-import { UnprocessableEntity } from '@app/exceptions';
 import { JwtService } from '@nestjs/jwt';
+import { comparePasswords } from '@app/auth/helpers';
+import { AuthUserRepository } from '@app/auth/repositories';
+import { SignInRequestBodyDTO, SignInResponseBodyDTO } from '@app/auth/dtos';
+import { ExceptionsUnprocessableEntity } from '@app/exceptions/errors';
+import { AUTH_ERRORS } from '@app/auth/constants';
 
 @Injectable()
 export class AuthSignInService {
@@ -19,7 +16,7 @@ export class AuthSignInService {
   async signIn(body: SignInRequestBodyDTO): Promise<SignInResponseBodyDTO> {
     const user = await this.authUserRepository.findByEmailOrFail(body.email);
     if (!user.emailConfirmed) {
-      throw new UnprocessableEntity([
+      throw new ExceptionsUnprocessableEntity([
         { field: 'email', message: AUTH_ERRORS.EMAIL_NOT_CONFIRMED },
       ]);
     }
@@ -29,7 +26,7 @@ export class AuthSignInService {
       user.password,
     );
     if (!passwordIsCompare) {
-      throw new UnprocessableEntity([
+      throw new ExceptionsUnprocessableEntity([
         { field: 'password', message: AUTH_ERRORS.INVALID_PASSWORD },
       ]);
     }

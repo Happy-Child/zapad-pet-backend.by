@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { AppValidationPipe } from '@app/exceptions/pipes/app-validation.pipe';
+import { ExceptionsAppValidationPipe } from '@app/exceptions/pipes/exceptions-app-validation.pipe';
 
 @Injectable()
-export class UsersCreateValidationPipe extends AppValidationPipe {}
+export class UsersCreateValidationPipe extends ExceptionsAppValidationPipe {}

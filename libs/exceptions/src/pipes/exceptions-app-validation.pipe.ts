@@ -1,12 +1,12 @@
 import { ArgumentMetadata, Injectable, PipeTransform } from '@nestjs/common';
 import { validate, ValidationError } from 'class-validator';
 import { plainToClass } from 'class-transformer';
-import { prepareErrorsFromPipes } from '@app/exceptions/helpers/pipes.helpers';
-import { BadRequest } from '@app/exceptions/errors';
-import { ErrorDetailItem } from '@app/exceptions';
+import { prepareErrorsFromPipes } from '@app/exceptions/helpers';
+import { ErrorDetailItem } from '@app/exceptions/interfaces';
+import { ExceptionsBadRequest } from '@app/exceptions/errors';
 
 @Injectable()
-export class AppValidationPipe implements PipeTransform {
+export class ExceptionsAppValidationPipe implements PipeTransform {
   fnPrepareErrors(rawErrors: ValidationError[]): ErrorDetailItem[] {
     return prepareErrorsFromPipes(rawErrors);
   }
@@ -21,7 +21,7 @@ export class AppValidationPipe implements PipeTransform {
 
     if (errors.length) {
       const details = this.fnPrepareErrors(errors);
-      throw new BadRequest(details);
+      throw new ExceptionsBadRequest(details);
     }
 
     return value;

@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { UsersCheckBeforeUpdateService } from './users-check-before-update.service';
 import { UsersUpdateRequestBodyDTO } from '../../dtos';
 import { UsersCheckGeneralDataService } from '../common';
-import { getFilteredUsersToUpdate } from '../../helpers/users-update.helpers';
+import { getFilteredUsersToUpdate } from '../../helpers';
 
 // Расширенная проверка
 

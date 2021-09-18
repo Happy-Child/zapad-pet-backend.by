@@ -1,8 +1,9 @@
 import { IsArray, ValidateNested, ArrayUnique, IsIn } from 'class-validator';
 import { Type } from 'class-transformer';
-import { AUTH_ERRORS, SignUpRequestBodyDTO } from '@app/auth';
+import { SignUpRequestBodyDTO } from '@app/auth/dtos';
 import { USERS_CREATE_ALLOWED_ROLES } from '../constants';
 import { ClientMembersOrStationWorkerRolesType } from '@app/types';
+import { AUTH_ERRORS } from '@app/auth/constants';
 
 export class UsersCreateItemDTO extends SignUpRequestBodyDTO {
   @IsIn(USERS_CREATE_ALLOWED_ROLES, { message: AUTH_ERRORS.INVALID_ROLE })

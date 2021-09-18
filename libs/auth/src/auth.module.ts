@@ -5,15 +5,15 @@ import {
   AuthEmailConfirmedRepository,
   AuthUserRepository,
   AuthPasswordRecoveryRepository,
-} from '@app/auth/repositories';
+} from './repositories';
 import {
   AuthSignInService,
   AuthSignUpService,
   AuthPasswordRecoveryService,
   AuthSendingMailService,
   AuthEmailConfirmedService,
-} from '@app/auth/services';
-import { AuthJwtStrategy } from '@app/auth/strategies';
+} from './services';
+import { AuthJwtStrategy } from './strategies';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { MailSenderModule } from '@app/mail-sender';
 import { PugModule } from '@app/pug';

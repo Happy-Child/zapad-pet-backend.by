@@ -1,10 +1,10 @@
+import config from 'config';
 import nodemailer from 'nodemailer';
 import { Provider } from '@nestjs/common';
-import { MAIL_SENDER_PROVIDER_NAME } from '@app/mail-sender';
-import config from 'config';
-import { SendMailOptions } from '@app/mail-sender/mail-sender.types';
+import { SendMailOptionsType } from '@app/mail-sender/types';
+import { MAIL_SENDER_PROVIDER_NAME } from '@app/mail-sender/constants';
 
-export class MailSenderConnector {
+export class MailSenderGeneralConnector {
   private transporter!: nodemailer.Transporter;
 
   connect(): void {
@@ -19,7 +19,7 @@ export class MailSenderConnector {
     });
   }
 
-  async sendMail(options: SendMailOptions): Promise<void> {
+  async sendMail(options: SendMailOptionsType): Promise<void> {
     const result = await this.transporter.sendMail({
       from: config.MAIL_SENDER.USER,
       to: options.to,
@@ -30,14 +30,3 @@ export class MailSenderConnector {
     console.log('Message sent: %s', result.messageId);
   }
 }
-
-const result: Provider = {
-  provide: MAIL_SENDER_PROVIDER_NAME,
-  useFactory: async () => {
-    const connector = new MailSenderConnector();
-    await connector.connect();
-    return connector;
-  },
-};
-
-export default result;

@@ -5,10 +5,10 @@ import {
   HttpException,
 } from '@nestjs/common';
 import { APP_CONTEXT } from '@app/constants';
-import { isValidException } from '@app/exceptions/helpers/filters.helpers';
+import { isValidException } from '@app/exceptions/helpers/exceptions-filters.helpers';
 
 @Catch()
-export class CommonFilter implements ExceptionFilter {
+export class ExceptionsCommonFilter implements ExceptionFilter {
   catch(exception: any, host: ArgumentsHost) {
     const contextType = host.getType();
 

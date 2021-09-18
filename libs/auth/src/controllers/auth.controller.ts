@@ -6,20 +6,22 @@ import {
   HttpCode,
   HttpStatus,
 } from '@nestjs/common';
+import { getCookieExpiration } from '@app/auth/helpers';
 import {
-  COOKIE,
-  getCookieExpiration,
-  SignUpRequestBodyDTO,
-  SignInRequestBodyDTO,
+  AuthEmailConfirmedService,
+  AuthPasswordRecoveryService,
+  AuthSignInService,
+  AuthSignUpService,
+} from '@app/auth/services';
+import {
   CreateNewPasswordRequestBodyDTO,
+  EmailConfirmationRequestBodyDTO,
   PasswordRecoveryRequestBodyDTO,
   PasswordRecoveryResponseBodyDTO,
-  EmailConfirmationRequestBodyDTO,
-  AuthSignInService,
-  AuthPasswordRecoveryService,
-  AuthEmailConfirmedService,
-  AuthSignUpService,
-} from '@app/auth';
+  SignInRequestBodyDTO,
+  SignUpRequestBodyDTO,
+} from '@app/auth/dtos';
+import { COOKIE } from '@app/auth/constants';
 
 @Controller('auth')
 export class AuthController {

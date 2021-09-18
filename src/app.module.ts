@@ -1,8 +1,8 @@
 import { ClassSerializerInterceptor, Module } from '@nestjs/common';
-import { ExceptionsModule } from '@app/exceptions';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from '@app/auth';
+import { ExceptionsModule } from '@app/exceptions';
 import { UsersModule } from './modules/users';
 import { DistrictsModule } from './modules/districts';
 import { BidsModule } from './modules/bids';

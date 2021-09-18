@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { UsersCreateRequestBodyDTO } from '../../dtos';
 import { UsersCheckBeforeCreateService } from './users-check-before-create.service';
 import { UsersCheckGeneralDataService } from '../common';
-import { getFilteredUsersToCreate } from '../../helpers/users-create.helpers';
+import { getFilteredUsersToCreate } from '../../helpers';
 import {
   UsersCreateDistrictLeader,
   UsersCreateStationWorker,

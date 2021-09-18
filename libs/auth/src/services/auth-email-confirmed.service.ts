@@ -1,14 +1,14 @@
 import { Injectable } from '@nestjs/common';
+import { Connection } from 'typeorm';
+import { User } from '@app/entities';
 import {
   AuthEmailConfirmedRepository,
-  EmailConfirmationRequestBodyDTO,
   AuthUserRepository,
-  EmailConfirmed,
-  AUTH_ERRORS,
-} from '@app/auth';
-import { UnprocessableEntity } from '@app/exceptions';
-import { Connection } from 'typeorm';
-import { User } from '../../../../src/modules/users';
+} from '@app/auth/repositories';
+import { EmailConfirmationRequestBodyDTO } from '@app/auth/dtos';
+import { ExceptionsUnprocessableEntity } from '@app/exceptions/errors';
+import { AUTH_ERRORS } from '@app/auth/constants';
+import { EmailConfirmed } from '@app/auth/entities';
 
 @Injectable()
 export class AuthEmailConfirmedService {
@@ -28,7 +28,7 @@ export class AuthEmailConfirmedService {
       emailConfirmationData.email,
     );
     if (user.emailConfirmed) {
-      throw new UnprocessableEntity([
+      throw new ExceptionsUnprocessableEntity([
         { field: 'email', message: AUTH_ERRORS.EMAIL_IS_ALREADY_CONFIRMED },
       ]);
     }

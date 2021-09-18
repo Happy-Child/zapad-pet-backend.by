@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
-import { PugService } from './pug.service';
+import { PugGeneralService } from '@app/pug/services';
 
 @Module({
-  providers: [PugService],
-  exports: [PugService],
+  providers: [PugGeneralService],
+  exports: [PugGeneralService],
 })
 export class PugModule {}

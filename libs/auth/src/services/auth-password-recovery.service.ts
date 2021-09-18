@@ -1,18 +1,19 @@
 import { Injectable } from '@nestjs/common';
+import { Connection } from 'typeorm';
 import {
-  PasswordRecovery,
   CreateNewPasswordRequestBodyDTO,
   PasswordRecoveryRequestBodyDTO,
   PasswordRecoveryResponseBodyDTO,
-  AuthUserRepository,
-  AuthPasswordRecoveryRepository,
-  AuthSendingMailService,
-  getHashByPassword,
-  checkTimeAllowedSendMail,
-} from '@app/auth';
-import { Connection } from 'typeorm';
+} from '@app/auth/dtos';
 import { generateRandomToken } from '@app/helpers';
-import { User } from '../../../../src/modules/users';
+import { User } from '@app/entities';
+import { checkTimeAllowedSendMail, getHashByPassword } from '@app/auth/helpers';
+import {
+  AuthPasswordRecoveryRepository,
+  AuthUserRepository,
+} from '@app/auth/repositories';
+import { AuthSendingMailService } from '@app/auth/services/auth-sending-mail.service';
+import { PasswordRecovery } from '@app/auth/entities';
 
 @Injectable()
 export class AuthPasswordRecoveryService {

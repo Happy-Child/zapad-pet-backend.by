@@ -3,8 +3,10 @@ import { PassportStrategy } from '@nestjs/passport';
 import { JWT, RSA } from 'config';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { readFile } from '@app/helpers';
-import { AuthUserRepository, AuthJwtPayloadDTO, COOKIE } from '@app/auth';
-import { Unauthorized } from '@app/exceptions';
+import { AuthUserRepository } from '@app/auth/repositories';
+import { COOKIE } from '@app/auth/constants';
+import { AuthJwtPayloadDTO } from '@app/auth/dtos';
+import { ExceptionsUnauthorized } from '@app/exceptions/errors';
 
 @Injectable()
 export class AuthJwtStrategy extends PassportStrategy(Strategy) {
@@ -38,7 +40,7 @@ export class AuthJwtStrategy extends PassportStrategy(Strategy) {
     });
 
     if (!user) {
-      throw new Unauthorized();
+      throw new ExceptionsUnauthorized();
     }
 
     return {

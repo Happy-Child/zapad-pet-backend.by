@@ -1,17 +1,17 @@
 import { Injectable } from '@nestjs/common';
-import {
-  EmailConfirmed,
-  SignUpRequestBodyDTO,
-  AuthUserRepository,
-  AuthEmailConfirmedRepository,
-  AuthSendingMailService,
-  getHashByPassword,
-  AUTH_ERRORS,
-} from '@app/auth';
 import { generateRandomToken } from '@app/helpers';
-import { UnprocessableEntity } from '@app/exceptions';
 import { Connection } from 'typeorm';
-import { User } from '../../../../src/modules/users';
+import { User } from '@app/entities';
+import { getHashByPassword } from '@app/auth/helpers';
+import {
+  AuthEmailConfirmedRepository,
+  AuthUserRepository,
+} from '@app/auth/repositories';
+import { AuthSendingMailService } from '@app/auth/services/auth-sending-mail.service';
+import { SignUpRequestBodyDTO } from '@app/auth/dtos';
+import { ExceptionsUnprocessableEntity } from '@app/exceptions/errors';
+import { AUTH_ERRORS } from '@app/auth/constants';
+import { EmailConfirmed } from '@app/auth/entities';
 
 @Injectable()
 export class AuthSignUpService {
@@ -32,7 +32,7 @@ export class AuthSignUpService {
     const user = await this.authUserRepository.findByEmail(email);
 
     if (user) {
-      throw new UnprocessableEntity([
+      throw new ExceptionsUnprocessableEntity([
         { field: 'email', message: AUTH_ERRORS.EMAIL_IS_EXIST },
       ]);
     }

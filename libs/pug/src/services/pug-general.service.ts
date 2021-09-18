@@ -1,10 +1,10 @@
 import { renderFile } from 'pug';
 import { Injectable } from '@nestjs/common';
-import { PUG_TEMPLATES_NAMES } from '@app/pug/pug.constants';
-import { GetPugTemplateVariablesType } from '@app/pug/pug.types';
+import { PUG_TEMPLATES_NAMES } from '@app/pug/constants';
+import { GetPugTemplateVariablesType } from '@app/pug/types';
 
 @Injectable()
-export class PugService {
+export class PugGeneralService {
   private readonly pathToTemplates: string = 'libs/pug/src/templates';
 
   compileFile(

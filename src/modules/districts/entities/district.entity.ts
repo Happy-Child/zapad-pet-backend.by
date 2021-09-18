@@ -3,7 +3,7 @@ import { BaseEntity } from '@app/entities/base.entity';
 import { VARCHAR_DEFAULT_LENGTH } from '@app/constants';
 import { plainToClass } from 'class-transformer';
 import { Region } from '../../regions';
-import { User } from '../../users';
+import { User } from '@app/entities';
 
 @Entity({ name: 'district' })
 export class District extends BaseEntity {

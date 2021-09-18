@@ -1,6 +1,6 @@
 import moment from 'moment';
 import { TIME_SECONDS } from '@app/constants';
-import { COUNT_ATTEMPTS_TO_SEND_MESSAGE } from '@app/auth';
+import { COUNT_ATTEMPTS_TO_SEND_MESSAGE } from '@app/auth/constants';
 
 interface CheckTimeAllowedSendMail {
   time: Date;

@@ -1,17 +1,17 @@
 import { Injectable } from '@nestjs/common';
-import { UnprocessableEntity } from '@app/exceptions';
 import {
   ClientRepository,
   DistrictRepository,
   UsersRepository,
 } from '../../repositories';
-import { getUsersWithNotExistsClientsOrDistricts } from '../../helpers/users-general.helpers';
+import { getUsersWithNotExistsClientsOrDistricts } from '../../helpers';
 import {
   UsersCreateDistrictLeader,
   UsersCreateStationWorker,
   UsersCreateEngineer,
 } from '../../interfaces';
-import { AUTH_ERRORS } from '@app/auth';
+import { ExceptionsUnprocessableEntity } from '@app/exceptions/errors';
+import { AUTH_ERRORS } from '@app/auth/constants';
 
 @Injectable()
 export class UsersCheckGeneralDataService {
@@ -26,7 +26,7 @@ export class UsersCheckGeneralDataService {
 
     if (!existingUsers.length) return;
 
-    throw new UnprocessableEntity(
+    throw new ExceptionsUnprocessableEntity(
       existingUsers.map(({ email }) => ({
         value: email,
         field: 'email',
@@ -48,7 +48,7 @@ export class UsersCheckGeneralDataService {
     const throwError = stationWorkersWithNotExistingClients.length;
 
     if (throwError) {
-      throw new UnprocessableEntity(
+      throw new ExceptionsUnprocessableEntity(
         stationWorkersWithNotExistingClients.map(({ clientId }) => ({
           value: clientId,
           field: 'clientId',
@@ -88,7 +88,7 @@ export class UsersCheckGeneralDataService {
     const throwError = clientMembersWithNotExistingClients.length;
 
     if (throwError) {
-      throw new UnprocessableEntity(
+      throw new ExceptionsUnprocessableEntity(
         clientMembersWithNotExistingClients.map(({ districtId }) => ({
           value: districtId,
           field: 'districtId',
