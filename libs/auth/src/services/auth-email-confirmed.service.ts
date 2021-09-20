@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Connection } from 'typeorm';
-import { User } from '@app/entities';
+import { ENTITIES_FIELDS } from '@app/entities';
 import {
   AuthEmailConfirmedRepository,
   AuthUserRepository,
@@ -8,7 +8,6 @@ import {
 import { EmailConfirmationRequestBodyDTO } from '@app/auth/dtos';
 import { ExceptionsUnprocessableEntity } from '@app/exceptions/errors';
 import { AUTH_ERRORS } from '@app/auth/constants';
-import { EmailConfirmed } from '@app/auth/entities';
 
 @Injectable()
 export class AuthEmailConfirmedService {
@@ -29,15 +28,22 @@ export class AuthEmailConfirmedService {
     );
     if (user.emailConfirmed) {
       throw new ExceptionsUnprocessableEntity([
-        { field: 'email', messages: [AUTH_ERRORS.EMAIL_IS_ALREADY_CONFIRMED] },
+        {
+          field: ENTITIES_FIELDS.EMAIL,
+          messages: [AUTH_ERRORS.EMAIL_IS_ALREADY_CONFIRMED],
+        },
       ]);
     }
 
     await this.connection.transaction(async (manager) => {
-      await manager.delete(EmailConfirmed, {
-        id: emailConfirmationData.id,
-      });
-      await manager.save(User, { ...user, emailConfirmed: true });
+      const authEmailConfirmedRepository = manager.getCustomRepository(
+        AuthEmailConfirmedRepository,
+      );
+      await authEmailConfirmedRepository.deleteEntity(emailConfirmationData.id);
+
+      const authUserRepository =
+        manager.getCustomRepository(AuthUserRepository);
+      await authUserRepository.saveEntity({ ...user, emailConfirmed: true });
     });
   }
 }

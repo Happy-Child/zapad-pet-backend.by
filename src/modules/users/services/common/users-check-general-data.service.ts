@@ -6,12 +6,13 @@ import {
 } from '../../repositories';
 import { getUsersWithNotExistsClientsOrDistricts } from '../../helpers';
 import {
-  UsersCreateDistrictLeader,
-  UsersCreateStationWorker,
-  UsersCreateEngineer,
+  IUsersCreateDistrictLeader,
+  IUsersCreateEngineer,
+  IUsersCreateStationWorker,
 } from '../../interfaces';
 import { ExceptionsUnprocessableEntity } from '@app/exceptions/errors';
 import { AUTH_ERRORS } from '@app/auth/constants';
+import { ENTITIES_FIELDS } from '@app/entities';
 
 @Injectable()
 export class UsersCheckGeneralDataService {
@@ -29,18 +30,18 @@ export class UsersCheckGeneralDataService {
     throw new ExceptionsUnprocessableEntity(
       existingUsers.map(({ email }) => ({
         value: email,
-        field: 'email',
+        field: ENTITIES_FIELDS.EMAIL,
         message: AUTH_ERRORS.EMAIL_IS_EXIST,
       })),
     );
   }
 
   public async checkStationWorkersOrFail(
-    stationWorkers: UsersCreateStationWorker[],
+    stationWorkers: IUsersCreateStationWorker[],
   ): Promise<void> {
     const stationWorkersWithNotExistingClients =
-      await getUsersWithNotExistsClientsOrDistricts<UsersCreateStationWorker>({
-        fieldName: 'clientId',
+      await getUsersWithNotExistsClientsOrDistricts<IUsersCreateStationWorker>({
+        fieldName: ENTITIES_FIELDS.CLIENT_ID,
         users: stationWorkers,
         repository: this.clientRepository,
       });
@@ -51,7 +52,7 @@ export class UsersCheckGeneralDataService {
       throw new ExceptionsUnprocessableEntity(
         stationWorkersWithNotExistingClients.map(({ clientId }) => ({
           value: clientId,
-          field: 'clientId',
+          field: ENTITIES_FIELDS.CLIENT_ID,
           message: AUTH_ERRORS.CLIENT_NOT_EXIST,
         })),
       );
@@ -59,7 +60,7 @@ export class UsersCheckGeneralDataService {
   }
 
   public async checkDistrictLeadersOrFail(
-    districtLeaders: UsersCreateDistrictLeader[],
+    districtLeaders: IUsersCreateDistrictLeader[],
   ): Promise<void> {
     await this.checkClientMembersOrFail(districtLeaders);
     // CHECK IF DISTRICT IS BUSY
@@ -67,20 +68,20 @@ export class UsersCheckGeneralDataService {
   }
 
   public async checkEngineersOrFail(
-    engineer: UsersCreateEngineer[],
+    engineer: IUsersCreateEngineer[],
   ): Promise<void> {
     await this.checkClientMembersOrFail(engineer);
     // CHECK OTHER PROPS FOR ENGINEER
   }
 
   private async checkClientMembersOrFail(
-    clientMembers: (UsersCreateEngineer | UsersCreateDistrictLeader)[],
+    clientMembers: (IUsersCreateEngineer | IUsersCreateDistrictLeader)[],
   ): Promise<void> {
     const clientMembersWithNotExistingClients =
       await getUsersWithNotExistsClientsOrDistricts<
-        UsersCreateEngineer | UsersCreateDistrictLeader
+        IUsersCreateEngineer | IUsersCreateDistrictLeader
       >({
-        fieldName: 'districtId',
+        fieldName: ENTITIES_FIELDS.DISTRICT_ID,
         users: clientMembers,
         repository: this.districtRepository,
       });
@@ -91,7 +92,7 @@ export class UsersCheckGeneralDataService {
       throw new ExceptionsUnprocessableEntity(
         clientMembersWithNotExistingClients.map(({ districtId }) => ({
           value: districtId,
-          field: 'districtId',
+          field: ENTITIES_FIELDS.DISTRICT_ID,
           message: AUTH_ERRORS.DISTRICT_NOT_EXIST,
         })),
       );

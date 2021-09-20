@@ -1,17 +1,32 @@
-import { EntityRepository, Repository } from 'typeorm';
-import { PasswordRecovery } from '@app/auth/entities';
+import { EntityRepository } from 'typeorm';
+import { PasswordRecoveryEntity } from '@app/auth/entities';
 import { ExceptionsUnprocessableEntity } from '@app/exceptions/errors';
 import { AUTH_ERRORS } from '@app/auth/constants';
+import { ENTITIES_FIELDS } from '@app/entities';
+import { SerializedPasswordRecoveryEntity } from '@app/auth/serializers';
+import { GeneralRepository } from '@app/repositories';
 
-@EntityRepository(PasswordRecovery)
-export class AuthPasswordRecoveryRepository extends Repository<PasswordRecovery> {
-  async findByTokenOrFail(token: string): Promise<PasswordRecovery> {
-    const passwordRecoveryData = await this.findOne({ token });
-    if (!passwordRecoveryData) {
-      throw new ExceptionsUnprocessableEntity([
-        { field: 'token', messages: [AUTH_ERRORS.TOKEN_NOT_FOUND] },
-      ]);
-    }
-    return passwordRecoveryData;
+@EntityRepository(PasswordRecoveryEntity)
+export class AuthPasswordRecoveryRepository extends GeneralRepository<
+  PasswordRecoveryEntity,
+  SerializedPasswordRecoveryEntity
+> {
+  protected entitySerializer = SerializedPasswordRecoveryEntity;
+
+  async findByTokenOrFail(
+    token: string,
+  ): Promise<SerializedPasswordRecoveryEntity> {
+    return this.getOneOrFail({
+      conditions: { token },
+      exception: {
+        type: ExceptionsUnprocessableEntity,
+        messages: [
+          {
+            field: ENTITIES_FIELDS.TOKEN,
+            messages: [AUTH_ERRORS.TOKEN_NOT_FOUND],
+          },
+        ],
+      },
+    });
   }
 }

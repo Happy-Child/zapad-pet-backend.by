@@ -1,4 +1,4 @@
-import { USER_ROLES } from '@app/constants';
+import { USER_ROLES } from '@app/user';
 
 export const SIGN_UP_ALLOWED_ROLES = [
   USER_ROLES.ENGINEER,

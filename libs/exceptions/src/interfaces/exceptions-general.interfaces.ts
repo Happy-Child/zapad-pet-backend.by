@@ -1,13 +1,15 @@
-export interface ErrorDetailItem {
-  field: string;
+import { ENTITIES_FIELDS } from '@app/entities';
+
+export interface IErrorDetailItem {
+  field: ENTITIES_FIELDS;
   messages?: string[];
-  children?: ErrorDetailItem[];
+  children?: IErrorDetailItem[];
 }
 
-export interface AbstractError {
-  details: ErrorDetailItem[];
+export interface IAbstractError {
+  details: IErrorDetailItem[];
 }
 
-export interface ExceptionModuleConfig {
+export interface IExceptionModuleConfig {
   withValidationPipes?: boolean;
 }

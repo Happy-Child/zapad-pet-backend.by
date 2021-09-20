@@ -65,33 +65,6 @@
         "tsConfigPath": "libs/dtos/tsconfig.lib.json"
       }
     },
-    "repositories": {
-      "type": "library",
-      "root": "libs/repositories",
-      "entryFile": "index",
-      "sourceRoot": "libs/repositories/src",
-      "compilerOptions": {
-        "tsConfigPath": "libs/repositories/tsconfig.lib.json"
-      }
-    },
-    "interfaces": {
-      "type": "library",
-      "root": "libs/interfaces",
-      "entryFile": "index",
-      "sourceRoot": "libs/interfaces/src",
-      "compilerOptions": {
-        "tsConfigPath": "libs/interfaces/tsconfig.lib.json"
-      }
-    },
-    "types": {
-      "type": "library",
-      "root": "libs/types",
-      "entryFile": "index",
-      "sourceRoot": "libs/types/src",
-      "compilerOptions": {
-        "tsConfigPath": "libs/types/tsconfig.lib.json"
-      }
-    },
     "validators": {
       "type": "library",
       "root": "libs/validators",
@@ -126,6 +99,24 @@
       "sourceRoot": "libs/decorators/src",
       "compilerOptions": {
         "tsConfigPath": "libs/decorators/tsconfig.lib.json"
+      }
+    },
+    "repositories": {
+      "type": "library",
+      "root": "libs/repositories",
+      "entryFile": "index",
+      "sourceRoot": "libs/repositories/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/repositories/tsconfig.lib.json"
+      }
+    },
+    "user": {
+      "type": "library",
+      "root": "libs/user",
+      "entryFile": "index",
+      "sourceRoot": "libs/user/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/user/tsconfig.lib.json"
       }
     }
   },

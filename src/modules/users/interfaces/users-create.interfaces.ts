@@ -1,18 +1,18 @@
 import {
-  UserDistrictLeader,
-  UserEngineer,
-  UserStationWorker,
-} from '@app/interfaces/users/users-roles.interfaces';
-import { GeneralCreateUserFields } from '@app/interfaces/users/users-general.interfaces';
+  IGeneralCreateUserFields,
+  IUserDistrictLeader,
+  IUserEngineer,
+  IUserStationWorker,
+} from '@app/user';
 
-export interface UsersCreateStationWorker
-  extends UserStationWorker,
-    GeneralCreateUserFields {}
+export interface IUsersCreateStationWorker
+  extends IUserStationWorker,
+    IGeneralCreateUserFields {}
 
-export interface UsersCreateDistrictLeader
-  extends UserDistrictLeader,
-    GeneralCreateUserFields {}
+export interface IUsersCreateDistrictLeader
+  extends IUserDistrictLeader,
+    IGeneralCreateUserFields {}
 
-export interface UsersCreateEngineer
-  extends UserEngineer,
-    GeneralCreateUserFields {}
+export interface IUsersCreateEngineer
+  extends IUserEngineer,
+    IGeneralCreateUserFields {}

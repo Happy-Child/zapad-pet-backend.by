@@ -5,7 +5,8 @@ import {
   HttpException,
 } from '@nestjs/common';
 import { APP_CONTEXT } from '@app/constants';
-import { isValidException } from '@app/exceptions/helpers/exceptions-filters.helpers';
+import { isValidException } from '@app/exceptions/helpers';
+import { ENTITIES_FIELDS } from '@app/entities';
 
 @Catch()
 export class ExceptionsCommonFilter implements ExceptionFilter {
@@ -31,7 +32,7 @@ export class ExceptionsCommonFilter implements ExceptionFilter {
       if (validStatus) {
         const errors = isValidException(exception)
           ? (exception as any).details
-          : { field: '', message: exception.message };
+          : { field: ENTITIES_FIELDS.UNKNOWN, message: exception.message };
 
         response.status(status).json({ status, errors });
         return true;

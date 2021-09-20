@@ -6,7 +6,7 @@ import {
   OneToMany,
   ManyToOne,
 } from 'typeorm';
-import { BaseEntity, User, District, Bid, Client } from '@app/entities';
+import { BaseEntity, UserEntity, District, Bid, Client } from '@app/entities';
 import { plainToClass } from 'class-transformer';
 import { STATION_NUMBER_LENGTH } from '../constants';
 
@@ -23,12 +23,12 @@ export class Station extends BaseEntity {
   @Column({ nullable: true })
   stationWorkerId!: number | null;
 
-  @OneToOne(() => User)
+  @OneToOne(() => UserEntity)
   @JoinColumn({
     name: 'stationWorkerId',
     referencedColumnName: 'id',
   })
-  stationWorker!: User | null;
+  stationWorker!: UserEntity | null;
 
   @Column({ nullable: false })
   clientId!: number;

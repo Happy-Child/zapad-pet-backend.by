@@ -3,9 +3,7 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { Expose } from 'class-transformer';
 
-@Expose()
 export class BaseEntity {
   @PrimaryGeneratedColumn()
   id!: number;

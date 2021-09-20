@@ -1,25 +1,26 @@
 import { ClientRepository, DistrictRepository } from '../repositories';
 import { getItemsByUniqueField } from '@app/helpers/array.helpers';
-import { USER_ROLES } from '@app/constants';
 import {
-  UserAccountant,
-  UserDistrictLeader,
-  UserEngineer,
-  UserStationWorker,
-} from '@app/interfaces/users/users-roles.interfaces';
-import { UserClientMemberOrStationWorkerFields } from '@app/interfaces/users/users-general.interfaces';
-import { AllowedRolesType } from '@app/types';
+  AllowedRolesType,
+  IUserAccountant,
+  IUserClientMemberOrStationWorkerFields,
+  IUserDistrictLeader,
+  IUserEngineer,
+  IUserStationWorker,
+  USER_ROLES,
+} from '@app/user';
+import { ENTITIES_FIELDS } from '@app/entities';
 
-interface GetFilteredGeneralUsers {
-  districtLeaders: UserDistrictLeader[];
-  engineers: UserEngineer[];
-  stationWorkers: UserStationWorker[];
-  accountants: UserAccountant[];
+interface IGetFilteredGeneralUsers {
+  districtLeaders: IUserDistrictLeader[];
+  engineers: IUserEngineer[];
+  stationWorkers: IUserStationWorker[];
+  accountants: IUserAccountant[];
 }
 export const getFilteredGeneralUsers = (
   rawUsers: { role: AllowedRolesType }[],
-): GetFilteredGeneralUsers => {
-  const result: GetFilteredGeneralUsers = {
+): IGetFilteredGeneralUsers => {
+  const result: IGetFilteredGeneralUsers = {
     districtLeaders: [],
     engineers: [],
     stationWorkers: [],
@@ -29,16 +30,16 @@ export const getFilteredGeneralUsers = (
   rawUsers.forEach((user) => {
     switch (user.role) {
       case USER_ROLES.ACCOUNTANT:
-        result.accountants.push(user as UserAccountant);
+        result.accountants.push(user as IUserAccountant);
         break;
       case USER_ROLES.DISTRICT_LEADER:
-        result.districtLeaders.push(user as UserDistrictLeader);
+        result.districtLeaders.push(user as IUserDistrictLeader);
         break;
       case USER_ROLES.ENGINEER:
-        result.engineers.push(user as UserEngineer);
+        result.engineers.push(user as IUserEngineer);
         break;
       case USER_ROLES.STATION_WORKER:
-        result.stationWorkers.push(user as UserStationWorker);
+        result.stationWorkers.push(user as IUserStationWorker);
         break;
     }
   });
@@ -46,22 +47,22 @@ export const getFilteredGeneralUsers = (
   return result;
 };
 
-interface GetUsersWithNotExistsClientsOrDistrictsProps<
-  T extends UserClientMemberOrStationWorkerFields,
+interface IGetUsersWithNotExistsClientsOrDistrictsProps<
+  T extends IUserClientMemberOrStationWorkerFields,
 > {
-  fieldName: 'clientId' | 'districtId';
+  fieldName: ENTITIES_FIELDS.CLIENT_ID | ENTITIES_FIELDS.DISTRICT_ID;
   users: T[];
   repository: ClientRepository | DistrictRepository;
 }
 export const getUsersWithNotExistsClientsOrDistricts = async <
-  T extends UserClientMemberOrStationWorkerFields,
+  T extends IUserClientMemberOrStationWorkerFields,
 >({
   fieldName,
   users,
   repository,
-}: GetUsersWithNotExistsClientsOrDistrictsProps<T>): Promise<T[]> => {
+}: IGetUsersWithNotExistsClientsOrDistrictsProps<T>): Promise<T[]> => {
   const searchedClientsOrDistrictsIds =
-    getItemsByUniqueField<UserClientMemberOrStationWorkerFields>(
+    getItemsByUniqueField<IUserClientMemberOrStationWorkerFields>(
       fieldName,
       users,
     );

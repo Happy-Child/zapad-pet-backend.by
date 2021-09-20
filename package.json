@@ -112,13 +112,12 @@
       "^@app/pug(|/.*)$": "<rootDir>/libs/pug/src/$1",
       "^@app/helpers(|/.*)$": "<rootDir>/libs/helpers/src/$1",
       "^@app/dtos(|/.*)$": "<rootDir>/libs/dtos/src/$1",
-      "^@app/repositories(|/.*)$": "<rootDir>/libs/repositories/src/$1",
-      "^@app/interfaces(|/.*)$": "<rootDir>/libs/interfaces/src/$1",
-      "^@app/types(|/.*)$": "<rootDir>/libs/types/src/$1",
       "^@app/validators(|/.*)$": "<rootDir>/libs/validators/src/$1",
       "^@app/files(|/.*)$": "<rootDir>/libs/files/src/$1",
       "^@app/auth(|/.*)$": "<rootDir>/libs/auth/src/$1",
-      "^@app/decorators(|/.*)$": "<rootDir>/libs/decorators/src/$1"
+      "^@app/decorators(|/.*)$": "<rootDir>/libs/decorators/src/$1",
+      "^@app/repositories(|/.*)$": "<rootDir>/libs/repositories/src/$1",
+      "^@app/user(|/.*)$": "<rootDir>/libs/user/src/$1"
     }
   }
 }

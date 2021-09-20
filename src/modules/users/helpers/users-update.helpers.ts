@@ -1,28 +1,28 @@
 import {
-  UsersUpdateDistrictLeader,
-  UsersUpdateGeneralUser,
-  UsersUpdateUserEngineer,
+  IUsersUpdateDistrictLeader,
+  IUsersUpdateGeneralUser,
+  IUsersUpdateUserEngineer,
 } from '../interfaces';
 import { getFilteredGeneralUsers } from './users-general.helpers';
-import { ClientMembersRolesType } from '@app/types';
+import { ClientMembersRolesType } from '@app/user';
 
-interface GetFilteredUsersToUpdate {
-  districtLeaders: UsersUpdateDistrictLeader[];
-  engineers: UsersUpdateUserEngineer[];
-  others: UsersUpdateGeneralUser[];
+interface IGetFilteredUsersToUpdate {
+  districtLeaders: IUsersUpdateDistrictLeader[];
+  engineers: IUsersUpdateUserEngineer[];
+  others: IUsersUpdateGeneralUser[];
 }
 interface RawUser {
   role?: ClientMembersRolesType;
 }
 export const getFilteredUsersToUpdate = (
   rawUsers: RawUser[],
-): GetFilteredUsersToUpdate => {
+): IGetFilteredUsersToUpdate => {
   const usersWithRoles: Required<RawUser>[] = [];
-  const others: UsersUpdateGeneralUser[] = [];
+  const others: IUsersUpdateGeneralUser[] = [];
 
   rawUsers.forEach((user) => {
     if (user.role) usersWithRoles.push(user as Required<RawUser>);
-    else others.push(user as UsersUpdateGeneralUser);
+    else others.push(user as IUsersUpdateGeneralUser);
   });
 
   const { districtLeaders, engineers } = getFilteredGeneralUsers(
@@ -33,5 +33,5 @@ export const getFilteredUsersToUpdate = (
     districtLeaders,
     engineers,
     others,
-  } as unknown as GetFilteredUsersToUpdate;
+  } as unknown as IGetFilteredUsersToUpdate;
 };

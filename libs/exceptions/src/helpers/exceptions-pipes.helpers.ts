@@ -1,5 +1,6 @@
 import { ValidationError } from 'class-validator';
-import { ErrorDetailItem } from '@app/exceptions/interfaces';
+import { IErrorDetailItem } from '@app/exceptions/interfaces';
+import { ENTITIES_FIELDS } from '@app/entities';
 
 const getSingleValidationErrorMessages = ({
   property,
@@ -16,12 +17,12 @@ const getSingleValidationErrorMessages = ({
 
 export const generalPrepareErrorsToException = (
   rawErrors: ValidationError[],
-): ErrorDetailItem[] => {
-  const result: ErrorDetailItem[] = [];
+): IErrorDetailItem[] => {
+  const result: IErrorDetailItem[] = [];
 
   rawErrors.forEach(({ constraints, property, children }) => {
-    const item: ErrorDetailItem = {
-      field: property,
+    const item: IErrorDetailItem = {
+      field: property as ENTITIES_FIELDS,
     };
 
     if (constraints) {

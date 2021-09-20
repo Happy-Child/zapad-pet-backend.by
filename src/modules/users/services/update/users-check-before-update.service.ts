@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { UsersCheckGeneralDataService } from '../common';
 import {
-  UsersCreateDistrictLeader,
-  UsersCreateEngineer,
+  IUsersCreateDistrictLeader,
+  IUsersCreateEngineer,
 } from '../../interfaces';
 
 @Injectable()
@@ -12,7 +12,7 @@ export class UsersCheckBeforeUpdateService {
   ) {}
 
   public async checkDistrictLeadersOrFail(
-    districtLeaders: UsersCreateDistrictLeader[],
+    districtLeaders: IUsersCreateDistrictLeader[],
   ): Promise<void> {
     await this.checkGeneralUsersDataService.checkDistrictLeadersOrFail(
       districtLeaders,
@@ -26,7 +26,7 @@ export class UsersCheckBeforeUpdateService {
   }
 
   public async checkEngineersOrFail(
-    engineer: UsersCreateEngineer[],
+    engineer: IUsersCreateEngineer[],
   ): Promise<void> {
     await this.checkGeneralUsersDataService.checkEngineersOrFail(engineer);
     // CHECK IF NOT EXISTS ACTIVE BIDS?

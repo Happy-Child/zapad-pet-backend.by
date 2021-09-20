@@ -1,17 +1,18 @@
-import { GeneralUserFields } from '@app/interfaces/users/users-general.interfaces';
 import {
-  UserDistrictLeader,
-  UserEngineer,
-} from '@app/interfaces/users/users-roles.interfaces';
+  IGeneralUserFields,
+  IUserDistrictLeader,
+  IUserEngineer,
+} from '@app/user';
 
-export interface UsersUpdateGeneralUser extends Partial<GeneralUserFields> {
+export interface IUsersUpdateGeneralUser extends Partial<IGeneralUserFields> {
   id: number;
 }
 
-export interface UsersUpdateDistrictLeader extends Partial<UserDistrictLeader> {
+export interface IUsersUpdateDistrictLeader
+  extends Partial<IUserDistrictLeader> {
   id: number;
 }
 
-export interface UsersUpdateUserEngineer extends Partial<UserEngineer> {
+export interface IUsersUpdateUserEngineer extends Partial<IUserEngineer> {
   id: number;
 }

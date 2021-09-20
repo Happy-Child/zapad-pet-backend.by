@@ -1,4 +1,6 @@
-export const DEFAULT_EXCEPTION_MODULE_CONFIG = {
+import { IExceptionModuleConfig } from '@app/exceptions/interfaces';
+
+export const DEFAULT_EXCEPTION_MODULE_CONFIG: IExceptionModuleConfig = {
   withValidationPipes: true,
 };
 

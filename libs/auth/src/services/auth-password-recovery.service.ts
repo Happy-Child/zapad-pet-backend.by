@@ -6,14 +6,13 @@ import {
   PasswordRecoveryResponseBodyDTO,
 } from '@app/auth/dtos';
 import { generateRandomToken } from '@app/helpers';
-import { User } from '@app/entities';
 import { checkTimeAllowedSendMail, getHashByPassword } from '@app/auth/helpers';
 import {
   AuthPasswordRecoveryRepository,
   AuthUserRepository,
 } from '@app/auth/repositories';
-import { AuthSendingMailService } from '@app/auth/services/auth-sending-mail.service';
-import { PasswordRecovery } from '@app/auth/entities';
+import { AuthSendingMailService } from '@app/auth/services';
+import { SerializedPasswordRecoveryEntity } from '@app/auth/serializers';
 
 @Injectable()
 export class AuthPasswordRecoveryService {
@@ -30,7 +29,7 @@ export class AuthPasswordRecoveryService {
     await this.authUserRepository.findByEmailOrFail(email);
 
     const prevPasswordRecoveryData =
-      await this.authPasswordRecoveryRepository.findOne({
+      await this.authPasswordRecoveryRepository.getOne({
         email,
       });
 
@@ -52,7 +51,7 @@ export class AuthPasswordRecoveryService {
     });
 
     const { attemptCount, updatedAt } =
-      await this.authPasswordRecoveryRepository.save({
+      await this.authPasswordRecoveryRepository.saveEntity({
         token,
         email,
         attemptCount: 1,
@@ -66,7 +65,7 @@ export class AuthPasswordRecoveryService {
   }
 
   private async checkAttemptCountAndSendEmailRecoveryPassword(
-    prevPasswordRecoveryData: PasswordRecovery,
+    prevPasswordRecoveryData: SerializedPasswordRecoveryEntity,
   ): Promise<PasswordRecoveryResponseBodyDTO> {
     const { id, email, token, attemptCount, updatedAt } =
       prevPasswordRecoveryData;
@@ -82,14 +81,17 @@ export class AuthPasswordRecoveryService {
         token,
       });
 
-      await this.authPasswordRecoveryRepository.update(id, {
-        attemptCount: attemptCount + 1,
-      });
+      await this.authPasswordRecoveryRepository.updateEntity(
+        { id },
+        {
+          attemptCount: attemptCount + 1,
+        },
+      );
 
       const updatedPasswordRecoveryData =
-        (await this.authPasswordRecoveryRepository.findOne(
+        (await this.authPasswordRecoveryRepository.getOne({
           id,
-        )) as PasswordRecovery;
+        })) as SerializedPasswordRecoveryEntity;
 
       return new PasswordRecoveryResponseBodyDTO({
         attemptCount: updatedPasswordRecoveryData.attemptCount,
@@ -118,9 +120,16 @@ export class AuthPasswordRecoveryService {
     const newPasswordHash = await getHashByPassword(body.password);
 
     await this.connection.transaction(async (manager) => {
-      await manager.delete(PasswordRecovery, { id: passwordRecoveryData.id });
-      await manager.update(
-        User,
+      const authPasswordRecoveryRepository = manager.getCustomRepository(
+        AuthPasswordRecoveryRepository,
+      );
+      await authPasswordRecoveryRepository.deleteEntity(
+        passwordRecoveryData.id,
+      );
+
+      const authUserRepository =
+        manager.getCustomRepository(AuthUserRepository);
+      await authUserRepository.updateEntity(
         { id: user.id },
         { password: newPasswordHash },
       );

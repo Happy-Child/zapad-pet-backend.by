@@ -59,24 +59,6 @@
       "@app/dtos/*": [
         "libs/dtos/src/*"
       ],
-      "@app/repositories": [
-        "libs/repositories/src"
-      ],
-      "@app/repositories/*": [
-        "libs/repositories/src/*"
-      ],
-      "@app/interfaces": [
-        "libs/interfaces/src"
-      ],
-      "@app/interfaces/*": [
-        "libs/interfaces/src/*"
-      ],
-      "@app/types": [
-        "libs/types/src"
-      ],
-      "@app/types/*": [
-        "libs/types/src/*"
-      ],
       "@app/validators": [
         "libs/validators/src"
       ],
@@ -100,6 +82,18 @@
       ],
       "@app/decorators/*": [
         "libs/decorators/src/*"
+      ],
+      "@app/repositories": [
+        "libs/repositories/src"
+      ],
+      "@app/repositories/*": [
+        "libs/repositories/src/*"
+      ],
+      "@app/user": [
+        "libs/user/src"
+      ],
+      "@app/user/*": [
+        "libs/user/src/*"
       ]
     }
   }

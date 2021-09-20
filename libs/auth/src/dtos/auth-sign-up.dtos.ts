@@ -1,4 +1,3 @@
-import { USER_ROLES } from '@app/constants';
 import {
   IsEmail,
   IsIn,
@@ -16,8 +15,8 @@ import {
   USER_NAME_LENGTH,
   CLIENT_MEMBERS_ROLES,
 } from '../constants';
-import { AllowedRolesType } from '@app/types';
 import { Match } from '@app/decorators';
+import { AllowedRolesType, USER_ROLES } from '@app/user';
 
 export class SignUpRequestBodyDTO {
   @IsString()

@@ -40,6 +40,8 @@
     "@app/auth2/(.*)": "<rootDir>/../libs/auth2/src/$1",
     "@app/auth2": "<rootDir>/../libs/auth2/src",
     "@app/auth/(.*)": "<rootDir>/../libs/auth/src/$1",
-    "@app/auth": "<rootDir>/../libs/auth/src"
+    "@app/auth": "<rootDir>/../libs/auth/src",
+    "@app/user/(.*)": "<rootDir>/../libs/user/src/$1",
+    "@app/user": "<rootDir>/../libs/user/src"
   }
 }

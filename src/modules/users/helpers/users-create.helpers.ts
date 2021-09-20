@@ -1,19 +1,19 @@
 import {
-  UsersCreateDistrictLeader,
-  UsersCreateStationWorker,
-  UsersCreateEngineer,
+  IUsersCreateDistrictLeader,
+  IUsersCreateStationWorker,
+  IUsersCreateEngineer,
 } from '../interfaces';
 import { getFilteredGeneralUsers } from './users-general.helpers';
-import { ClientMembersOrStationWorkerRolesType } from '@app/types';
+import { ClientMembersOrStationWorkerRolesType } from '@app/user';
 
-interface GetFilteredUsersToCreate {
-  districtLeaders: UsersCreateDistrictLeader[];
-  engineers: UsersCreateEngineer[];
-  stationWorkers: UsersCreateStationWorker[];
+interface IGetFilteredUsersToCreate {
+  districtLeaders: IUsersCreateDistrictLeader[];
+  engineers: IUsersCreateEngineer[];
+  stationWorkers: IUsersCreateStationWorker[];
 }
 export const getFilteredUsersToCreate = (
   rawUsers: { role: ClientMembersOrStationWorkerRolesType }[],
-): GetFilteredUsersToCreate => {
+): IGetFilteredUsersToCreate => {
   const { districtLeaders, engineers, stationWorkers } =
     getFilteredGeneralUsers(rawUsers);
 
@@ -21,5 +21,5 @@ export const getFilteredUsersToCreate = (
     districtLeaders,
     engineers,
     stationWorkers,
-  } as GetFilteredUsersToCreate;
+  } as IGetFilteredUsersToCreate;
 };

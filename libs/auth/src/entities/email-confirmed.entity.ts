@@ -1,10 +1,13 @@
 import { Entity, Column } from 'typeorm';
 import { BaseEntity } from '@app/entities/base.entity';
-import { plainToClass } from 'class-transformer';
 import { VARCHAR_DEFAULT_LENGTH } from '@app/constants';
+import { IEmailConfirmed } from '@app/auth/interfaces';
 
 @Entity({ name: 'email_confirmed' })
-export class EmailConfirmed extends BaseEntity {
+export class EmailConfirmedEntity
+  extends BaseEntity
+  implements IEmailConfirmed
+{
   @Column({
     type: 'varchar',
     length: VARCHAR_DEFAULT_LENGTH,
@@ -20,9 +23,4 @@ export class EmailConfirmed extends BaseEntity {
     unique: true,
   })
   token!: string;
-
-  constructor(data: Partial<EmailConfirmed>) {
-    super();
-    Object.assign(this, plainToClass(EmailConfirmed, data));
-  }
 }

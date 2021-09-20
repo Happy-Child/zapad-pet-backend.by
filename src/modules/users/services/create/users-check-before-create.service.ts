@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import {
-  UsersCreateDistrictLeader,
-  UsersCreateStationWorker,
-  UsersCreateEngineer,
+  IUsersCreateDistrictLeader,
+  IUsersCreateStationWorker,
+  IUsersCreateEngineer,
 } from '../../interfaces';
 import { UsersCheckGeneralDataService } from '../common';
 
@@ -13,7 +13,7 @@ export class UsersCheckBeforeCreateService {
   ) {}
 
   public async checkStationWorkersOrFail(
-    stationWorkers: UsersCreateStationWorker[],
+    stationWorkers: IUsersCreateStationWorker[],
   ): Promise<void> {
     await this.checkGeneralUsersDataService.checkStationWorkersOrFail(
       stationWorkers,
@@ -22,7 +22,7 @@ export class UsersCheckBeforeCreateService {
   }
 
   public async checkDistrictLeadersOrFail(
-    districtLeaders: UsersCreateDistrictLeader[],
+    districtLeaders: IUsersCreateDistrictLeader[],
   ): Promise<void> {
     await this.checkGeneralUsersDataService.checkDistrictLeadersOrFail(
       districtLeaders,
@@ -31,7 +31,7 @@ export class UsersCheckBeforeCreateService {
   }
 
   public async checkEngineersOrFail(
-    engineer: UsersCreateEngineer[],
+    engineer: IUsersCreateEngineer[],
   ): Promise<void> {
     await this.checkGeneralUsersDataService.checkEngineersOrFail(engineer);
     // CHECK OTHER

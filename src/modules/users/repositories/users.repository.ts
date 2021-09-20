@@ -1,9 +1,9 @@
 import { EntityRepository, Repository } from 'typeorm';
-import { User } from '@app/entities';
+import { UserEntity } from '@app/entities';
 
-@EntityRepository(User)
-export class UsersRepository extends Repository<User> {
-  async findUsersByEmails(emails: string[]): Promise<User[]> {
+@EntityRepository(UserEntity)
+export class UsersRepository extends Repository<UserEntity> {
+  async findUsersByEmails(emails: string[]): Promise<UserEntity[]> {
     return this.createQueryBuilder('u')
       .where('u.email IN (:...emails)', { emails })
       .orderBy('u.id')

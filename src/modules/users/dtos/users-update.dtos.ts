@@ -11,12 +11,12 @@ import {
   IsIn,
 } from 'class-validator';
 import { Type } from 'class-transformer';
-import { ClientMembersRolesType } from '@app/types';
 import {
   AUTH_ERRORS,
   CLIENT_MEMBERS_ROLES,
   USER_NAME_LENGTH,
 } from '@app/auth/constants';
+import { ClientMembersRolesType } from '@app/user';
 
 export class UsersUpdateItemDTO {
   @IsInt()

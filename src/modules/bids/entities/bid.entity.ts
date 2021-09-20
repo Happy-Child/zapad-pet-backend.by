@@ -8,7 +8,7 @@ import {
   OneToMany,
 } from 'typeorm';
 import { plainToClass } from 'class-transformer';
-import { BaseEntity, User, Station, File } from '@app/entities';
+import { BaseEntity, UserEntity, Station, File } from '@app/entities';
 import { BidTodo } from './bid-todo.entity';
 import { VARCHAR_DEFAULT_LENGTH } from '@app/constants';
 import { BID_PRIORITY, BID_STATUS } from '../constants';
@@ -51,32 +51,32 @@ export class Bid extends BaseEntity {
   @Column({ nullable: true })
   engineerId!: number | null;
 
-  @ManyToOne(() => User)
+  @ManyToOne(() => UserEntity)
   @JoinColumn({
     name: 'engineerId',
     referencedColumnName: 'id',
   })
-  engineer!: User | null;
+  engineer!: UserEntity | null;
 
   @Column({ nullable: true })
   rejectedUserId!: number | null;
 
-  @ManyToOne(() => User)
+  @ManyToOne(() => UserEntity)
   @JoinColumn({
     name: 'rejectedUserId',
     referencedColumnName: 'id',
   })
-  rejectedUser!: User | null;
+  rejectedUser!: UserEntity | null;
 
   @Column({ nullable: true })
   confirmedStationWorkerId!: number | null;
 
-  @ManyToOne(() => User)
+  @ManyToOne(() => UserEntity)
   @JoinColumn({
     name: 'confirmedStationWorkerId',
     referencedColumnName: 'id',
   })
-  confirmedStationWorker!: User | null;
+  confirmedStationWorker!: UserEntity | null;
 
   @Column({ nullable: true })
   finalPhotoId!: number | null;

@@ -1,11 +1,11 @@
 import { ValidateBy, ARRAY_UNIQUE } from 'class-validator';
 import { USERS_ERRORS } from '../constants';
-import { UserClientMemberOrStationWorkerFields } from '@app/interfaces';
 import { getFilteredGeneralUsers } from '../helpers';
 import { getUniquePrimitiveArray } from '@app/helpers';
+import { IUserClientMemberOrStationWorkerFields } from '@app/user';
 
 const uniqueArrayOfDistrictLeadersIdentifier = <
-  T extends UserClientMemberOrStationWorkerFields,
+  T extends IUserClientMemberOrStationWorkerFields,
 >(
   items: T[],
 ): boolean => {
@@ -20,8 +20,9 @@ const uniqueArrayOfDistrictLeadersIdentifier = <
 
   return groupedFields.length === uniqueGroupedFields.length;
 };
+
 export function UniqueArrayOfDistrictLeaders<
-  T extends UserClientMemberOrStationWorkerFields,
+  T extends IUserClientMemberOrStationWorkerFields,
 >() {
   return ValidateBy({
     name: ARRAY_UNIQUE,

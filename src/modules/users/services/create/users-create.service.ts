@@ -4,9 +4,9 @@ import { UsersCheckBeforeCreateService } from './users-check-before-create.servi
 import { UsersCheckGeneralDataService } from '../common';
 import { getFilteredUsersToCreate } from '../../helpers';
 import {
-  UsersCreateDistrictLeader,
-  UsersCreateStationWorker,
-  UsersCreateEngineer,
+  IUsersCreateDistrictLeader,
+  IUsersCreateStationWorker,
+  IUsersCreateEngineer,
 } from '../../interfaces';
 
 @Injectable()
@@ -37,7 +37,7 @@ export class UsersCreateService {
   }
 
   private async createStationWorkers(
-    stationWorkers: UsersCreateStationWorker[],
+    stationWorkers: IUsersCreateStationWorker[],
   ): Promise<void> {
     await this.usersCheckBeforeCreateService.checkStationWorkersOrFail(
       stationWorkers,
@@ -46,7 +46,7 @@ export class UsersCreateService {
   }
 
   private async createDistrictLeaders(
-    districtLeaders: UsersCreateDistrictLeader[],
+    districtLeaders: IUsersCreateDistrictLeader[],
   ): Promise<void> {
     await this.usersCheckBeforeCreateService.checkDistrictLeadersOrFail(
       districtLeaders,
@@ -55,7 +55,7 @@ export class UsersCreateService {
   }
 
   private async createEngineers(
-    engineers: UsersCreateEngineer[],
+    engineers: IUsersCreateEngineer[],
   ): Promise<void> {
     await this.usersCheckBeforeCreateService.checkEngineersOrFail(engineers);
     // transaction(() => { this.generalCreateUser(); ...other })
