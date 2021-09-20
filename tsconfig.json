@@ -35,12 +35,6 @@
       "@app/entities/*": [
         "libs/entities/src/*"
       ],
-      "@app/decorators": [
-        "libs/decorators/src"
-      ],
-      "@app/decorators/*": [
-        "libs/decorators/src/*"
-      ],
       "@app/mail-sender": [
         "libs/mail-sender/src"
       ],
@@ -100,6 +94,12 @@
       ],
       "@app/auth/*": [
         "libs/auth/src/*"
+      ],
+      "@app/decorators": [
+        "libs/decorators/src"
+      ],
+      "@app/decorators/*": [
+        "libs/decorators/src/*"
       ]
     }
   }

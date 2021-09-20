@@ -2,7 +2,7 @@ import { IsEmail, IsString, Length, Matches } from 'class-validator';
 import { TokenRequestDTO } from '@app/dtos';
 import { Expose, plainToClass } from 'class-transformer';
 import { AUTH_ERRORS, PASSWORD_LENGTH, PASSWORD_REGEX } from '../constants';
-import { Match } from '@app/validators';
+import { Match } from '@app/decorators';
 
 export class PasswordRecoveryRequestBodyDTO {
   @IsEmail()

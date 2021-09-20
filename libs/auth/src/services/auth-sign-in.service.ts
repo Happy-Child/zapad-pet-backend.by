@@ -17,7 +17,7 @@ export class AuthSignInService {
     const user = await this.authUserRepository.findByEmailOrFail(body.email);
     if (!user.emailConfirmed) {
       throw new ExceptionsUnprocessableEntity([
-        { field: 'email', message: AUTH_ERRORS.EMAIL_NOT_CONFIRMED },
+        { field: 'email', messages: [AUTH_ERRORS.EMAIL_NOT_CONFIRMED] },
       ]);
     }
 
@@ -27,7 +27,7 @@ export class AuthSignInService {
     );
     if (!passwordIsCompare) {
       throw new ExceptionsUnprocessableEntity([
-        { field: 'password', message: AUTH_ERRORS.INVALID_PASSWORD },
+        { field: 'password', messages: [AUTH_ERRORS.INVALID_PASSWORD] },
       ]);
     }
 

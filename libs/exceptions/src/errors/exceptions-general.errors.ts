@@ -8,7 +8,7 @@ export class ExceptionsGeneralErrors
   defaultError: ErrorDetailItem[] = [
     {
       field: '',
-      message: 'Unknown error',
+      messages: ['Unknown error'],
     },
   ];
 

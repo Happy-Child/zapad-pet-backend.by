@@ -4,7 +4,7 @@ export class ExceptionsUnprocessableEntity extends ExceptionsGeneralErrors {
   defaultError = [
     {
       field: '',
-      message: 'Unprocessable Entity',
+      messages: ['Unprocessable Entity'],
     },
   ];
 }

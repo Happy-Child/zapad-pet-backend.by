@@ -9,7 +9,7 @@ export class AuthPasswordRecoveryRepository extends Repository<PasswordRecovery>
     const passwordRecoveryData = await this.findOne({ token });
     if (!passwordRecoveryData) {
       throw new ExceptionsUnprocessableEntity([
-        { field: 'token', message: AUTH_ERRORS.TOKEN_NOT_FOUND },
+        { field: 'token', messages: [AUTH_ERRORS.TOKEN_NOT_FOUND] },
       ]);
     }
     return passwordRecoveryData;

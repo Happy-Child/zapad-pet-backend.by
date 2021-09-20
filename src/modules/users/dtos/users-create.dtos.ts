@@ -1,9 +1,11 @@
-import { IsArray, ValidateNested, ArrayUnique, IsIn } from 'class-validator';
+import { IsArray, IsIn, ValidateNested } from 'class-validator';
 import { Type } from 'class-transformer';
 import { SignUpRequestBodyDTO } from '@app/auth/dtos';
 import { USERS_CREATE_ALLOWED_ROLES } from '../constants';
 import { ClientMembersOrStationWorkerRolesType } from '@app/types';
 import { AUTH_ERRORS } from '@app/auth/constants';
+import { UniqueArrayOfDistrictLeaders } from '../decorators';
+import { UniqueArrayByFields } from '@app/decorators';
 
 export class UsersCreateItemDTO extends SignUpRequestBodyDTO {
   @IsIn(USERS_CREATE_ALLOWED_ROLES, { message: AUTH_ERRORS.INVALID_ROLE })
@@ -12,9 +14,10 @@ export class UsersCreateItemDTO extends SignUpRequestBodyDTO {
 
 export class UsersCreateRequestBodyDTO {
   @IsArray()
-  @ArrayUnique<UsersCreateItemDTO>((item) => item.email, {
+  @UniqueArrayByFields<UsersCreateItemDTO>(['email'], {
     message: AUTH_ERRORS.EMAILS_SHOULD_BE_UNIQUES,
   })
+  @UniqueArrayOfDistrictLeaders()
   @ValidateNested({ each: true })
   @Type(() => UsersCreateItemDTO)
   users!: UsersCreateItemDTO[];

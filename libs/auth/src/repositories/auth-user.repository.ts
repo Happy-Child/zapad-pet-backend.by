@@ -14,7 +14,7 @@ export class AuthUserRepository extends Repository<User> {
     const user = await this.findByEmail(email);
     if (!user) {
       throw new ExceptionsUnprocessableEntity([
-        { field: 'email', message: AUTH_ERRORS.USER_NOT_FOUND },
+        { field: 'email', messages: [AUTH_ERRORS.USER_NOT_FOUND] },
       ]);
     }
     return user;

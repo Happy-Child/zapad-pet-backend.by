@@ -29,15 +29,6 @@
         "tsConfigPath": "libs/entities/tsconfig.lib.json"
       }
     },
-    "decorators": {
-      "type": "library",
-      "root": "libs/decorators",
-      "entryFile": "index",
-      "sourceRoot": "libs/decorators/src",
-      "compilerOptions": {
-        "tsConfigPath": "libs/decorators/tsconfig.lib.json"
-      }
-    },
     "mail-sender": {
       "type": "library",
       "root": "libs/mail-sender",
@@ -126,6 +117,15 @@
       "sourceRoot": "libs/auth/src",
       "compilerOptions": {
         "tsConfigPath": "libs/auth/tsconfig.lib.json"
+      }
+    },
+    "decorators": {
+      "type": "library",
+      "root": "libs/decorators",
+      "entryFile": "index",
+      "sourceRoot": "libs/decorators/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/decorators/tsconfig.lib.json"
       }
     }
   },

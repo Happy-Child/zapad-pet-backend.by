@@ -108,7 +108,6 @@
       "^@app/exceptions(|/.*)$": "<rootDir>/libs/exceptions/src/$1",
       "^@app/constants(|/.*)$": "<rootDir>/libs/constants/src/$1",
       "^@app/entities(|/.*)$": "<rootDir>/libs/entities/src/$1",
-      "^@app/decorators(|/.*)$": "<rootDir>/libs/decorators/src/$1",
       "^@app/mail-sender(|/.*)$": "<rootDir>/libs/mail-sender/src/$1",
       "^@app/pug(|/.*)$": "<rootDir>/libs/pug/src/$1",
       "^@app/helpers(|/.*)$": "<rootDir>/libs/helpers/src/$1",
@@ -118,7 +117,8 @@
       "^@app/types(|/.*)$": "<rootDir>/libs/types/src/$1",
       "^@app/validators(|/.*)$": "<rootDir>/libs/validators/src/$1",
       "^@app/files(|/.*)$": "<rootDir>/libs/files/src/$1",
-      "^@app/auth(|/.*)$": "<rootDir>/libs/auth/src/$1"
+      "^@app/auth(|/.*)$": "<rootDir>/libs/auth/src/$1",
+      "^@app/decorators(|/.*)$": "<rootDir>/libs/decorators/src/$1"
     }
   }
 }

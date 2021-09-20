@@ -17,7 +17,7 @@ import {
   CLIENT_MEMBERS_ROLES,
 } from '../constants';
 import { AllowedRolesType } from '@app/types';
-import { Match } from '@app/validators';
+import { Match } from '@app/decorators';
 
 export class SignUpRequestBodyDTO {
   @IsString()

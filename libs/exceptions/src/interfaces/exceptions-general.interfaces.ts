@@ -1,7 +1,7 @@
 export interface ErrorDetailItem {
-  value?: number | string;
   field: string;
-  message: string;
+  messages?: string[];
+  children?: ErrorDetailItem[];
 }
 
 export interface AbstractError {

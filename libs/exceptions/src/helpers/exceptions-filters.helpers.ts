@@ -1,4 +1,4 @@
+import { isNull, isObject } from '@app/helpers';
+
 export const isValidException = (exception: any): boolean =>
-  typeof exception === 'object' &&
-  typeof exception !== null &&
-  'details' in exception;
+  isObject(exception) && !isNull(exception) && 'details' in exception;

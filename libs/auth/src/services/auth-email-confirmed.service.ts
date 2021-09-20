@@ -29,7 +29,7 @@ export class AuthEmailConfirmedService {
     );
     if (user.emailConfirmed) {
       throw new ExceptionsUnprocessableEntity([
-        { field: 'email', message: AUTH_ERRORS.EMAIL_IS_ALREADY_CONFIRMED },
+        { field: 'email', messages: [AUTH_ERRORS.EMAIL_IS_ALREADY_CONFIRMED] },
       ]);
     }
 

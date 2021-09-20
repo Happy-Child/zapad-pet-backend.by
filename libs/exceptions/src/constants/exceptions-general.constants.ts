@@ -1,3 +1,6 @@
 export const DEFAULT_EXCEPTION_MODULE_CONFIG = {
   withValidationPipes: true,
 };
+
+export const PIPE_VALIDATION_OPTIONS_DECORATOR =
+  'PIPE_VALIDATION_OPTIONS_DECORATOR';

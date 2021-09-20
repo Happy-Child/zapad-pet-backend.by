@@ -1,5 +1,5 @@
 import { ClientRepository, DistrictRepository } from '../repositories';
-import { getArrayUniqueFieldsByFieldName } from '@app/helpers/array.helpers';
+import { getItemsByUniqueField } from '@app/helpers/array.helpers';
 import { USER_ROLES } from '@app/constants';
 import {
   UserAccountant,
@@ -61,7 +61,7 @@ export const getUsersWithNotExistsClientsOrDistricts = async <
   repository,
 }: GetUsersWithNotExistsClientsOrDistrictsProps<T>): Promise<T[]> => {
   const searchedClientsOrDistrictsIds =
-    getArrayUniqueFieldsByFieldName<UserClientMemberOrStationWorkerFields>(
+    getItemsByUniqueField<UserClientMemberOrStationWorkerFields>(
       fieldName,
       users,
     );

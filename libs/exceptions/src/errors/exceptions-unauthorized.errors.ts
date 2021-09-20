@@ -4,7 +4,7 @@ export class ExceptionsUnauthorized extends ExceptionsGeneralErrors {
   defaultError = [
     {
       field: '',
-      message: 'Unauthorized',
+      messages: ['Unauthorized'],
     },
   ];
 }

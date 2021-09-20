@@ -33,7 +33,7 @@ export class AuthSignUpService {
 
     if (user) {
       throw new ExceptionsUnprocessableEntity([
-        { field: 'email', message: AUTH_ERRORS.EMAIL_IS_EXIST },
+        { field: 'email', messages: [AUTH_ERRORS.EMAIL_IS_EXIST] },
       ]);
     }
   }

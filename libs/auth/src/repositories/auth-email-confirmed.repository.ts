@@ -9,7 +9,7 @@ export class AuthEmailConfirmedRepository extends Repository<EmailConfirmed> {
     const emailConfirmationData = await this.findOne({ token });
     if (!emailConfirmationData) {
       throw new ExceptionsUnprocessableEntity([
-        { field: 'token', message: AUTH_ERRORS.TOKEN_NOT_FOUND },
+        { field: 'token', messages: [AUTH_ERRORS.TOKEN_NOT_FOUND] },
       ]);
     }
     return emailConfirmationData;

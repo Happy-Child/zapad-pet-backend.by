@@ -1,8 +1,6 @@
 import config from 'config';
 import nodemailer from 'nodemailer';
-import { Provider } from '@nestjs/common';
 import { SendMailOptionsType } from '@app/mail-sender/types';
-import { MAIL_SENDER_PROVIDER_NAME } from '@app/mail-sender/constants';
 
 export class MailSenderGeneralConnector {
   private transporter!: nodemailer.Transporter;

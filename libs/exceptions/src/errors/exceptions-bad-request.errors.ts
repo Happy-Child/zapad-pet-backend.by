@@ -4,7 +4,7 @@ export class ExceptionsBadRequest extends ExceptionsGeneralErrors {
   defaultError = [
     {
       field: '',
-      message: 'Bad Request',
+      messages: ['Bad Request'],
     },
   ];
 }

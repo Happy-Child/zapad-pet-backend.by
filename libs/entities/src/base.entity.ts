@@ -7,7 +7,6 @@ import { Expose } from 'class-transformer';
 
 @Expose()
 export class BaseEntity {
-  @Expose()
   @PrimaryGeneratedColumn()
   id!: number;
 

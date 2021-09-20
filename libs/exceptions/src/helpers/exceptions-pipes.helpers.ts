@@ -1,25 +1,41 @@
 import { ValidationError } from 'class-validator';
 import { ErrorDetailItem } from '@app/exceptions/interfaces';
 
-export const prepareErrorsFromPipes = (
+const getSingleValidationErrorMessages = ({
+  property,
+  constraints,
+}: Required<Pick<ValidationError, 'property' | 'constraints'>>): string[] => {
+  const messages: string[] = [];
+
+  Object.keys(constraints).forEach((key) => {
+    messages?.push(constraints[key].replace(property, '').trim());
+  });
+
+  return messages;
+};
+
+export const generalPrepareErrorsToException = (
   rawErrors: ValidationError[],
 ): ErrorDetailItem[] => {
   const result: ErrorDetailItem[] = [];
 
-  rawErrors.forEach(({ property, constraints, children }) => {
+  rawErrors.forEach(({ constraints, property, children }) => {
+    const item: ErrorDetailItem = {
+      field: property,
+    };
+
     if (constraints) {
-      Object.keys(constraints).forEach((key) => {
-        result.push({
-          field: property,
-          message: constraints[key].replace(property, '').trim(),
-        });
+      item.messages = getSingleValidationErrorMessages({
+        constraints,
+        property,
       });
     }
 
-    if (children) {
-      const preparedChildrenErrors = prepareErrorsFromPipes(children);
-      result.push(...preparedChildrenErrors);
+    if (children?.length) {
+      item.children = generalPrepareErrorsToException(children);
     }
+
+    result.push(item);
   });
 
   return result;
