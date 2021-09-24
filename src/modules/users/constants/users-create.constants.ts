@@ -1,4 +1,4 @@
-import { USER_ROLES } from '@app/user';
+import { USER_ROLES } from './users-roles.constants';
 
 export const USERS_CREATE_ALLOWED_ROLES = [
   USER_ROLES.ENGINEER,

@@ -71,12 +71,6 @@
       "@app/files/*": [
         "libs/files/src/*"
       ],
-      "@app/auth": [
-        "libs/auth/src"
-      ],
-      "@app/auth/*": [
-        "libs/auth/src/*"
-      ],
       "@app/decorators": [
         "libs/decorators/src"
       ],
@@ -89,11 +83,11 @@
       "@app/repositories/*": [
         "libs/repositories/src/*"
       ],
-      "@app/user": [
-        "libs/user/src"
+      "@app/interfaces": [
+        "libs/interfaces/src"
       ],
-      "@app/user/*": [
-        "libs/user/src/*"
+      "@app/interfaces/*": [
+        "libs/interfaces/src/*"
       ]
     }
   }

@@ -1,9 +1,9 @@
 import { Entity, Column, ManyToOne, OneToOne, JoinColumn } from 'typeorm';
 import { BaseEntity } from '@app/entities/base.entity';
 import { VARCHAR_DEFAULT_LENGTH } from '@app/constants';
-import { plainToClass } from 'class-transformer';
+import { Expose } from 'class-transformer';
 import { Region } from '../../regions';
-import { UserEntity } from '@app/user';
+import { UserEntity } from '@app/entities';
 
 @Entity({ name: 'district' })
 export class District extends BaseEntity {
@@ -13,6 +13,7 @@ export class District extends BaseEntity {
     nullable: false,
     unique: true,
   })
+  @Expose()
   name!: string;
 
   @Column({
@@ -21,9 +22,11 @@ export class District extends BaseEntity {
     nullable: false,
     unique: true,
   })
+  @Expose()
   slug!: string;
 
   @Column({ nullable: false })
+  @Expose()
   regionSlug!: string;
 
   @ManyToOne(() => Region)
@@ -31,6 +34,7 @@ export class District extends BaseEntity {
     name: 'regionSlug',
     referencedColumnName: 'slug',
   })
+  @Expose()
   region!: Region;
 
   @Column({ nullable: true })
@@ -41,10 +45,6 @@ export class District extends BaseEntity {
     name: 'districtLeaderId',
     referencedColumnName: 'id',
   })
+  @Expose()
   districtLeader!: UserEntity | null;
-
-  constructor(data: Partial<District>) {
-    super();
-    Object.assign(this, plainToClass(District, data));
-  }
 }

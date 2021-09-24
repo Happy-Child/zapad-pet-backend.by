@@ -1,48 +1,47 @@
-import { Repository, ObjectLiteral } from 'typeorm';
+import { Repository } from 'typeorm';
 import { plainToClass } from 'class-transformer';
 import {
   RepositoryFindConditions,
-  RepositoryFindOneOptions,
   RepositorySerializeOptions,
   RepositorySaveEntityOptions,
   RepositoryUpdateEntityInputs,
   RepositorySaveEntity,
-  RepositoryDeleteConditions,
   RepositoryCreateEntity,
+  RepositoryDeleteOneConditions,
+  RepositoryDeleteByIdsConditions,
 } from '@app/repositories/types';
 import {
-  IGetOneOrFailParams,
+  IGetOneOptions,
+  IGetOneOrFailOptions,
   IUpdateEntitiesItem,
 } from '@app/repositories/interfaces';
-import { RepositoryGeneralSerializer } from '@app/repositories/serializers';
 import { DEFAULT_REPOSITORY_SERIALISE_OPTIONS } from '@app/repositories/constants';
+import { ExceptionsBadRequest } from '@app/exceptions/errors';
+import { BaseEntity } from '@app/entities';
 
-export class GeneralRepository<
-  E extends ObjectLiteral,
-  S extends RepositoryGeneralSerializer,
-> extends Repository<E> {
+export class GeneralRepository<E extends BaseEntity> extends Repository<E> {
   protected readonly defaultSerializeOptions: RepositorySerializeOptions =
     DEFAULT_REPOSITORY_SERIALISE_OPTIONS;
 
-  protected entitySerializer = RepositoryGeneralSerializer;
+  protected entitySerializer = BaseEntity;
 
   public async getOne(
     conditions: RepositoryFindConditions<E>,
-    options?: RepositoryFindOneOptions<E>,
-    serializeOptions?: RepositorySerializeOptions,
-  ): Promise<S | null> {
-    const item = await this.findOne(conditions, options);
-    return item ? this.serialize(item, serializeOptions) : null;
+    { repository, serialize }: IGetOneOptions<E> = {},
+  ): Promise<E | null> {
+    const item = await this.findOne(conditions, repository);
+    return item ? this.serialize(item, serialize) : null;
   }
 
   public async getOneOrFail(
-    { conditions, options, exception }: IGetOneOrFailParams<E>,
-    serializeOptions?: RepositorySerializeOptions,
+    conditions: RepositoryFindConditions<E>,
+    { repository, serialize, exception }: IGetOneOrFailOptions<E> = {},
   ) {
-    const entity = await this.getOne(conditions, options, serializeOptions);
+    const entity = await this.getOne(conditions, { repository, serialize });
 
     if (!entity) {
-      throw new exception.type(exception.messages);
+      const finalException = exception?.type || ExceptionsBadRequest;
+      throw new finalException(exception?.messages);
     }
 
     return entity;
@@ -85,30 +84,30 @@ export class GeneralRepository<
   }
 
   public async deleteEntity(
-    conditions: RepositoryDeleteConditions<E>,
+    conditions: RepositoryDeleteOneConditions<E>,
   ): Promise<void> {
     await this.delete(conditions);
   }
 
-  public async deleteEntities(
-    conditions: RepositoryDeleteConditions<E>,
+  public async deleteEntitiesByIds(
+    conditions: RepositoryDeleteByIdsConditions,
   ): Promise<void> {
     await this.delete(conditions);
   }
 
-  public serialize(entity: E, options?: RepositorySerializeOptions): S {
+  public serialize(entity: E, options?: RepositorySerializeOptions): E {
     const concatOptions = {
       ...this.defaultSerializeOptions,
       ...(options || null),
     };
 
-    return plainToClass(this.entitySerializer, entity, concatOptions) as S;
+    return plainToClass(this.entitySerializer, entity, concatOptions) as E;
   }
 
   public serializeMany(
     entities: E[],
     options?: RepositorySerializeOptions,
-  ): S[] {
+  ): E[] {
     return entities.map((entity) => this.serialize(entity, options));
   }
 }

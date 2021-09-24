@@ -7,7 +7,6 @@ import {
   ManyToOne,
 } from 'typeorm';
 import { BaseEntity, UserEntity, District, Bid, Client } from '@app/entities';
-import { plainToClass } from 'class-transformer';
 import { STATION_NUMBER_LENGTH } from '../constants';
 
 @Entity({ name: 'station' })
@@ -52,9 +51,4 @@ export class Station extends BaseEntity {
 
   @OneToMany(() => Bid, (bid) => bid.station)
   bids!: Bid[];
-
-  constructor(data: Partial<Station>) {
-    super();
-    Object.assign(this, plainToClass(Station, data));
-  }
 }

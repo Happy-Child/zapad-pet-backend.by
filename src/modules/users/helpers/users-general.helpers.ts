@@ -1,24 +1,30 @@
 import { ClientRepository, DistrictRepository } from '../repositories';
 import { getItemsByUniqueField } from '@app/helpers/array.helpers';
-import {
-  AllowedRolesType,
-  IUserAccountant,
-  IUserClientMemberOrStationWorkerFields,
-  IUserDistrictLeader,
-  IUserEngineer,
-  IUserStationWorker,
-  USER_ROLES,
-} from '@app/user';
 import { ENTITIES_FIELDS } from '@app/entities';
+import {
+  IAccountantIdentifyingFields,
+  IDistrictLeaderIdentifyingFields,
+  IEngineerIdentifyingFields,
+  IStationWorkerIdentifyingFields,
+  IClientMemberOrStationWorkerIdentifyingFields,
+} from '../interfaces';
+import { AllowedRolesType } from '../types';
+import { USER_ROLES } from '../constants';
+
+interface IFilteredUser {
+  role: AllowedRolesType;
+  clientId?: number;
+  districtId?: number;
+}
 
 interface IGetFilteredGeneralUsers {
-  districtLeaders: IUserDistrictLeader[];
-  engineers: IUserEngineer[];
-  stationWorkers: IUserStationWorker[];
-  accountants: IUserAccountant[];
+  districtLeaders: IDistrictLeaderIdentifyingFields[];
+  engineers: IEngineerIdentifyingFields[];
+  stationWorkers: IStationWorkerIdentifyingFields[];
+  accountants: IAccountantIdentifyingFields[];
 }
 export const getFilteredGeneralUsers = (
-  rawUsers: { role: AllowedRolesType }[],
+  rawUsers: IFilteredUser[],
 ): IGetFilteredGeneralUsers => {
   const result: IGetFilteredGeneralUsers = {
     districtLeaders: [],
@@ -28,19 +34,20 @@ export const getFilteredGeneralUsers = (
   };
 
   rawUsers.forEach((user) => {
-    switch (user.role) {
-      case USER_ROLES.ACCOUNTANT:
-        result.accountants.push(user as IUserAccountant);
-        break;
-      case USER_ROLES.DISTRICT_LEADER:
-        result.districtLeaders.push(user as IUserDistrictLeader);
-        break;
-      case USER_ROLES.ENGINEER:
-        result.engineers.push(user as IUserEngineer);
-        break;
-      case USER_ROLES.STATION_WORKER:
-        result.stationWorkers.push(user as IUserStationWorker);
-        break;
+    if (user.role === USER_ROLES.ACCOUNTANT) {
+      result.accountants.push(user as IAccountantIdentifyingFields);
+      return;
+    }
+    if (user.role === USER_ROLES.DISTRICT_LEADER && user.districtId) {
+      result.districtLeaders.push(user as IDistrictLeaderIdentifyingFields);
+      return;
+    }
+    if (user.role === USER_ROLES.ENGINEER && user.districtId) {
+      result.engineers.push(user as IEngineerIdentifyingFields);
+      return;
+    }
+    if (user.role === USER_ROLES.STATION_WORKER && user.clientId) {
+      result.stationWorkers.push(user as IStationWorkerIdentifyingFields);
     }
   });
 
@@ -48,21 +55,21 @@ export const getFilteredGeneralUsers = (
 };
 
 interface IGetUsersWithNotExistsClientsOrDistrictsProps<
-  T extends IUserClientMemberOrStationWorkerFields,
+  T extends IClientMemberOrStationWorkerIdentifyingFields,
 > {
-  fieldName: ENTITIES_FIELDS.CLIENT_ID | ENTITIES_FIELDS.DISTRICT_ID;
   users: T[];
+  fieldName: ENTITIES_FIELDS.CLIENT_ID | ENTITIES_FIELDS.DISTRICT_ID;
   repository: ClientRepository | DistrictRepository;
 }
 export const getUsersWithNotExistsClientsOrDistricts = async <
-  T extends IUserClientMemberOrStationWorkerFields,
+  T extends IClientMemberOrStationWorkerIdentifyingFields,
 >({
   fieldName,
   users,
   repository,
 }: IGetUsersWithNotExistsClientsOrDistrictsProps<T>): Promise<T[]> => {
   const searchedClientsOrDistrictsIds =
-    getItemsByUniqueField<IUserClientMemberOrStationWorkerFields>(
+    getItemsByUniqueField<IClientMemberOrStationWorkerIdentifyingFields>(
       fieldName,
       users,
     );
@@ -74,7 +81,7 @@ export const getUsersWithNotExistsClientsOrDistricts = async <
     .getMany();
 
   if (
-    existingClientsOrDistricts.length === searchedClientsOrDistrictsIds.length // If all clients or districts exists
+    existingClientsOrDistricts.length === searchedClientsOrDistrictsIds.length
   )
     return [];
 

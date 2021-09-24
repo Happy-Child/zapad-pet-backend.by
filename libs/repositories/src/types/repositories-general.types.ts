@@ -1,28 +1,27 @@
-import { ObjectLiteral, SaveOptions, FindOneOptions } from 'typeorm';
+import { SaveOptions, FindOneOptions } from 'typeorm';
 import { FindConditions } from 'typeorm/find-options/FindConditions';
 import { ClassTransformOptions } from 'class-transformer';
 import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity';
 import { DeepPartial } from 'typeorm/common/DeepPartial';
+import { BaseEntity } from '@app/entities';
 
-export type RepositoryFindConditions<E extends ObjectLiteral> =
-  FindConditions<E>;
+export type RepositoryFindConditions<E extends BaseEntity> = FindConditions<E>;
 
-export type RepositoryFindOneOptions<E extends ObjectLiteral> =
-  FindOneOptions<E>;
+export type RepositoryFindOneOptions<E extends BaseEntity> = FindOneOptions<E>;
 
-export type RepositoryUpdateEntityInputs<E extends ObjectLiteral> =
+export type RepositoryUpdateEntityInputs<E extends BaseEntity> =
   QueryDeepPartialEntity<E>;
 
-export type RepositoryDeleteConditions<E extends ObjectLiteral> =
+export type RepositoryDeleteOneConditions<E extends BaseEntity> =
   | number
   | string
-  | number[]
-  | string[]
   | RepositoryFindConditions<E>;
 
-export type RepositorySaveEntity<E extends ObjectLiteral> = DeepPartial<E>;
+export type RepositoryDeleteByIdsConditions = number[] | string[];
 
-export type RepositoryCreateEntity<E extends ObjectLiteral> = DeepPartial<E>;
+export type RepositorySaveEntity<E extends BaseEntity> = DeepPartial<E>;
+
+export type RepositoryCreateEntity<E extends BaseEntity> = DeepPartial<E>;
 
 export type RepositorySaveEntityOptions = SaveOptions;
 

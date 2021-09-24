@@ -11,8 +11,8 @@ import {
   IUsersCreateStationWorker,
 } from '../../interfaces';
 import { ExceptionsUnprocessableEntity } from '@app/exceptions/errors';
-import { AUTH_ERRORS } from '@app/auth/constants';
 import { ENTITIES_FIELDS } from '@app/entities';
+import { AUTH_ERRORS } from '../../../auth/constants';
 
 @Injectable()
 export class UsersCheckGeneralDataService {

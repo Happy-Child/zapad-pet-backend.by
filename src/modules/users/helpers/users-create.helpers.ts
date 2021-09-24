@@ -4,7 +4,7 @@ import {
   IUsersCreateEngineer,
 } from '../interfaces';
 import { getFilteredGeneralUsers } from './users-general.helpers';
-import { ClientMembersOrStationWorkerRolesType } from '@app/user';
+import { UsersCreateItemDTO } from '../dtos';
 
 interface IGetFilteredUsersToCreate {
   districtLeaders: IUsersCreateDistrictLeader[];
@@ -12,7 +12,7 @@ interface IGetFilteredUsersToCreate {
   stationWorkers: IUsersCreateStationWorker[];
 }
 export const getFilteredUsersToCreate = (
-  rawUsers: { role: ClientMembersOrStationWorkerRolesType }[],
+  rawUsers: UsersCreateItemDTO[],
 ): IGetFilteredUsersToCreate => {
   const { districtLeaders, engineers, stationWorkers } =
     getFilteredGeneralUsers(rawUsers);

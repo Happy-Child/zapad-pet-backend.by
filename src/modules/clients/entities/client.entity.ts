@@ -1,7 +1,7 @@
 import { Entity, Column, OneToMany } from 'typeorm';
 import { BaseEntity } from '@app/entities/base.entity';
 import { VARCHAR_DEFAULT_LENGTH } from '@app/constants';
-import { plainToClass } from 'class-transformer';
+import { Expose } from 'class-transformer';
 import { Station } from '../../stations';
 
 @Entity({ name: 'client' })
@@ -12,13 +12,10 @@ export class Client extends BaseEntity {
     nullable: false,
     unique: true,
   })
+  @Expose()
   name!: string;
 
   @OneToMany(() => Station, (station) => station.client)
+  @Expose()
   stations!: Station[];
-
-  constructor(data: Partial<Client>) {
-    super();
-    Object.assign(this, plainToClass(Client, data));
-  }
 }

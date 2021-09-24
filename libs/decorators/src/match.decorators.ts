@@ -5,6 +5,7 @@ import {
   ValidationOptions,
   ValidatorConstraintInterface,
 } from 'class-validator';
+import { ENTITIES_FIELDS } from '@app/entities';
 
 @ValidatorConstraint({ name: 'Match' })
 class MatchConstraint implements ValidatorConstraintInterface {
@@ -16,7 +17,7 @@ class MatchConstraint implements ValidatorConstraintInterface {
 }
 
 export const Match = (
-  property: string,
+  property: ENTITIES_FIELDS,
   validationOptions?: ValidationOptions,
 ) => {
   return (object: any, propertyName: string) => {

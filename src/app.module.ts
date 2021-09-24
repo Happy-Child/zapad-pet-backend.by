@@ -1,7 +1,5 @@
-import { ClassSerializerInterceptor, Module } from '@nestjs/common';
-import { APP_INTERCEPTOR } from '@nestjs/core';
+import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { AuthModule } from '@app/auth';
 import { ExceptionsModule } from '@app/exceptions';
 import { UsersModule } from './modules/users';
 import { DistrictsModule } from './modules/districts';
@@ -9,6 +7,7 @@ import { BidsModule } from './modules/bids';
 import { StationsModule } from './modules/stations';
 import { ClientsModule } from './modules/clients';
 import { RegionsModule } from './modules/regions';
+import { AuthModule } from './modules/auth';
 import ormconfig from '../ormconfig';
 
 @Module({
@@ -22,12 +21,6 @@ import ormconfig from '../ormconfig';
     StationsModule,
     ClientsModule,
     RegionsModule,
-  ],
-  providers: [
-    {
-      provide: APP_INTERCEPTOR,
-      useClass: ClassSerializerInterceptor,
-    },
   ],
 })
 export class AppModule {}

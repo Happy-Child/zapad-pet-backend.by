@@ -7,7 +7,7 @@ import {
   CreateDateColumn,
   OneToMany,
 } from 'typeorm';
-import { plainToClass } from 'class-transformer';
+import { Expose } from 'class-transformer';
 import { BaseEntity, UserEntity, Station, File } from '@app/entities';
 import { BidTodo } from './bid-todo.entity';
 import { VARCHAR_DEFAULT_LENGTH } from '@app/constants';
@@ -21,6 +21,7 @@ export class Bid extends BaseEntity {
     nullable: false,
     default: BID_STATUS.PENDING_IN_WORK,
   })
+  @Expose()
   status!: BID_STATUS;
 
   @Column({
@@ -29,6 +30,7 @@ export class Bid extends BaseEntity {
     nullable: false,
     default: BID_PRIORITY.MEDIUM,
   })
+  @Expose()
   priority!: BID_PRIORITY;
 
   @Column({
@@ -36,6 +38,7 @@ export class Bid extends BaseEntity {
     length: VARCHAR_DEFAULT_LENGTH,
     nullable: true,
   })
+  @Expose()
   description!: string | null;
 
   @Column({ nullable: false })
@@ -46,6 +49,7 @@ export class Bid extends BaseEntity {
     name: 'stationId',
     referencedColumnName: 'id',
   })
+  @Expose()
   station!: Station;
 
   @Column({ nullable: true })
@@ -56,6 +60,7 @@ export class Bid extends BaseEntity {
     name: 'engineerId',
     referencedColumnName: 'id',
   })
+  @Expose()
   engineer!: UserEntity | null;
 
   @Column({ nullable: true })
@@ -66,6 +71,7 @@ export class Bid extends BaseEntity {
     name: 'rejectedUserId',
     referencedColumnName: 'id',
   })
+  @Expose()
   rejectedUser!: UserEntity | null;
 
   @Column({ nullable: true })
@@ -76,6 +82,7 @@ export class Bid extends BaseEntity {
     name: 'confirmedStationWorkerId',
     referencedColumnName: 'id',
   })
+  @Expose()
   confirmedStationWorker!: UserEntity | null;
 
   @Column({ nullable: true })
@@ -86,25 +93,26 @@ export class Bid extends BaseEntity {
     name: 'finalPhotoId',
     referencedColumnName: 'id',
   })
+  @Expose()
   finalPhoto!: File | null;
 
   @OneToMany(() => BidTodo, (todo) => todo.bid)
+  @Expose()
   todos!: BidTodo[];
 
   @CreateDateColumn({ type: 'timestamptz', nullable: false })
+  @Expose()
   deadlineAt!: Date;
 
   @CreateDateColumn({ type: 'timestamptz', nullable: true })
+  @Expose()
   startWorkAt!: Date | null;
 
   @CreateDateColumn({ type: 'timestamptz', nullable: true })
+  @Expose()
   endWorkAt!: Date | null;
 
   @CreateDateColumn({ type: 'timestamptz', nullable: true })
+  @Expose()
   confirmSuccessAt!: Date | null;
-
-  constructor(data: Partial<Bid>) {
-    super();
-    Object.assign(this, plainToClass(Bid, data));
-  }
 }

@@ -83,15 +83,6 @@
         "tsConfigPath": "libs/files/tsconfig.lib.json"
       }
     },
-    "auth": {
-      "type": "library",
-      "root": "libs/auth",
-      "entryFile": "index",
-      "sourceRoot": "libs/auth/src",
-      "compilerOptions": {
-        "tsConfigPath": "libs/auth/tsconfig.lib.json"
-      }
-    },
     "decorators": {
       "type": "library",
       "root": "libs/decorators",
@@ -110,13 +101,13 @@
         "tsConfigPath": "libs/repositories/tsconfig.lib.json"
       }
     },
-    "user": {
+    "interfaces": {
       "type": "library",
-      "root": "libs/user",
+      "root": "libs/interfaces",
       "entryFile": "index",
-      "sourceRoot": "libs/user/src",
+      "sourceRoot": "libs/interfaces/src",
       "compilerOptions": {
-        "tsConfigPath": "libs/user/tsconfig.lib.json"
+        "tsConfigPath": "libs/interfaces/tsconfig.lib.json"
       }
     }
   },

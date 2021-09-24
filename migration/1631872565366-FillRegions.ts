@@ -1,6 +1,6 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 import regions from '../static/regions.json';
-import { Region } from "../src/modules/regions";
+import { Region } from '../src/modules/regions';
 
 export class FillRegions1631872565366 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {

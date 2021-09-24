@@ -4,7 +4,7 @@ import {
   IUsersUpdateUserEngineer,
 } from '../interfaces';
 import { getFilteredGeneralUsers } from './users-general.helpers';
-import { ClientMembersRolesType } from '@app/user';
+import { ClientMembersRolesType } from '../types';
 
 interface IGetFilteredUsersToUpdate {
   districtLeaders: IUsersUpdateDistrictLeader[];

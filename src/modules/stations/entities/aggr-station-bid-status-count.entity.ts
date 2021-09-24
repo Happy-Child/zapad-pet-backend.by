@@ -1,5 +1,4 @@
 import { Column, Entity, JoinColumn, OneToOne } from 'typeorm';
-import { plainToClass } from 'class-transformer';
 import { BaseEntity } from '@app/entities';
 import { Station } from './station.entity';
 
@@ -41,9 +40,4 @@ export class AggrStationBidStatusCount extends BaseEntity {
 
   @Column({ nullable: false, default: 0 })
   notAcceptedDistrictLeader!: number;
-
-  constructor(data: Partial<AggrStationBidStatusCount>) {
-    super();
-    Object.assign(this, plainToClass(AggrStationBidStatusCount, data));
-  }
 }

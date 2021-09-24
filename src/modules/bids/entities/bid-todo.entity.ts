@@ -1,6 +1,6 @@
 import { Entity, Column, ManyToOne, JoinColumn } from 'typeorm';
 import { BaseEntity } from '@app/entities/base.entity';
-import { plainToClass } from 'class-transformer';
+import { Expose } from 'class-transformer';
 import { BID_TODO_MAX_LENGTH, BID_TODO_STATUS } from '../constants';
 import { Bid } from './bid.entity';
 
@@ -11,6 +11,7 @@ export class BidTodo extends BaseEntity {
     length: BID_TODO_MAX_LENGTH,
     nullable: false,
   })
+  @Expose()
   text!: string;
 
   @Column({
@@ -19,6 +20,7 @@ export class BidTodo extends BaseEntity {
     nullable: false,
     default: BID_TODO_STATUS.PENDING,
   })
+  @Expose()
   status!: BID_TODO_STATUS;
 
   @Column({ nullable: false })
@@ -29,10 +31,6 @@ export class BidTodo extends BaseEntity {
     name: 'bidId',
     referencedColumnName: 'id',
   })
+  @Expose()
   bid!: Bid;
-
-  constructor(data: Partial<BidTodo>) {
-    super();
-    Object.assign(this, plainToClass(BidTodo, data));
-  }
 }
