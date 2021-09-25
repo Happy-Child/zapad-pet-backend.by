@@ -8,6 +8,7 @@ import {
   HttpCode,
   HttpStatus,
   UseGuards,
+  Query,
 } from '@nestjs/common';
 import { getCookieExpiration } from '../helpers';
 import {
@@ -22,6 +23,7 @@ import {
   PasswordRecoveryRequestBodyDTO,
   PasswordRecoveryResponseBodyDTO,
   SignInRequestBodyDTO,
+  SignInResponseBodyDTO,
 } from '../dtos';
 import { COOKIE } from '../constants';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
@@ -55,7 +57,7 @@ export class AuthController {
       ...COOKIE.SECURE_OPTIONS,
       expires: getCookieExpiration(),
     });
-    res.send(response);
+    res.send(new SignInResponseBodyDTO(response));
   }
 
   @HttpCode(HttpStatus.OK)
@@ -68,11 +70,11 @@ export class AuthController {
   }
 
   @HttpCode(HttpStatus.OK)
-  @Post('/password-recovery')
+  @Get('/password-recovery')
   async passwordRecovery(
-    @Body() body: PasswordRecoveryRequestBodyDTO,
+    @Query() query: PasswordRecoveryRequestBodyDTO,
   ): Promise<PasswordRecoveryResponseBodyDTO> {
-    return this.authPasswordRecoveryService.passwordRecovery(body);
+    return this.authPasswordRecoveryService.passwordRecovery(query.email);
   }
 
   @HttpCode(HttpStatus.OK)

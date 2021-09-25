@@ -55,7 +55,7 @@ export class BidEntity extends BaseEntity {
     referencedColumnName: 'id',
   })
   @Expose()
-  station!: StationEntity;
+  station?: StationEntity;
 
   @Column({ nullable: true })
   engineerId!: number | null;
@@ -66,7 +66,7 @@ export class BidEntity extends BaseEntity {
     referencedColumnName: 'id',
   })
   @Expose()
-  engineer!: UserEntity | null;
+  engineer?: UserEntity;
 
   @Column({ nullable: true })
   rejectedUserId!: number | null;
@@ -77,7 +77,7 @@ export class BidEntity extends BaseEntity {
     referencedColumnName: 'id',
   })
   @Expose()
-  rejectedUser!: UserEntity | null;
+  rejectedUser?: UserEntity;
 
   @Column({ nullable: true })
   confirmedStationWorkerId!: number | null;
@@ -88,7 +88,7 @@ export class BidEntity extends BaseEntity {
     referencedColumnName: 'id',
   })
   @Expose()
-  confirmedStationWorker!: UserEntity | null;
+  confirmedStationWorker?: UserEntity;
 
   @Column({ nullable: true })
   finalPhotoId!: number | null;
@@ -99,11 +99,11 @@ export class BidEntity extends BaseEntity {
     referencedColumnName: 'id',
   })
   @Expose()
-  finalPhoto!: File | null;
+  finalPhoto?: File;
 
   @OneToMany(() => BidTodoEntity, (todo) => todo.bid)
   @Expose()
-  todos!: BidTodoEntity[];
+  todos?: BidTodoEntity[];
 
   @CreateDateColumn({ type: 'timestamptz', nullable: false })
   @Expose()

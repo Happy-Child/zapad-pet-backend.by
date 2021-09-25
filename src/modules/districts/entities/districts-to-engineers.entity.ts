@@ -16,7 +16,7 @@ export class DistrictsToEngineersEntity extends BaseEntity {
     referencedColumnName: 'id',
   })
   @Expose()
-  district?: DistrictEntity | null;
+  district?: DistrictEntity;
 
   @Column({ nullable: false })
   @Expose()
@@ -28,5 +28,5 @@ export class DistrictsToEngineersEntity extends BaseEntity {
     referencedColumnName: 'id',
   })
   @Expose()
-  engineer?: UserEntity | null;
+  engineer?: UserEntity;
 }

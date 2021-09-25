@@ -1,11 +1,26 @@
-import { ExceptionsGeneralErrors } from '@app/exceptions/errors/exceptions-general.errors';
 import { ENTITIES_FIELDS } from '@app/entities';
+import { IAbstractError, IErrorDetailItem } from '@app/exceptions/interfaces';
+import { BadRequestException } from '@nestjs/common';
 
-export class ExceptionsBadRequest extends ExceptionsGeneralErrors {
-  defaultError = [
-    {
-      field: ENTITIES_FIELDS.UNKNOWN,
-      messages: ['Bad Request'],
-    },
-  ];
+const defaultErrors = [
+  {
+    field: ENTITIES_FIELDS.UNKNOWN,
+    messages: ['Bad Request'],
+  },
+];
+
+export class ExceptionsBadRequest
+  extends BadRequestException
+  implements IAbstractError
+{
+  private readonly _details: IErrorDetailItem[];
+
+  constructor(details?: IErrorDetailItem[]) {
+    super();
+    this._details = details || defaultErrors;
+  }
+
+  get details() {
+    return this._details;
+  }
 }

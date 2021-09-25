@@ -11,5 +11,6 @@ export enum ENTITIES_FIELDS {
   CREATED_AT = 'createdAt',
   UPDATED_AT = 'updatedAt',
   TOKEN = 'token',
+  USERS = 'users',
   UNKNOWN = '',
 }

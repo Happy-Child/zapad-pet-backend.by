@@ -46,5 +46,5 @@ export class DistrictEntity extends BaseEntity {
     referencedColumnName: 'id',
   })
   @Expose()
-  districtLeader?: UserEntity | null;
+  districtLeader?: UserEntity;
 }

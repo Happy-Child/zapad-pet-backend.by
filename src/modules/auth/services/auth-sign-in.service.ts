@@ -1,4 +1,4 @@
-import { Injectable, UnprocessableEntityException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { ExceptionsUnprocessableEntity } from '@app/exceptions/errors';
 import { ENTITIES_FIELDS, UserEntity } from '@app/entities';
@@ -18,9 +18,9 @@ import { ClientsToStationWorkersRepository } from '../../clients';
 export class AuthSignInService {
   constructor(
     private readonly authUserRepository: AuthUserRepository,
+    private readonly districtsRepository: DistrictsRepository,
     private readonly districtToEngineersRepository: DistrictsToEngineersRepository,
     private readonly clientToStationWorkersRepository: ClientsToStationWorkersRepository,
-    private readonly districtsRepository: DistrictsRepository,
     private readonly jwtService: JwtService,
   ) {}
 
@@ -30,11 +30,12 @@ export class AuthSignInService {
     );
 
     this.checkEmailConfirmedOrFail(user.emailConfirmed);
-    await this.checkUserRoleOrFail(user);
     await this.checkComparePasswordsOrFail(body.password, user.password);
+    await this.isCompleteUserRoleOrFail(user);
 
     const accessToken = this.jwtService.sign({ sub: user.id, role: user.role });
-    return new SignInResponseBodyDTO({ user, accessToken });
+
+    return { user: this.authUserRepository.serialize(user), accessToken };
   }
 
   private checkEmailConfirmedOrFail(emailConfirmed: boolean): void {
@@ -48,7 +49,7 @@ export class AuthSignInService {
     }
   }
 
-  public async checkUserRoleOrFail(user: UserEntity): Promise<void> {
+  public async isCompleteUserRoleOrFail(user: UserEntity): Promise<void> {
     if (user.role === USER_ROLES.DISTRICT_LEADER) {
       await this.districtsRepository.getOneOrFail(
         { districtLeaderId: user.id },
@@ -74,7 +75,7 @@ export class AuthSignInService {
         { stationWorkerId: user.id },
         {
           exception: this.getExceptionCheckUserRole(
-            AUTH_ERRORS.NO_CONNECTION_WITH_DISTRICT,
+            AUTH_ERRORS.NO_CONNECTION_WITH_CLIENT,
           ),
         },
       );
@@ -83,7 +84,7 @@ export class AuthSignInService {
 
   private getExceptionCheckUserRole(message: string): IRepositoryException {
     return {
-      type: UnprocessableEntityException,
+      type: ExceptionsUnprocessableEntity,
       messages: [
         {
           field: ENTITIES_FIELDS.UNKNOWN,

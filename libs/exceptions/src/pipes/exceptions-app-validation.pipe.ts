@@ -11,6 +11,22 @@ import { PIPE_VALIDATION_OPTIONS_DECORATOR } from '@app/exceptions/constants';
 
 @Injectable()
 export class ExceptionsAppValidationPipe implements PipeTransform {
+  async transform(value: any, { metatype }: ArgumentMetadata) {
+    if (!metatype || !this.canValidate(metatype)) {
+      return value;
+    }
+
+    const obj = plainToClass(metatype, value);
+    const errors = await validate(obj);
+
+    if (errors.length) {
+      const details = this.getFormattedErrors(metatype, errors);
+      throw new ExceptionsBadRequest(details);
+    }
+
+    return value;
+  }
+
   private getFormattedErrors(
     metatype: any,
     rawErrors: ValidationError[],
@@ -25,19 +41,8 @@ export class ExceptionsAppValidationPipe implements PipeTransform {
       : generalPrepareErrorsToException(rawErrors);
   }
 
-  async transform(value: any, { metatype }: ArgumentMetadata) {
-    if (!metatype) {
-      return value;
-    }
-
-    const obj = plainToClass(metatype, value);
-    const errors = await validate(obj);
-
-    if (errors.length) {
-      const details = this.getFormattedErrors(metatype, errors);
-      throw new ExceptionsBadRequest(details);
-    }
-
-    return value;
+  private canValidate(metatype: any): boolean {
+    const types = [String, Boolean, Number, Array, Object];
+    return !types.includes(metatype);
   }
 }

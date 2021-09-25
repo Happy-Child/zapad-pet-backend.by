@@ -32,5 +32,5 @@ export class BidTodoEntity extends BaseEntity {
     referencedColumnName: 'id',
   })
   @Expose()
-  bid!: BidEntity;
+  bid?: BidEntity;
 }

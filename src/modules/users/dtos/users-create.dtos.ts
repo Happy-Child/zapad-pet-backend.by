@@ -1,4 +1,5 @@
 import {
+  ArrayNotEmpty,
   IsArray,
   IsEmail,
   IsIn,
@@ -64,7 +65,8 @@ export class UsersCreateItemDTO {
 
 export class UsersCreateRequestBodyDTO {
   @IsArray()
-  @UniqueArrayByFields<UsersCreateItemDTO>(['email'], {
+  @ArrayNotEmpty()
+  @UniqueArrayByFields<UsersCreateItemDTO>([ENTITIES_FIELDS.EMAIL], {
     message: AUTH_ERRORS.EMAILS_SHOULD_BE_UNIQUES,
   })
   @UniqueArrayOfDistrictLeaders()

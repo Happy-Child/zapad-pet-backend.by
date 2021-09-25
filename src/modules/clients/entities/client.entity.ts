@@ -17,5 +17,5 @@ export class ClientEntity extends BaseEntity {
 
   @OneToMany(() => StationEntity, (station) => station.client)
   @Expose()
-  stations!: StationEntity[];
+  stations?: StationEntity[];
 }

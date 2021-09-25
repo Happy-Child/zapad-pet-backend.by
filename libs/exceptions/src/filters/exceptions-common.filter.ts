@@ -13,8 +13,6 @@ export class ExceptionsCommonFilter implements ExceptionFilter {
   catch(exception: any, host: ArgumentsHost) {
     const contextType = host.getType();
 
-    console.log(exception);
-
     if (contextType === APP_CONTEXT.HTTP) {
       const ctx = host.switchToHttp();
       const response = ctx.getResponse();
@@ -34,7 +32,7 @@ export class ExceptionsCommonFilter implements ExceptionFilter {
       if (validStatus) {
         const errors = isValidException(exception)
           ? (exception as any).details
-          : { field: ENTITIES_FIELDS.UNKNOWN, message: exception.message };
+          : [{ field: ENTITIES_FIELDS.UNKNOWN, message: exception.message }];
 
         response.status(status).json({ status, errors });
         return true;
@@ -45,6 +43,11 @@ export class ExceptionsCommonFilter implements ExceptionFilter {
   }
 
   private sendDefaultResponse(response: any) {
-    response.status(500).json({ status: 500, errors: 'Interval Server Error' });
+    response.status(500).json({
+      status: 500,
+      errors: [
+        { field: ENTITIES_FIELDS.UNKNOWN, message: 'Interval Server Error' },
+      ],
+    });
   }
 }

@@ -1,11 +1,26 @@
-import { ExceptionsGeneralErrors } from '@app/exceptions/errors/exceptions-general.errors';
 import { ENTITIES_FIELDS } from '@app/entities';
+import { UnprocessableEntityException } from '@nestjs/common';
+import { IAbstractError, IErrorDetailItem } from '@app/exceptions/interfaces';
 
-export class ExceptionsUnprocessableEntity extends ExceptionsGeneralErrors {
-  defaultError = [
-    {
-      field: ENTITIES_FIELDS.UNKNOWN,
-      messages: ['Unprocessable Entity'],
-    },
-  ];
+const defaultErrors = [
+  {
+    field: ENTITIES_FIELDS.UNKNOWN,
+    messages: ['Unprocessable Entity'],
+  },
+];
+
+export class ExceptionsUnprocessableEntity
+  extends UnprocessableEntityException
+  implements IAbstractError
+{
+  private readonly _details: IErrorDetailItem[];
+
+  constructor(details?: IErrorDetailItem[]) {
+    super();
+    this._details = details || defaultErrors;
+  }
+
+  get details() {
+    return this._details;
+  }
 }

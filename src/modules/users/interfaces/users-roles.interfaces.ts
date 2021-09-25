@@ -1,10 +1,10 @@
 import {
-  IAccountantIdentifyingFields,
   IDistrictLeaderIdentifyingFields,
   IEngineerIdentifyingFields,
   IGeneralUserFields,
   IStationWorkerIdentifyingFields,
 } from './users-fields.interfaces';
+import { AllowedRolesType } from '../types';
 
 export interface IStationWorker
   extends IGeneralUserFields,
@@ -18,6 +18,6 @@ export interface IEngineer
   extends IGeneralUserFields,
     IEngineerIdentifyingFields {}
 
-export interface IAccountant
-  extends IGeneralUserFields,
-    IAccountantIdentifyingFields {}
+export interface ISimpleUser extends IGeneralUserFields {
+  role: AllowedRolesType;
+}

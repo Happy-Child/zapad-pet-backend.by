@@ -5,9 +5,10 @@ import { ExtractJwt, Strategy } from 'passport-jwt';
 import { readFile } from '@app/helpers';
 import { ExceptionsUnauthorized } from '@app/exceptions/errors';
 import { AuthUserRepository } from '../repositories';
-import { COOKIE } from '../constants';
+import { AUTH_ERRORS, COOKIE } from '../constants';
 import { IAuthJwtPayload } from '../interfaces';
 import { AuthSignInService } from '../services';
+import { ENTITIES_FIELDS } from '@app/entities';
 
 @Injectable()
 export class AuthJwtStrategy extends PassportStrategy(Strategy) {
@@ -44,11 +45,17 @@ export class AuthJwtStrategy extends PassportStrategy(Strategy) {
       {
         exception: {
           type: ExceptionsUnauthorized,
+          messages: [
+            {
+              field: ENTITIES_FIELDS.UNKNOWN,
+              messages: [AUTH_ERRORS.UNAUTHORIZED],
+            },
+          ],
         },
       },
     );
 
-    await this.authSignInService.checkUserRoleOrFail(user);
+    await this.authSignInService.isCompleteUserRoleOrFail(user);
 
     return {
       id: payload.sub,

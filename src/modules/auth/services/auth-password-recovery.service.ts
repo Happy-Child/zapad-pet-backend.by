@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { Connection } from 'typeorm';
 import {
   CreateNewPasswordRequestBodyDTO,
-  PasswordRecoveryRequestBodyDTO,
   PasswordRecoveryResponseBodyDTO,
 } from '../dtos';
 import { generateRandomToken } from '@app/helpers';
@@ -23,9 +22,9 @@ export class AuthPasswordRecoveryService {
     private readonly connection: Connection,
   ) {}
 
-  async passwordRecovery({
-    email,
-  }: PasswordRecoveryRequestBodyDTO): Promise<PasswordRecoveryResponseBodyDTO> {
+  async passwordRecovery(
+    email: string,
+  ): Promise<PasswordRecoveryResponseBodyDTO> {
     await this.authUserRepository.findByEmailOrFail(email);
 
     const prevPasswordRecoveryData =

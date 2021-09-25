@@ -12,7 +12,7 @@ export class AggrStationBidStatusCountEntity extends BaseEntity {
     name: 'stationId',
     referencedColumnName: 'id',
   })
-  station!: StationEntity;
+  station?: StationEntity;
 
   @Column({ nullable: false, default: 0 })
   pendingInWork!: number;

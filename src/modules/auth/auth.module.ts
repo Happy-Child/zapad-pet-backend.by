@@ -19,8 +19,12 @@ import { MailSenderModule } from '@app/mail-sender';
 import { PugModule } from '@app/pug';
 import { JwtModule } from '@nestjs/jwt';
 import { readFile } from '@app/helpers';
-import { DistrictsModule } from '../districts';
-import { ClientsModule } from '../clients';
+import {
+  DistrictsModule,
+  DistrictsRepository,
+  DistrictsToEngineersRepository,
+} from '../districts';
+import { ClientsModule, ClientsToStationWorkersRepository } from '../clients';
 
 @Module({
   imports: [
@@ -28,6 +32,9 @@ import { ClientsModule } from '../clients';
       AuthUserRepository,
       AuthEmailConfirmedRepository,
       AuthPasswordRecoveryRepository,
+      DistrictsRepository,
+      DistrictsToEngineersRepository,
+      ClientsToStationWorkersRepository,
     ]),
     JwtModule.register({
       privateKey: readFile(config.RSA.PRIVATE_KEY_PATH).toString(),

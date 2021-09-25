@@ -12,7 +12,5 @@ import {
       ClientsRepository,
     ]),
   ],
-  providers: [ClientsToStationWorkersRepository],
-  exports: [ClientsToStationWorkersRepository],
 })
 export class ClientsModule {}

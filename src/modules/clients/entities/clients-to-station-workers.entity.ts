@@ -16,7 +16,7 @@ export class ClientsToStationWorkersEntity extends BaseEntity {
     referencedColumnName: 'id',
   })
   @Expose()
-  client?: ClientEntity | null;
+  client?: ClientEntity;
 
   @Column({ nullable: false })
   @Expose()
@@ -28,5 +28,5 @@ export class ClientsToStationWorkersEntity extends BaseEntity {
     referencedColumnName: 'id',
   })
   @Expose()
-  stationWorker?: UserEntity | null;
+  stationWorker?: UserEntity;
 }

@@ -5,7 +5,6 @@ import {
 import { getItemsByUniqueField } from '@app/helpers/array.helpers';
 import { ENTITIES_FIELDS } from '@app/entities';
 import {
-  IAccountantIdentifyingFields,
   IDistrictLeaderIdentifyingFields,
   IEngineerIdentifyingFields,
   IStationWorkerIdentifyingFields,
@@ -13,45 +12,50 @@ import {
 } from '../interfaces';
 import { AllowedRolesType } from '../types';
 import { USER_ROLES } from '../constants';
+import { FilteredUser } from '../types/users-general.types';
 
-interface IFilteredUser {
+interface IRawFilteredUser {
   role: AllowedRolesType;
   clientId?: number;
   districtId?: number;
 }
 
 interface IGetFilteredGeneralUsers {
-  districtLeaders: IDistrictLeaderIdentifyingFields[];
-  engineers: IEngineerIdentifyingFields[];
-  stationWorkers: IStationWorkerIdentifyingFields[];
-  accountants: IAccountantIdentifyingFields[];
+  districtLeaders: FilteredUser<IDistrictLeaderIdentifyingFields>[];
+  engineers: FilteredUser<IEngineerIdentifyingFields>[];
+  stationWorkers: FilteredUser<IStationWorkerIdentifyingFields>[];
+  simples: FilteredUser<{ role: AllowedRolesType }>[];
 }
 export const getFilteredGeneralUsers = (
-  rawUsers: IFilteredUser[],
+  rawUsers: IRawFilteredUser[],
 ): IGetFilteredGeneralUsers => {
   const result: IGetFilteredGeneralUsers = {
     districtLeaders: [],
     engineers: [],
     stationWorkers: [],
-    accountants: [],
+    simples: [],
   };
 
-  rawUsers.forEach((user) => {
-    if (user.role === USER_ROLES.ACCOUNTANT) {
-      result.accountants.push(user as IAccountantIdentifyingFields);
-      return;
-    }
+  rawUsers.forEach((user, index) => {
     if (user.role === USER_ROLES.DISTRICT_LEADER && user.districtId) {
-      result.districtLeaders.push(user as IDistrictLeaderIdentifyingFields);
+      result.districtLeaders.push({
+        ...(user as IDistrictLeaderIdentifyingFields),
+        index,
+      });
       return;
     }
     if (user.role === USER_ROLES.ENGINEER && user.districtId) {
-      result.engineers.push(user as IEngineerIdentifyingFields);
+      result.engineers.push({ ...(user as IEngineerIdentifyingFields), index });
       return;
     }
     if (user.role === USER_ROLES.STATION_WORKER && user.clientId) {
-      result.stationWorkers.push(user as IStationWorkerIdentifyingFields);
+      result.stationWorkers.push({
+        ...(user as IStationWorkerIdentifyingFields),
+        index,
+      });
+      return;
     }
+    result.simples.push({ ...user, index });
   });
 
   return result;
@@ -94,9 +98,9 @@ export const getUsersWithNotExistsClientsOrDistricts = async <
 
   const usersWithNotExistingClientsOrDistricts = users.filter((user) => {
     const clientOrDistrictId = user[fieldName] as number;
-    const curClientOrDistrictIdExist =
+    const clientOrDistrictExist =
       existingClientsOrDistrictsIds.includes(clientOrDistrictId);
-    return !curClientOrDistrictIdExist;
+    return !clientOrDistrictExist;
   });
 
   return usersWithNotExistingClientsOrDistricts;

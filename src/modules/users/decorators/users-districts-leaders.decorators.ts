@@ -7,8 +7,10 @@ import { IClientMemberOrStationWorkerIdentifyingFields } from '../interfaces';
 const uniqueArrayOfDistrictLeadersIdentifier = <
   T extends IClientMemberOrStationWorkerIdentifyingFields,
 >(
-  items: T[],
+  items: T[] | undefined,
 ): boolean => {
+  if (!items) return false;
+
   const { districtLeaders } = getFilteredGeneralUsers(items);
 
   if (!districtLeaders.length) return true;

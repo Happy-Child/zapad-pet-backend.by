@@ -6,13 +6,16 @@ import {
 } from '../../repositories';
 import { getUsersWithNotExistsClientsOrDistricts } from '../../helpers';
 import {
+  IGetPreparedChildrenErrorsParams,
   IUsersCreateDistrictLeader,
   IUsersCreateEngineer,
   IUsersCreateStationWorker,
 } from '../../interfaces';
 import { ExceptionsUnprocessableEntity } from '@app/exceptions/errors';
-import { ENTITIES_FIELDS } from '@app/entities';
+import { ENTITIES_FIELDS, UserEntity } from '@app/entities';
 import { AUTH_ERRORS } from '../../../auth/constants';
+import { getPreparingUsersWithDubbedEmail } from '../../helpers/users-check-general-data.helpers';
+import { IErrorDetailItem } from '../../../../../libs/exceptions/src/interfaces';
 
 @Injectable()
 export class UsersCheckGeneralDataService {
@@ -22,18 +25,28 @@ export class UsersCheckGeneralDataService {
     private readonly usersDistrictsRepository: UsersDistrictsRepository,
   ) {}
 
-  public async checkUsersEmailsOrFail(emails: string[]): Promise<void> {
+  public async checkExistingEmailsOrFail(
+    users: Pick<UserEntity, 'email'>[],
+  ): Promise<void> {
+    const emails = users.map(({ email }) => email);
     const existingUsers = await this.usersRepository.findUsersByEmails(emails);
 
     if (!existingUsers.length) return;
 
-    throw new ExceptionsUnprocessableEntity(
-      existingUsers.map(({ email }) => ({
-        value: email,
-        field: ENTITIES_FIELDS.EMAIL,
-        message: AUTH_ERRORS.EMAIL_IS_EXIST,
-      })),
+    const preparedExistingUsers = getPreparingUsersWithDubbedEmail(
+      users,
+      existingUsers,
     );
+
+    const preparedErrors =
+      UsersCheckGeneralDataService.getPreparedChildrenErrors(
+        preparedExistingUsers,
+        {
+          field: ENTITIES_FIELDS.EMAIL,
+          messages: [AUTH_ERRORS.EMAIL_IS_EXIST],
+        },
+      );
+    throw new ExceptionsUnprocessableEntity(preparedErrors);
   }
 
   public async checkStationWorkersOrFail(
@@ -46,16 +59,16 @@ export class UsersCheckGeneralDataService {
         repository: this.usersClientsRepository,
       });
 
-    const throwError = stationWorkersWithNotExistingClients.length;
-
-    if (throwError) {
-      throw new ExceptionsUnprocessableEntity(
-        stationWorkersWithNotExistingClients.map(({ clientId }) => ({
-          value: clientId,
-          field: ENTITIES_FIELDS.CLIENT_ID,
-          message: AUTH_ERRORS.CLIENT_NOT_EXIST,
-        })),
-      );
+    if (stationWorkersWithNotExistingClients.length) {
+      const preparedErrors =
+        UsersCheckGeneralDataService.getPreparedChildrenErrors(
+          stationWorkersWithNotExistingClients,
+          {
+            field: ENTITIES_FIELDS.CLIENT_ID,
+            messages: [AUTH_ERRORS.CLIENT_NOT_EXIST],
+          },
+        );
+      throw new ExceptionsUnprocessableEntity(preparedErrors);
     }
   }
 
@@ -77,7 +90,7 @@ export class UsersCheckGeneralDataService {
   private async checkClientMembersOrFail(
     clientMembers: (IUsersCreateEngineer | IUsersCreateDistrictLeader)[],
   ): Promise<void> {
-    const clientMembersWithNotExistingClients =
+    const clientMembersWithNotExistingDistricts =
       await getUsersWithNotExistsClientsOrDistricts<
         IUsersCreateEngineer | IUsersCreateDistrictLeader
       >({
@@ -86,16 +99,38 @@ export class UsersCheckGeneralDataService {
         repository: this.usersDistrictsRepository,
       });
 
-    const throwError = clientMembersWithNotExistingClients.length;
-
-    if (throwError) {
-      throw new ExceptionsUnprocessableEntity(
-        clientMembersWithNotExistingClients.map(({ districtId }) => ({
-          value: districtId,
-          field: ENTITIES_FIELDS.DISTRICT_ID,
-          message: AUTH_ERRORS.DISTRICT_NOT_EXIST,
-        })),
-      );
+    if (clientMembersWithNotExistingDistricts.length) {
+      const preparedErrors =
+        UsersCheckGeneralDataService.getPreparedChildrenErrors(
+          clientMembersWithNotExistingDistricts,
+          {
+            field: ENTITIES_FIELDS.DISTRICT_ID,
+            messages: [AUTH_ERRORS.DISTRICT_NOT_EXIST],
+          },
+        );
+      throw new ExceptionsUnprocessableEntity(preparedErrors);
     }
+  }
+
+  public static getPreparedChildrenErrors(
+    list: { index: number }[],
+    params: IGetPreparedChildrenErrorsParams,
+  ): IErrorDetailItem[] {
+    const children = list.map(({ index }) => ({
+      field: index,
+      children: [
+        {
+          field: params.field,
+          messages: params.messages,
+        },
+      ],
+    }));
+
+    return [
+      {
+        field: ENTITIES_FIELDS.USERS,
+        children,
+      },
+    ];
   }
 }

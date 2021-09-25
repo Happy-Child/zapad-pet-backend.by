@@ -26,14 +26,14 @@ export class StationEntity extends BaseEntity {
   number!: string;
 
   @Column({ nullable: true })
-  stationWorkerId!: number | null;
+  stationWorkerId?: number;
 
   @OneToOne(() => UserEntity)
   @JoinColumn({
     name: 'stationWorkerId',
     referencedColumnName: 'id',
   })
-  stationWorker!: UserEntity | null;
+  stationWorker?: UserEntity;
 
   @Column({ nullable: false })
   clientId!: number;
@@ -43,7 +43,7 @@ export class StationEntity extends BaseEntity {
     name: 'clientId',
     referencedColumnName: 'id',
   })
-  client!: ClientEntity;
+  client?: ClientEntity;
 
   @Column({ nullable: false })
   districtId!: number;
@@ -53,8 +53,8 @@ export class StationEntity extends BaseEntity {
     name: 'districtId',
     referencedColumnName: 'id',
   })
-  district!: DistrictEntity;
+  district?: DistrictEntity;
 
   @OneToMany(() => BidEntity, (bid) => bid.station)
-  bids!: BidEntity[];
+  bids?: BidEntity[];
 }

@@ -12,7 +12,5 @@ import {
       DistrictsRepository,
     ]),
   ],
-  providers: [DistrictsToEngineersRepository, DistrictsRepository],
-  exports: [DistrictsToEngineersRepository, DistrictsRepository],
 })
 export class DistrictsModule {}

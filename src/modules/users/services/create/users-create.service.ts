@@ -3,11 +3,6 @@ import { UsersCreateRequestBodyDTO } from '../../dtos';
 import { UsersCheckBeforeCreateService } from './users-check-before-create.service';
 import { UsersCheckGeneralDataService } from '../common';
 import { getFilteredUsersToCreate } from '../../helpers';
-import {
-  IUsersCreateDistrictLeader,
-  IUsersCreateStationWorker,
-  IUsersCreateEngineer,
-} from '../../interfaces';
 
 @Injectable()
 export class UsersCreateService {
@@ -17,49 +12,29 @@ export class UsersCreateService {
   ) {}
 
   async create({ users }: UsersCreateRequestBodyDTO) {
-    const emails = users.map(({ email }) => email);
-    await this.checkGeneralUsersDataService.checkUsersEmailsOrFail(emails);
+    await this.checkGeneralUsersDataService.checkExistingEmailsOrFail(users);
 
-    const { stationWorkers, engineers, districtLeaders } =
+    const { stationWorkers, engineers, districtLeaders, simples } =
       getFilteredUsersToCreate(users);
 
     if (stationWorkers.length) {
-      await this.createStationWorkers(stationWorkers);
+      await this.usersCheckBeforeCreateService.checkStationWorkersOrFail(
+        stationWorkers,
+      );
     }
 
     if (districtLeaders.length) {
-      await this.createDistrictLeaders(districtLeaders);
+      await this.usersCheckBeforeCreateService.checkDistrictLeadersOrFail(
+        districtLeaders,
+      );
     }
 
     if (engineers.length) {
-      await this.createEngineers(engineers);
+      await this.usersCheckBeforeCreateService.checkEngineersOrFail(engineers);
+    }
+
+    if (simples.length) {
+      //
     }
   }
-
-  private async createStationWorkers(
-    stationWorkers: IUsersCreateStationWorker[],
-  ): Promise<void> {
-    await this.usersCheckBeforeCreateService.checkStationWorkersOrFail(
-      stationWorkers,
-    );
-    // transaction(() => { this.generalCreateUser(); ...other })
-  }
-
-  private async createDistrictLeaders(
-    districtLeaders: IUsersCreateDistrictLeader[],
-  ): Promise<void> {
-    await this.usersCheckBeforeCreateService.checkDistrictLeadersOrFail(
-      districtLeaders,
-    );
-    // transaction(() => { this.generalCreateUser(); ...other })
-  }
-
-  private async createEngineers(
-    engineers: IUsersCreateEngineer[],
-  ): Promise<void> {
-    await this.usersCheckBeforeCreateService.checkEngineersOrFail(engineers);
-    // transaction(() => { this.generalCreateUser(); ...other })
-  }
-
-  // private async generalCreateUser() { ... }
 }

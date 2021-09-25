@@ -26,10 +26,6 @@ export interface IEngineerIdentifyingFields {
   districtId: number;
 }
 
-export interface IAccountantIdentifyingFields {
-  role: USER_ROLES.ACCOUNTANT;
-}
-
 export interface IClientMemberOrStationWorkerIdentifyingFields {
   role: ClientMembersOrStationWorkerRolesType;
   clientId?: number;

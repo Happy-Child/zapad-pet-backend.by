@@ -2,10 +2,12 @@ import { ARRAY_UNIQUE, ValidateBy } from 'class-validator';
 import { getUniquePrimitiveArray } from '@app/helpers';
 
 const uniqueArrayByFieldsIdentifier = <T>(
-  arr: T[],
+  arr: T[] | undefined,
   fields: (keyof T)[],
 ): boolean => {
-  const arrayWithFullItems = arr.filter((item: any) =>
+  if (!arr) return false;
+
+  const arrayWithFullItems = arr.filter((item) =>
     fields.every((fieldName) => Object.keys(item).includes(String(fieldName))),
   );
 

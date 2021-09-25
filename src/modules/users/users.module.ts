@@ -15,7 +15,13 @@ import {
 } from './services';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([UsersRepository])],
+  imports: [
+    TypeOrmModule.forFeature([
+      UsersRepository,
+      UsersClientsRepository,
+      UsersDistrictsRepository,
+    ]),
+  ],
   controllers: [UsersController],
   providers: [
     UsersCheckGeneralDataService,
@@ -23,8 +29,6 @@ import {
     UsersCreateService,
     UsersCheckBeforeUpdateService,
     UsersUpdateService,
-    UsersClientsRepository,
-    UsersDistrictsRepository,
   ],
 })
 export class UsersModule {}
