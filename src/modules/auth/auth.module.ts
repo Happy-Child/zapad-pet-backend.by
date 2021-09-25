@@ -19,6 +19,8 @@ import { MailSenderModule } from '@app/mail-sender';
 import { PugModule } from '@app/pug';
 import { JwtModule } from '@nestjs/jwt';
 import { readFile } from '@app/helpers';
+import { DistrictsModule } from '../districts';
+import { ClientsModule } from '../clients';
 
 @Module({
   imports: [
@@ -37,6 +39,8 @@ import { readFile } from '@app/helpers';
     }),
     MailSenderModule,
     PugModule,
+    DistrictsModule,
+    ClientsModule,
   ],
   providers: [
     AuthSignInService,

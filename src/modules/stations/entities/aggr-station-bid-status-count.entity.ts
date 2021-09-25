@@ -1,18 +1,18 @@
 import { Column, Entity, JoinColumn, OneToOne } from 'typeorm';
 import { BaseEntity } from '@app/entities';
-import { Station } from './station.entity';
+import { StationEntity } from './station.entity';
 
 @Entity({ name: 'aggr_station_bid_status_count' })
-export class AggrStationBidStatusCount extends BaseEntity {
+export class AggrStationBidStatusCountEntity extends BaseEntity {
   @Column({ nullable: false })
   stationId!: number;
 
-  @OneToOne(() => Station)
+  @OneToOne(() => StationEntity)
   @JoinColumn({
     name: 'stationId',
     referencedColumnName: 'id',
   })
-  station!: Station;
+  station!: StationEntity;
 
   @Column({ nullable: false, default: 0 })
   pendingInWork!: number;

@@ -2,10 +2,10 @@ import { Entity, Column, ManyToOne, JoinColumn } from 'typeorm';
 import { BaseEntity } from '@app/entities/base.entity';
 import { Expose } from 'class-transformer';
 import { BID_TODO_MAX_LENGTH, BID_TODO_STATUS } from '../constants';
-import { Bid } from './bid.entity';
+import { BidEntity } from './bid.entity';
 
 @Entity({ name: 'bid_todo' })
-export class BidTodo extends BaseEntity {
+export class BidTodoEntity extends BaseEntity {
   @Column({
     type: 'varchar',
     length: BID_TODO_MAX_LENGTH,
@@ -26,11 +26,11 @@ export class BidTodo extends BaseEntity {
   @Column({ nullable: false })
   bidId!: number;
 
-  @ManyToOne(() => Bid)
+  @ManyToOne(() => BidEntity)
   @JoinColumn({
     name: 'bidId',
     referencedColumnName: 'id',
   })
   @Expose()
-  bid!: Bid;
+  bid!: BidEntity;
 }

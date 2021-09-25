@@ -8,6 +8,11 @@ import {
 import { IErrorDetailItem } from '@app/exceptions/interfaces';
 import { BaseEntity } from '@app/entities';
 
+export interface IRepositoryException {
+  type?: typeof BadRequestException;
+  messages?: IErrorDetailItem[];
+}
+
 export interface IGetOneOptions<E extends BaseEntity> {
   repository?: RepositoryFindOneOptions<E>;
   serialize?: RepositorySerializeOptions;
@@ -15,10 +20,7 @@ export interface IGetOneOptions<E extends BaseEntity> {
 
 export interface IGetOneOrFailOptions<E extends BaseEntity>
   extends IGetOneOptions<E> {
-  exception?: {
-    type?: typeof BadRequestException;
-    messages?: IErrorDetailItem[];
-  };
+  exception?: IRepositoryException;
 }
 
 export interface IUpdateEntitiesItem<E extends BaseEntity> {

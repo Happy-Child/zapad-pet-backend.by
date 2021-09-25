@@ -7,10 +7,14 @@ import { ExceptionsUnauthorized } from '@app/exceptions/errors';
 import { AuthUserRepository } from '../repositories';
 import { COOKIE } from '../constants';
 import { IAuthJwtPayload } from '../interfaces';
+import { AuthSignInService } from '../services';
 
 @Injectable()
 export class AuthJwtStrategy extends PassportStrategy(Strategy) {
-  constructor(private readonly userRepository: AuthUserRepository) {
+  constructor(
+    private readonly userRepository: AuthUserRepository,
+    private readonly authSignInService: AuthSignInService,
+  ) {
     super({
       jwtFromRequest: ExtractJwt.fromExtractors([
         (req) => {
@@ -35,7 +39,7 @@ export class AuthJwtStrategy extends PassportStrategy(Strategy) {
   }
 
   public async validate(payload: any): Promise<IAuthJwtPayload> {
-    await this.userRepository.getOneOrFail(
+    const user = await this.userRepository.getOneOrFail(
       { id: payload?.sub },
       {
         exception: {
@@ -43,6 +47,8 @@ export class AuthJwtStrategy extends PassportStrategy(Strategy) {
         },
       },
     );
+
+    await this.authSignInService.checkUserRoleOrFail(user);
 
     return {
       id: payload.sub,

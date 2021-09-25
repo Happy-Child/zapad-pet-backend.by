@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import {
-  ClientRepository,
-  DistrictRepository,
+  UsersClientsRepository,
+  UsersDistrictsRepository,
   UsersRepository,
 } from '../../repositories';
 import { getUsersWithNotExistsClientsOrDistricts } from '../../helpers';
@@ -18,8 +18,8 @@ import { AUTH_ERRORS } from '../../../auth/constants';
 export class UsersCheckGeneralDataService {
   constructor(
     private readonly usersRepository: UsersRepository,
-    private readonly clientRepository: ClientRepository,
-    private readonly districtRepository: DistrictRepository,
+    private readonly usersClientsRepository: UsersClientsRepository,
+    private readonly usersDistrictsRepository: UsersDistrictsRepository,
   ) {}
 
   public async checkUsersEmailsOrFail(emails: string[]): Promise<void> {
@@ -43,7 +43,7 @@ export class UsersCheckGeneralDataService {
       await getUsersWithNotExistsClientsOrDistricts<IUsersCreateStationWorker>({
         fieldName: ENTITIES_FIELDS.CLIENT_ID,
         users: stationWorkers,
-        repository: this.clientRepository,
+        repository: this.usersClientsRepository,
       });
 
     const throwError = stationWorkersWithNotExistingClients.length;
@@ -83,7 +83,7 @@ export class UsersCheckGeneralDataService {
       >({
         fieldName: ENTITIES_FIELDS.DISTRICT_ID,
         users: clientMembers,
-        repository: this.districtRepository,
+        repository: this.usersDistrictsRepository,
       });
 
     const throwError = clientMembersWithNotExistingClients.length;

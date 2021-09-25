@@ -1,24 +1,37 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { ExceptionsUnprocessableEntity } from '@app/exceptions/errors';
-import { ENTITIES_FIELDS } from '@app/entities';
+import { ENTITIES_FIELDS, UserEntity } from '@app/entities';
 import { AuthUserRepository } from '../repositories';
 import { SignInRequestBodyDTO, SignInResponseBodyDTO } from '../dtos';
 import { AUTH_ERRORS } from '../constants';
 import { comparePasswords } from '../helpers';
+import { USER_ROLES } from '../../users/constants';
+import {
+  DistrictsRepository,
+  DistrictsToEngineersRepository,
+} from '../../districts';
+import { IRepositoryException } from '@app/repositories/interfaces';
+import { ClientsToStationWorkersRepository } from '../../clients';
 
 @Injectable()
 export class AuthSignInService {
   constructor(
     private readonly authUserRepository: AuthUserRepository,
+    private readonly districtToEngineersRepository: DistrictsToEngineersRepository,
+    private readonly clientToStationWorkersRepository: ClientsToStationWorkersRepository,
+    private readonly districtsRepository: DistrictsRepository,
     private readonly jwtService: JwtService,
   ) {}
 
   async signIn(body: SignInRequestBodyDTO): Promise<SignInResponseBodyDTO> {
-    const user = await this.authUserRepository.findByEmailOrFail(body.email);
+    const user = await this.authUserRepository.findWithPasswordByEmailOrFail(
+      body.email,
+    );
 
     this.checkEmailConfirmedOrFail(user.emailConfirmed);
-    await this.checkComparePasswordsOrFail(body.password, user.password as any);
+    await this.checkUserRoleOrFail(user);
+    await this.checkComparePasswordsOrFail(body.password, user.password);
 
     const accessToken = this.jwtService.sign({ sub: user.id, role: user.role });
     return new SignInResponseBodyDTO({ user, accessToken });
@@ -33,6 +46,51 @@ export class AuthSignInService {
         },
       ]);
     }
+  }
+
+  public async checkUserRoleOrFail(user: UserEntity): Promise<void> {
+    if (user.role === USER_ROLES.DISTRICT_LEADER) {
+      await this.districtsRepository.getOneOrFail(
+        { districtLeaderId: user.id },
+        {
+          exception: this.getExceptionCheckUserRole(
+            AUTH_ERRORS.NO_CONNECTION_WITH_DISTRICT,
+          ),
+        },
+      );
+    }
+    if (user.role === USER_ROLES.ENGINEER) {
+      await this.districtToEngineersRepository.getOneOrFail(
+        { engineerId: user.id },
+        {
+          exception: this.getExceptionCheckUserRole(
+            AUTH_ERRORS.NO_CONNECTION_WITH_DISTRICT,
+          ),
+        },
+      );
+    }
+    if (user.role === USER_ROLES.STATION_WORKER) {
+      await this.clientToStationWorkersRepository.getOneOrFail(
+        { stationWorkerId: user.id },
+        {
+          exception: this.getExceptionCheckUserRole(
+            AUTH_ERRORS.NO_CONNECTION_WITH_DISTRICT,
+          ),
+        },
+      );
+    }
+  }
+
+  private getExceptionCheckUserRole(message: string): IRepositoryException {
+    return {
+      type: UnprocessableEntityException,
+      messages: [
+        {
+          field: ENTITIES_FIELDS.UNKNOWN,
+          messages: [message],
+        },
+      ],
+    };
   }
 
   private async checkComparePasswordsOrFail(

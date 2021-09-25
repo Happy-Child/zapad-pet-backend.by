@@ -8,13 +8,18 @@ import {
   OneToMany,
 } from 'typeorm';
 import { Expose } from 'class-transformer';
-import { BaseEntity, UserEntity, Station, File } from '@app/entities';
-import { BidTodo } from './bid-todo.entity';
+import {
+  BaseEntity,
+  UserEntity,
+  File,
+  BidTodoEntity,
+  StationEntity,
+} from '@app/entities';
 import { VARCHAR_DEFAULT_LENGTH } from '@app/constants';
 import { BID_PRIORITY, BID_STATUS } from '../constants';
 
 @Entity({ name: 'bid' })
-export class Bid extends BaseEntity {
+export class BidEntity extends BaseEntity {
   @Column({
     type: 'enum',
     enum: BID_STATUS,
@@ -44,13 +49,13 @@ export class Bid extends BaseEntity {
   @Column({ nullable: false })
   stationId!: number;
 
-  @ManyToOne(() => Station, (station) => station.bids)
+  @ManyToOne(() => StationEntity, (station) => station.bids)
   @JoinColumn({
     name: 'stationId',
     referencedColumnName: 'id',
   })
   @Expose()
-  station!: Station;
+  station!: StationEntity;
 
   @Column({ nullable: true })
   engineerId!: number | null;
@@ -96,9 +101,9 @@ export class Bid extends BaseEntity {
   @Expose()
   finalPhoto!: File | null;
 
-  @OneToMany(() => BidTodo, (todo) => todo.bid)
+  @OneToMany(() => BidTodoEntity, (todo) => todo.bid)
   @Expose()
-  todos!: BidTodo[];
+  todos!: BidTodoEntity[];
 
   @CreateDateColumn({ type: 'timestamptz', nullable: false })
   @Expose()

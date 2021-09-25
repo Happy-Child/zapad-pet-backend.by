@@ -2,13 +2,13 @@ import { Entity, Column } from 'typeorm';
 import { BaseEntity } from '@app/entities/base.entity';
 import { Expose } from 'class-transformer';
 
-@Entity({ name: 'o2m_client_to_station_workers' })
-export class O2MClientToStationWorkers extends BaseEntity {
+@Entity({ name: 'bids_to_images' })
+export class BidsToImagesEntity extends BaseEntity {
   @Column({ nullable: false })
   @Expose()
-  clientId!: number;
+  bidId!: number;
 
   @Column({ nullable: false })
   @Expose()
-  stationWorkerId!: number;
+  imageId!: number;
 }

@@ -1,3 +1,3 @@
 export * from './users.repository';
-export * from './district.repository';
-export * from './client.repository';
+export * from './users-districts.repository';
+export * from './users-clients.repository';

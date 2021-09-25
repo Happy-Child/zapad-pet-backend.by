@@ -1,2 +1,2 @@
 export * from './client.entity';
-export * from './o2m-client-to-station-workers.entity';
+export * from './clients-to-station-workers.entity';

@@ -2,11 +2,11 @@ import { Entity, Column, ManyToOne, OneToOne, JoinColumn } from 'typeorm';
 import { BaseEntity } from '@app/entities/base.entity';
 import { VARCHAR_DEFAULT_LENGTH } from '@app/constants';
 import { Expose } from 'class-transformer';
-import { Region } from '../../regions';
+import { RegionEntity } from '../../regions';
 import { UserEntity } from '@app/entities';
 
 @Entity({ name: 'district' })
-export class District extends BaseEntity {
+export class DistrictEntity extends BaseEntity {
   @Column({
     type: 'varchar',
     length: VARCHAR_DEFAULT_LENGTH,
@@ -29,13 +29,13 @@ export class District extends BaseEntity {
   @Expose()
   regionSlug!: string;
 
-  @ManyToOne(() => Region)
+  @ManyToOne(() => RegionEntity)
   @JoinColumn({
     name: 'regionSlug',
     referencedColumnName: 'slug',
   })
   @Expose()
-  region!: Region;
+  region?: RegionEntity;
 
   @Column({ nullable: true })
   districtLeaderId!: number | null;
@@ -46,5 +46,5 @@ export class District extends BaseEntity {
     referencedColumnName: 'id',
   })
   @Expose()
-  districtLeader!: UserEntity | null;
+  districtLeader?: UserEntity | null;
 }

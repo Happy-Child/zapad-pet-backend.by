@@ -2,8 +2,8 @@ import { Module } from '@nestjs/common';
 import { UsersController } from './controllers/users.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import {
-  ClientRepository,
-  DistrictRepository,
+  UsersClientsRepository,
+  UsersDistrictsRepository,
   UsersRepository,
 } from './repositories';
 import {
@@ -15,13 +15,7 @@ import {
 } from './services';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([
-      UsersRepository,
-      ClientRepository,
-      DistrictRepository,
-    ]),
-  ],
+  imports: [TypeOrmModule.forFeature([UsersRepository])],
   controllers: [UsersController],
   providers: [
     UsersCheckGeneralDataService,
@@ -29,6 +23,8 @@ import {
     UsersCreateService,
     UsersCheckBeforeUpdateService,
     UsersUpdateService,
+    UsersClientsRepository,
+    UsersDistrictsRepository,
   ],
 })
 export class UsersModule {}

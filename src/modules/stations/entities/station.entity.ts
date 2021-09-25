@@ -6,11 +6,17 @@ import {
   OneToMany,
   ManyToOne,
 } from 'typeorm';
-import { BaseEntity, UserEntity, District, Bid, Client } from '@app/entities';
+import {
+  BaseEntity,
+  UserEntity,
+  DistrictEntity,
+  BidEntity,
+  ClientEntity,
+} from '@app/entities';
 import { STATION_NUMBER_LENGTH } from '../constants';
 
 @Entity({ name: 'station' })
-export class Station extends BaseEntity {
+export class StationEntity extends BaseEntity {
   @Column({
     type: 'varchar',
     length: STATION_NUMBER_LENGTH,
@@ -32,23 +38,23 @@ export class Station extends BaseEntity {
   @Column({ nullable: false })
   clientId!: number;
 
-  @ManyToOne(() => Client)
+  @ManyToOne(() => ClientEntity)
   @JoinColumn({
     name: 'clientId',
     referencedColumnName: 'id',
   })
-  client!: Client;
+  client!: ClientEntity;
 
   @Column({ nullable: false })
   districtId!: number;
 
-  @OneToOne(() => District)
+  @OneToOne(() => DistrictEntity)
   @JoinColumn({
     name: 'districtId',
     referencedColumnName: 'id',
   })
-  district!: District;
+  district!: DistrictEntity;
 
-  @OneToMany(() => Bid, (bid) => bid.station)
-  bids!: Bid[];
+  @OneToMany(() => BidEntity, (bid) => bid.station)
+  bids!: BidEntity[];
 }

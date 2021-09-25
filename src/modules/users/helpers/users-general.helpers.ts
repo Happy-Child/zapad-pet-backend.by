@@ -1,4 +1,7 @@
-import { ClientRepository, DistrictRepository } from '../repositories';
+import {
+  UsersClientsRepository,
+  UsersDistrictsRepository,
+} from '../repositories';
 import { getItemsByUniqueField } from '@app/helpers/array.helpers';
 import { ENTITIES_FIELDS } from '@app/entities';
 import {
@@ -59,7 +62,7 @@ interface IGetUsersWithNotExistsClientsOrDistrictsProps<
 > {
   users: T[];
   fieldName: ENTITIES_FIELDS.CLIENT_ID | ENTITIES_FIELDS.DISTRICT_ID;
-  repository: ClientRepository | DistrictRepository;
+  repository: UsersClientsRepository | UsersDistrictsRepository;
 }
 export const getUsersWithNotExistsClientsOrDistricts = async <
   T extends IClientMemberOrStationWorkerIdentifyingFields,
