@@ -14,8 +14,9 @@ export class UsersController {
   ) {}
 
   @Post()
-  async create(@Body() body: UsersCreateRequestBodyDTO): Promise<void> {
+  async create(@Body() body: UsersCreateRequestBodyDTO): Promise<true> {
     await this.usersCreateService.create(body);
+    return true;
   }
 
   @Patch()

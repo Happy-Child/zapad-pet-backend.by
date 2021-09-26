@@ -24,7 +24,7 @@ export class BidEntity extends BaseEntity {
     type: 'enum',
     enum: BID_STATUS,
     nullable: false,
-    default: BID_STATUS.PENDING_IN_WORK,
+    default: BID_STATUS.AWAIT_ASSIGNMENT_TO_ENGINEER,
   })
   @Expose()
   status!: BID_STATUS;

@@ -18,7 +18,7 @@ export class DistrictsToEngineersEntity extends BaseEntity {
   @Expose()
   district?: DistrictEntity;
 
-  @Column({ nullable: false })
+  @Column({ nullable: false, unique: true })
   @Expose()
   engineerId!: number;
 

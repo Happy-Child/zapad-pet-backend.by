@@ -14,7 +14,7 @@ export class UsersCheckBeforeUpdateService {
   public async checkDistrictLeadersOrFail(
     districtLeaders: IUsersCreateDistrictLeader[],
   ): Promise<void> {
-    await this.checkGeneralUsersDataService.checkDistrictLeadersOrFail(
+    await this.checkGeneralUsersDataService.checkClientMembersExistingDistrictsOrFail(
       districtLeaders,
     );
     // IF CHANGE DISTRICT ID - CHECK IF PREV DISTRICT NOT HAW ACTIVE BIDS & NEXT DISTRICT EMPTY
@@ -28,7 +28,9 @@ export class UsersCheckBeforeUpdateService {
   public async checkEngineersOrFail(
     engineer: IUsersCreateEngineer[],
   ): Promise<void> {
-    await this.checkGeneralUsersDataService.checkEngineersOrFail(engineer);
+    await this.checkGeneralUsersDataService.checkClientMembersExistingDistrictsOrFail(
+      engineer,
+    );
     // CHECK IF NOT EXISTS ACTIVE BIDS?
     // CHECK OTHER
   }

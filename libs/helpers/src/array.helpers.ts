@@ -63,3 +63,6 @@ export const getItemsDubbedField = <T>(fieldName: keyof T, array: T[]): T[] => {
 
   return itemsDubbedField;
 };
+
+export const groupedBy = <T>(field: keyof T, arr: T[]): Record<string, T> =>
+  arr.reduce((map, item) => ({ ...map, [String(item[field])]: item }), {});

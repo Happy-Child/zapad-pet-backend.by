@@ -13,6 +13,8 @@ import {
   UsersUpdateService,
   UsersCheckGeneralDataService,
 } from './services';
+import { ClientsToStationWorkersRepository } from '../clients';
+import { DistrictsToEngineersRepository } from '../districts';
 
 @Module({
   imports: [
@@ -20,6 +22,8 @@ import {
       UsersRepository,
       UsersClientsRepository,
       UsersDistrictsRepository,
+      ClientsToStationWorkersRepository,
+      DistrictsToEngineersRepository,
     ]),
   ],
   controllers: [UsersController],

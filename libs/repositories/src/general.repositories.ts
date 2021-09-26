@@ -64,7 +64,7 @@ export class GeneralRepository<E extends BaseEntity> extends Repository<E> {
 
   public async updateEntities(items: IUpdateEntitiesItem<E>[]): Promise<void> {
     const updates = items.map(({ criteria, inputs }) =>
-      this.update.bind(null, criteria, inputs),
+      this.update(criteria, inputs),
     );
     await Promise.all(updates);
   }

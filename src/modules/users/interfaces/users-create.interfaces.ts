@@ -1,24 +1,28 @@
-import { IGeneralCreateUserFields } from './users-fields.interfaces';
 import {
   IDistrictLeader,
   IEngineer,
   ISimpleUser,
   IStationWorker,
 } from './users-roles.interfaces';
-import { FilteredUser } from '../types/users-general.types';
+import { FilteredUserForCheck } from '../types/users-general.types';
+
+export interface IGeneralCreateUserFields {
+  password: string;
+  passwordConfirmation: string;
+}
 
 export interface IUsersCreateStationWorker
-  extends FilteredUser<IStationWorker>,
+  extends FilteredUserForCheck<IStationWorker>,
     IGeneralCreateUserFields {}
 
 export interface IUsersCreateDistrictLeader
-  extends FilteredUser<IDistrictLeader>,
+  extends FilteredUserForCheck<IDistrictLeader>,
     IGeneralCreateUserFields {}
 
 export interface IUsersCreateEngineer
-  extends FilteredUser<IEngineer>,
+  extends FilteredUserForCheck<IEngineer>,
     IGeneralCreateUserFields {}
 
 export interface IUsersCreateSimpleUser
-  extends FilteredUser<ISimpleUser>,
+  extends FilteredUserForCheck<ISimpleUser>,
     IGeneralCreateUserFields {}

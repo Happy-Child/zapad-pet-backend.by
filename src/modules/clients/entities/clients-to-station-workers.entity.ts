@@ -18,7 +18,7 @@ export class ClientsToStationWorkersEntity extends BaseEntity {
   @Expose()
   client?: ClientEntity;
 
-  @Column({ nullable: false })
+  @Column({ nullable: false, unique: true })
   @Expose()
   stationWorkerId!: number;
 

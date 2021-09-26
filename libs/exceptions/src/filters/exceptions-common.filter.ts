@@ -13,6 +13,8 @@ export class ExceptionsCommonFilter implements ExceptionFilter {
   catch(exception: any, host: ArgumentsHost) {
     const contextType = host.getType();
 
+    console.log('exception', exception);
+
     if (contextType === APP_CONTEXT.HTTP) {
       const ctx = host.switchToHttp();
       const response = ctx.getResponse();

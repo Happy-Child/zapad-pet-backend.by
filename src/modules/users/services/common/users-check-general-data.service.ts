@@ -6,16 +6,19 @@ import {
 } from '../../repositories';
 import { getUsersWithNotExistsClientsOrDistricts } from '../../helpers';
 import {
+  IClientMemberIdentifyingFields,
   IGetPreparedChildrenErrorsParams,
-  IUsersCreateDistrictLeader,
-  IUsersCreateEngineer,
-  IUsersCreateStationWorker,
+  IStationWorkerIdentifyingFields,
 } from '../../interfaces';
 import { ExceptionsUnprocessableEntity } from '@app/exceptions/errors';
-import { ENTITIES_FIELDS, UserEntity } from '@app/entities';
+import { ENTITIES_FIELDS } from '@app/entities';
 import { AUTH_ERRORS } from '../../../auth/constants';
-import { getPreparingUsersWithDubbedEmail } from '../../helpers/users-check-general-data.helpers';
-import { IErrorDetailItem } from '../../../../../libs/exceptions/src/interfaces';
+import {
+  getPreparingUsersNotEmptyDistricts,
+  getPreparingUsersWithDubbedEmail,
+} from '../../helpers/users-check-general-data.helpers';
+import { IErrorDetailItem } from '@app/exceptions/interfaces';
+import { FilteredUserForCheck } from '../../types/users-general.types';
 
 @Injectable()
 export class UsersCheckGeneralDataService {
@@ -26,15 +29,15 @@ export class UsersCheckGeneralDataService {
   ) {}
 
   public async checkExistingEmailsOrFail(
-    users: Pick<UserEntity, 'email'>[],
+    items: { [ENTITIES_FIELDS.EMAIL]: string }[],
   ): Promise<void> {
-    const emails = users.map(({ email }) => email);
+    const emails = items.map(({ email }) => email);
     const existingUsers = await this.usersRepository.findUsersByEmails(emails);
 
     if (!existingUsers.length) return;
 
     const preparedExistingUsers = getPreparingUsersWithDubbedEmail(
-      users,
+      items,
       existingUsers,
     );
 
@@ -49,11 +52,38 @@ export class UsersCheckGeneralDataService {
     throw new ExceptionsUnprocessableEntity(preparedErrors);
   }
 
-  public async checkStationWorkersOrFail(
-    stationWorkers: IUsersCreateStationWorker[],
+  public async checkEmptyDistrictsOrFail(
+    items: FilteredUserForCheck<{ [ENTITIES_FIELDS.DISTRICT_ID]: number }>[],
+  ): Promise<void> {
+    const districtsIds = items.map(({ districtId }) => districtId);
+    const emptyDistricts =
+      await this.usersDistrictsRepository.findEmptyDistrictsByIds(districtsIds);
+
+    if (emptyDistricts.length === districtsIds.length) return;
+
+    const preparedNotEmptyDistricts = getPreparingUsersNotEmptyDistricts(
+      items,
+      emptyDistricts,
+    );
+
+    const preparedErrors =
+      UsersCheckGeneralDataService.getPreparedChildrenErrors(
+        preparedNotEmptyDistricts,
+        {
+          field: ENTITIES_FIELDS.DISTRICT_ID,
+          messages: [AUTH_ERRORS.DISTRICT_NOT_EMPTY],
+        },
+      );
+    throw new ExceptionsUnprocessableEntity(preparedErrors);
+  }
+
+  public async checkStationWorkersExistingClientsOrFail(
+    stationWorkers: FilteredUserForCheck<IStationWorkerIdentifyingFields>[],
   ): Promise<void> {
     const stationWorkersWithNotExistingClients =
-      await getUsersWithNotExistsClientsOrDistricts<IUsersCreateStationWorker>({
+      await getUsersWithNotExistsClientsOrDistricts<
+        FilteredUserForCheck<IStationWorkerIdentifyingFields>
+      >({
         fieldName: ENTITIES_FIELDS.CLIENT_ID,
         users: stationWorkers,
         repository: this.usersClientsRepository,
@@ -72,27 +102,12 @@ export class UsersCheckGeneralDataService {
     }
   }
 
-  public async checkDistrictLeadersOrFail(
-    districtLeaders: IUsersCreateDistrictLeader[],
-  ): Promise<void> {
-    await this.checkClientMembersOrFail(districtLeaders);
-    // CHECK IF DISTRICT IS BUSY
-    // CHECK OTHER PROPS FOR DISTRICT LEADERS
-  }
-
-  public async checkEngineersOrFail(
-    engineer: IUsersCreateEngineer[],
-  ): Promise<void> {
-    await this.checkClientMembersOrFail(engineer);
-    // CHECK OTHER PROPS FOR ENGINEER
-  }
-
-  private async checkClientMembersOrFail(
-    clientMembers: (IUsersCreateEngineer | IUsersCreateDistrictLeader)[],
+  public async checkClientMembersExistingDistrictsOrFail(
+    clientMembers: FilteredUserForCheck<IClientMemberIdentifyingFields>[],
   ): Promise<void> {
     const clientMembersWithNotExistingDistricts =
       await getUsersWithNotExistsClientsOrDistricts<
-        IUsersCreateEngineer | IUsersCreateDistrictLeader
+        FilteredUserForCheck<IClientMemberIdentifyingFields>
       >({
         fieldName: ENTITIES_FIELDS.DISTRICT_ID,
         users: clientMembers,

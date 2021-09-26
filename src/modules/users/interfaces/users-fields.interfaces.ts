@@ -1,14 +1,12 @@
-import { ClientMembersOrStationWorkerRolesType } from '../types';
+import {
+  ClientMembersOrStationWorkerRolesType,
+  ClientMembersRolesType,
+} from '../types';
 import { USER_ROLES } from '../constants';
 
 export interface IGeneralUserFields {
   name: string;
   email: string;
-}
-
-export interface IGeneralCreateUserFields {
-  password: string;
-  passwordConfirmation: string;
 }
 
 export interface IStationWorkerIdentifyingFields {
@@ -23,6 +21,11 @@ export interface IDistrictLeaderIdentifyingFields {
 
 export interface IEngineerIdentifyingFields {
   role: USER_ROLES.ENGINEER;
+  districtId: number;
+}
+
+export interface IClientMemberIdentifyingFields {
+  role: ClientMembersRolesType;
   districtId: number;
 }
 

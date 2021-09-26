@@ -15,25 +15,27 @@ export class UsersCheckBeforeCreateService {
   public async checkStationWorkersOrFail(
     stationWorkers: IUsersCreateStationWorker[],
   ): Promise<void> {
-    await this.checkGeneralUsersDataService.checkStationWorkersOrFail(
+    await this.checkGeneralUsersDataService.checkStationWorkersExistingClientsOrFail(
       stationWorkers,
     );
-    // CHECK OTHER
   }
 
   public async checkDistrictLeadersOrFail(
     districtLeaders: IUsersCreateDistrictLeader[],
   ): Promise<void> {
-    await this.checkGeneralUsersDataService.checkDistrictLeadersOrFail(
+    await this.checkGeneralUsersDataService.checkClientMembersExistingDistrictsOrFail(
       districtLeaders,
     );
-    // CHECK OTHER
+    await this.checkGeneralUsersDataService.checkEmptyDistrictsOrFail(
+      districtLeaders,
+    );
   }
 
   public async checkEngineersOrFail(
     engineer: IUsersCreateEngineer[],
   ): Promise<void> {
-    await this.checkGeneralUsersDataService.checkEngineersOrFail(engineer);
-    // CHECK OTHER
+    await this.checkGeneralUsersDataService.checkClientMembersExistingDistrictsOrFail(
+      engineer,
+    );
   }
 }

@@ -20,11 +20,10 @@ import { PugModule } from '@app/pug';
 import { JwtModule } from '@nestjs/jwt';
 import { readFile } from '@app/helpers';
 import {
-  DistrictsModule,
   DistrictsRepository,
   DistrictsToEngineersRepository,
 } from '../districts';
-import { ClientsModule, ClientsToStationWorkersRepository } from '../clients';
+import { ClientsToStationWorkersRepository } from '../clients';
 
 @Module({
   imports: [
@@ -46,8 +45,6 @@ import { ClientsModule, ClientsToStationWorkersRepository } from '../clients';
     }),
     MailSenderModule,
     PugModule,
-    DistrictsModule,
-    ClientsModule,
   ],
   providers: [
     AuthSignInService,

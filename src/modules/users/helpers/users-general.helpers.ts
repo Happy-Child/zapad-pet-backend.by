@@ -12,7 +12,7 @@ import {
 } from '../interfaces';
 import { AllowedRolesType } from '../types';
 import { USER_ROLES } from '../constants';
-import { FilteredUser } from '../types/users-general.types';
+import { FilteredUserForCheck } from '../types/users-general.types';
 
 interface IRawFilteredUser {
   role: AllowedRolesType;
@@ -21,10 +21,10 @@ interface IRawFilteredUser {
 }
 
 interface IGetFilteredGeneralUsers {
-  districtLeaders: FilteredUser<IDistrictLeaderIdentifyingFields>[];
-  engineers: FilteredUser<IEngineerIdentifyingFields>[];
-  stationWorkers: FilteredUser<IStationWorkerIdentifyingFields>[];
-  simples: FilteredUser<{ role: AllowedRolesType }>[];
+  districtLeaders: FilteredUserForCheck<IDistrictLeaderIdentifyingFields>[];
+  engineers: FilteredUserForCheck<IEngineerIdentifyingFields>[];
+  stationWorkers: FilteredUserForCheck<IStationWorkerIdentifyingFields>[];
+  simples: FilteredUserForCheck<{ role: AllowedRolesType }>[];
 }
 export const getFilteredGeneralUsers = (
   rawUsers: IRawFilteredUser[],

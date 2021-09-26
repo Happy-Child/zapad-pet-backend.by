@@ -1,1 +1,1 @@
-export type FilteredUser<T> = T & { index: number };
+export type FilteredUserForCheck<T> = T & { index: number };
