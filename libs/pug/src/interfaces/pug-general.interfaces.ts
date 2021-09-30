@@ -2,9 +2,9 @@ interface IDefaultTemplateVariables {
   href: string;
 }
 
-export interface IConfirmingRegistrationVariables
-  extends IDefaultTemplateVariables {
+export interface IAfterCreatedUserVariables extends IDefaultTemplateVariables {
   name: string;
+  password: string;
 }
 
 export type IPasswordRecoveryVariables = IDefaultTemplateVariables;

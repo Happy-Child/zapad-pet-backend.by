@@ -1,27 +1,15 @@
-import { Controller, Post, Body, Patch, Delete, Query } from '@nestjs/common';
-import {
-  UsersCreateRequestBodyDTO,
-  UsersUpdateRequestBodyDTO,
-  UsersDeleteRequestQueryDTO,
-} from '../dtos';
-import { UsersCreateService, UsersUpdateService } from '../services';
+import { Controller, Post, Body, Delete, Query } from '@nestjs/common';
+import { UsersCreateRequestBodyDTO, UsersDeleteRequestQueryDTO } from '../dtos';
+import { UsersCreateService } from '../services';
 
 @Controller('users')
 export class UsersController {
-  constructor(
-    private readonly usersCreateService: UsersCreateService,
-    private readonly usersUpdateService: UsersUpdateService,
-  ) {}
+  constructor(private readonly usersCreateService: UsersCreateService) {}
 
   @Post()
   async create(@Body() body: UsersCreateRequestBodyDTO): Promise<true> {
     await this.usersCreateService.create(body);
     return true;
-  }
-
-  @Patch()
-  async update(@Body() body: UsersUpdateRequestBodyDTO): Promise<void> {
-    await this.usersUpdateService.update(body);
   }
 
   @Delete()

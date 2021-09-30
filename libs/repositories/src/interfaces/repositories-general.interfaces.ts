@@ -13,17 +13,17 @@ export interface IRepositoryException {
   messages?: IErrorDetailItem[];
 }
 
-export interface IGetOneOptions<E extends BaseEntity> {
+export interface IRepositoryGetOneOptions<E extends BaseEntity> {
   repository?: RepositoryFindOneOptions<E>;
   serialize?: RepositorySerializeOptions;
 }
 
-export interface IGetOneOrFailOptions<E extends BaseEntity>
-  extends IGetOneOptions<E> {
+export interface IRepositoryGetOneOrFailOptions<E extends BaseEntity>
+  extends IRepositoryGetOneOptions<E> {
   exception?: IRepositoryException;
 }
 
-export interface IUpdateEntitiesItem<E extends BaseEntity> {
+export interface IRepositoryUpdateEntitiesItem<E extends BaseEntity> {
   criteria: RepositoryFindConditions<E>;
   inputs: RepositoryUpdateEntityInputs<E>;
 }

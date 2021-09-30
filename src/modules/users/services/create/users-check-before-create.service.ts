@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import {
-  IUsersCreateDistrictLeader,
-  IUsersCreateStationWorker,
-  IUsersCreateEngineer,
-} from '../../interfaces';
 import { UsersCheckGeneralDataService } from '../common';
+import {
+  UsersCreateDistrictLeaderDTO,
+  UsersCreateEngineerDTO,
+  UsersCreateStationWorkerDTO,
+} from '../../dtos';
 
 @Injectable()
 export class UsersCheckBeforeCreateService {
@@ -13,17 +13,17 @@ export class UsersCheckBeforeCreateService {
   ) {}
 
   public async checkStationWorkersOrFail(
-    stationWorkers: IUsersCreateStationWorker[],
+    stationWorkers: (UsersCreateStationWorkerDTO & { index: number })[],
   ): Promise<void> {
-    await this.checkGeneralUsersDataService.checkStationWorkersExistingClientsOrFail(
+    await this.checkGeneralUsersDataService.checkExistingClientsInArrayOrFail(
       stationWorkers,
     );
   }
 
   public async checkDistrictLeadersOrFail(
-    districtLeaders: IUsersCreateDistrictLeader[],
+    districtLeaders: (UsersCreateDistrictLeaderDTO & { index: number })[],
   ): Promise<void> {
-    await this.checkGeneralUsersDataService.checkClientMembersExistingDistrictsOrFail(
+    await this.checkGeneralUsersDataService.checkExistingDistrictsInArrayOrFail(
       districtLeaders,
     );
     await this.checkGeneralUsersDataService.checkEmptyDistrictsOrFail(
@@ -32,9 +32,9 @@ export class UsersCheckBeforeCreateService {
   }
 
   public async checkEngineersOrFail(
-    engineer: IUsersCreateEngineer[],
+    engineer: (UsersCreateEngineerDTO & { index: number })[],
   ): Promise<void> {
-    await this.checkGeneralUsersDataService.checkClientMembersExistingDistrictsOrFail(
+    await this.checkGeneralUsersDataService.checkExistingDistrictsInArrayOrFail(
       engineer,
     );
   }

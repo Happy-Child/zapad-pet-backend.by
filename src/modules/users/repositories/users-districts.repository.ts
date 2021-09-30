@@ -4,6 +4,8 @@ import { GeneralRepository } from '@app/repositories';
 
 @EntityRepository(DistrictEntity)
 export class UsersDistrictsRepository extends GeneralRepository<DistrictEntity> {
+  protected entitySerializer = DistrictEntity;
+
   public async findEmptyDistrictsByIds(
     ids: number[],
   ): Promise<DistrictEntity[]> {

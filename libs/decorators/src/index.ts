@@ -1,2 +1,3 @@
-export * from './unique-array-by-fields.decorators';
+export * from './unique-array-by-exist-field.decorators';
 export * from './match.decorators';
+export * from './array-with-object.decorators';

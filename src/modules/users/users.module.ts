@@ -8,13 +8,14 @@ import {
 } from './repositories';
 import {
   UsersCheckBeforeCreateService,
-  UsersCheckBeforeUpdateService,
   UsersCreateService,
-  UsersUpdateService,
   UsersCheckGeneralDataService,
+  UsersSendingMailService,
 } from './services';
 import { ClientsToStationWorkersRepository } from '../clients';
 import { DistrictsToEngineersRepository } from '../districts';
+import { MailSenderModule } from '@app/mail-sender';
+import { PugModule } from '@app/pug';
 
 @Module({
   imports: [
@@ -25,14 +26,15 @@ import { DistrictsToEngineersRepository } from '../districts';
       ClientsToStationWorkersRepository,
       DistrictsToEngineersRepository,
     ]),
+    MailSenderModule,
+    PugModule,
   ],
   controllers: [UsersController],
   providers: [
     UsersCheckGeneralDataService,
     UsersCheckBeforeCreateService,
     UsersCreateService,
-    UsersCheckBeforeUpdateService,
-    UsersUpdateService,
+    UsersSendingMailService,
   ],
 })
 export class UsersModule {}

@@ -11,9 +11,9 @@ import {
   RepositoryDeleteByIdsConditions,
 } from '@app/repositories/types';
 import {
-  IGetOneOptions,
-  IGetOneOrFailOptions,
-  IUpdateEntitiesItem,
+  IRepositoryGetOneOptions,
+  IRepositoryGetOneOrFailOptions,
+  IRepositoryUpdateEntitiesItem,
 } from '@app/repositories/interfaces';
 import { DEFAULT_REPOSITORY_SERIALISE_OPTIONS } from '@app/repositories/constants';
 import { ExceptionsBadRequest } from '@app/exceptions/errors';
@@ -27,7 +27,7 @@ export class GeneralRepository<E extends BaseEntity> extends Repository<E> {
 
   public async getOne(
     conditions: RepositoryFindConditions<E>,
-    { repository, serialize }: IGetOneOptions<E> = {},
+    { repository, serialize }: IRepositoryGetOneOptions<E> = {},
   ): Promise<E | null> {
     const item = await this.findOne(conditions, repository);
     return item ? this.serialize(item, serialize) : null;
@@ -35,7 +35,11 @@ export class GeneralRepository<E extends BaseEntity> extends Repository<E> {
 
   public async getOneOrFail(
     conditions: RepositoryFindConditions<E>,
-    { repository, serialize, exception }: IGetOneOrFailOptions<E> = {},
+    {
+      repository,
+      serialize,
+      exception,
+    }: IRepositoryGetOneOrFailOptions<E> = {},
   ) {
     const entity = await this.getOne(conditions, { repository, serialize });
 
@@ -45,6 +49,13 @@ export class GeneralRepository<E extends BaseEntity> extends Repository<E> {
     }
 
     return entity;
+  }
+
+  public async getManyByIds(ids: number[]): Promise<E[]> {
+    return this.createQueryBuilder('u')
+      .where('u.id IN (:...ids)', { ids })
+      .orderBy('u.id')
+      .getMany();
   }
 
   public createEntity(data: RepositoryCreateEntity<E>): E {
@@ -62,7 +73,9 @@ export class GeneralRepository<E extends BaseEntity> extends Repository<E> {
     await this.update(criteria, inputs);
   }
 
-  public async updateEntities(items: IUpdateEntitiesItem<E>[]): Promise<void> {
+  public async updateEntities(
+    items: IRepositoryUpdateEntitiesItem<E>[],
+  ): Promise<void> {
     const updates = items.map(({ criteria, inputs }) =>
       this.update(criteria, inputs),
     );

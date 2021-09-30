@@ -1,26 +1,25 @@
 import { Injectable } from '@nestjs/common';
-import { UsersCreateRequestBodyDTO } from '../../dtos';
+import {
+  UsersCreateAccountantDTO,
+  UsersCreateDistrictLeaderDTO,
+  UsersCreateEngineerDTO,
+  UsersCreateGeneralUserDTO,
+  UsersCreateRequestBodyDTO,
+  UsersCreateStationWorkerDTO,
+} from '../../dtos';
 import { UsersCheckBeforeCreateService } from './users-check-before-create.service';
 import { UsersCheckGeneralDataService } from '../common';
-import { getFilteredUsersToCreate } from '../../helpers';
-import {
-  IUsersCreateDistrictLeader,
-  IUsersCreateEngineer,
-  IUsersCreateSimpleUser,
-  IUsersCreateStationWorker,
-} from '../../interfaces';
 import { UsersDistrictsRepository, UsersRepository } from '../../repositories';
 import { Connection, EntityManager } from 'typeorm';
 import { ClientsToStationWorkersRepository } from '../../../clients';
-import { groupedBy } from '@app/helpers';
+import { toObjectByField } from '@app/helpers';
 import { UserEntity } from '../../entities';
-import {
-  DistrictEntity,
-  ENTITIES_FIELDS,
-} from '@app/entities';
+import { DistrictEntity, ENTITIES_FIELDS } from '@app/entities';
 import { DistrictsToEngineersRepository } from '../../../districts';
 import { getHashByPassword } from '../../../auth/helpers';
-import { IUpdateEntitiesItem } from '@app/repositories/interfaces';
+import { UsersSendingMailService } from '../users-sending-mail.service';
+import { getGroupedUsersByRoles } from '../../helpers';
+import { IRepositoryUpdateEntitiesItem } from '@app/repositories/interfaces';
 
 @Injectable()
 export class UsersCreateService {
@@ -28,91 +27,100 @@ export class UsersCreateService {
     private readonly usersRepository: UsersRepository,
     private readonly checkGeneralUsersDataService: UsersCheckGeneralDataService,
     private readonly usersCheckBeforeCreateService: UsersCheckBeforeCreateService,
+    private readonly usersSendingMailService: UsersSendingMailService,
     private readonly connection: Connection,
   ) {}
 
-  async create({ users }: UsersCreateRequestBodyDTO) {
+  public async create({ users }: UsersCreateRequestBodyDTO) {
     await this.checkGeneralUsersDataService.checkExistingEmailsOrFail(users);
 
-    const { stationWorkers, engineers, districtLeaders, simples } =
-      getFilteredUsersToCreate(users);
+    const { stationWorkers, engineers, districtLeaders, accountants } =
+      getGroupedUsersByRoles<
+        UsersCreateDistrictLeaderDTO,
+        UsersCreateEngineerDTO,
+        UsersCreateStationWorkerDTO,
+        UsersCreateAccountantDTO
+      >(users);
 
-    const listOfCheckingUsers = [];
-    const listOfCreationUsers: ((manager: EntityManager) => Promise<void>)[] =
-      [];
+    const userCheckingRequestList: Promise<void>[] = [];
+    const userCreationRequestList: ((
+      manager: EntityManager,
+    ) => Promise<UserEntity[]>)[] = [];
 
     if (districtLeaders.length) {
-      listOfCheckingUsers.push(
+      userCheckingRequestList.push(
         this.usersCheckBeforeCreateService.checkDistrictLeadersOrFail(
           districtLeaders,
         ),
       );
-      listOfCreationUsers.push((manager: EntityManager) =>
+      userCreationRequestList.push((manager: EntityManager) =>
         this.saveDistrictsLeaders(districtLeaders, manager),
       );
     }
 
     if (stationWorkers.length) {
-      listOfCheckingUsers.push(
+      userCheckingRequestList.push(
         this.usersCheckBeforeCreateService.checkStationWorkersOrFail(
           stationWorkers,
         ),
       );
-      listOfCreationUsers.push((manager: EntityManager) =>
+      userCreationRequestList.push((manager: EntityManager) =>
         this.saveStationWorkers(stationWorkers, manager),
       );
     }
 
     if (engineers.length) {
-      listOfCheckingUsers.push(
+      userCheckingRequestList.push(
         this.usersCheckBeforeCreateService.checkEngineersOrFail(engineers),
       );
-      listOfCreationUsers.push((manager: EntityManager) =>
+      userCreationRequestList.push((manager: EntityManager) =>
         this.saveEngineers(engineers, manager),
       );
     }
 
-    if (simples.length) {
-      listOfCreationUsers.push((manager: EntityManager) =>
-        this.saveSimples(simples, manager),
+    if (accountants.length) {
+      userCreationRequestList.push((manager: EntityManager) =>
+        this.saveAccountants(accountants, manager),
       );
     }
 
-    await Promise.all(listOfCheckingUsers);
+    await Promise.all(userCheckingRequestList);
 
     await this.connection.transaction(async (manager) => {
-      await Promise.all(listOfCreationUsers.map((cb) => cb(manager)));
+      const userCreationResult = await Promise.all(
+        userCreationRequestList.map((cb) => cb(manager)),
+      );
+      const createdUsers = userCreationResult.flat(1);
+      // 1. создать записи на подтверждение почты
+      // 2. отправить письма по токенам из <1>
+      // МОЖНО ДЕКОМПОЗИРОВАТЬ ???
     });
   }
 
   private async saveDistrictsLeaders(
-    districtsLeaders: IUsersCreateDistrictLeader[],
+    districtsLeaders: UsersCreateDistrictLeaderDTO[],
     manager: EntityManager,
-  ): Promise<void> {
-    const groupedCreatedUsersByEmail = await this.saveUsersAndGetGrouped(
-      districtsLeaders,
-      manager,
-    );
+  ): Promise<UserEntity[]> {
+    const createdUsers = await this.saveUsers(districtsLeaders, manager);
 
     const usersDistrictsRepository = manager.getCustomRepository(
       UsersDistrictsRepository,
     );
-    const districtsToUpdate: IUpdateEntitiesItem<DistrictEntity>[] =
+    const districtsToUpdate: IRepositoryUpdateEntitiesItem<DistrictEntity>[] =
       districtsLeaders.map(({ districtId: id, email }) => ({
         criteria: { id },
-        inputs: { districtLeaderId: groupedCreatedUsersByEmail[email].id },
+        inputs: { districtLeaderId: createdUsers[email].id },
       }));
     await usersDistrictsRepository.updateEntities(districtsToUpdate);
+
+    return Object.values(createdUsers);
   }
 
   private async saveStationWorkers(
-    stationWorkers: IUsersCreateStationWorker[],
+    stationWorkers: UsersCreateStationWorkerDTO[],
     manager: EntityManager,
-  ): Promise<void> {
-    const groupedCreatedUsersByEmail = await this.saveUsersAndGetGrouped(
-      stationWorkers,
-      manager,
-    );
+  ): Promise<UserEntity[]> {
+    const createdUsers = await this.saveUsers(stationWorkers, manager);
 
     const usersClientsRepository = manager.getCustomRepository(
       ClientsToStationWorkersRepository,
@@ -120,20 +128,19 @@ export class UsersCreateService {
     const clientsToStationWorkersEntities = stationWorkers.map(
       ({ email, clientId }) => ({
         clientId,
-        stationWorkerId: groupedCreatedUsersByEmail[email].id,
+        stationWorkerId: createdUsers[email].id,
       }),
     );
     await usersClientsRepository.saveEntities(clientsToStationWorkersEntities);
+
+    return Object.values(createdUsers);
   }
 
   private async saveEngineers(
-    engineers: IUsersCreateEngineer[],
+    engineers: UsersCreateEngineerDTO[],
     manager: EntityManager,
-  ): Promise<void> {
-    const groupedCreatedUsersByEmail = await this.saveUsersAndGetGrouped(
-      engineers,
-      manager,
-    );
+  ): Promise<UserEntity[]> {
+    const createdUsers = await this.saveUsers(engineers, manager);
 
     const districtsToEngineersRepository = manager.getCustomRepository(
       DistrictsToEngineersRepository,
@@ -141,23 +148,26 @@ export class UsersCreateService {
     const districtsToEngineersEntities = engineers.map(
       ({ email, districtId }) => ({
         districtId,
-        engineerId: groupedCreatedUsersByEmail[email].id,
+        engineerId: createdUsers[email].id,
       }),
     );
     await districtsToEngineersRepository.saveEntities(
       districtsToEngineersEntities,
     );
+
+    return Object.values(createdUsers);
   }
 
-  private async saveSimples(
-    users: IUsersCreateSimpleUser[],
+  private async saveAccountants(
+    users: UsersCreateAccountantDTO[],
     manager: EntityManager,
-  ): Promise<void> {
-    await this.saveUsersAndGetGrouped(users, manager);
+  ): Promise<UserEntity[]> {
+    const data = await this.saveUsers(users, manager);
+    return Object.values(data);
   }
 
-  private async saveUsersAndGetGrouped(
-    users: IUsersCreateSimpleUser[],
+  private async saveUsers(
+    users: UsersCreateGeneralUserDTO[],
     manager: EntityManager,
   ): Promise<Record<string, UserEntity>> {
     const usersRepository = manager.getCustomRepository(UsersRepository);
@@ -169,7 +179,10 @@ export class UsersCreateService {
         password: await getHashByPassword(password),
       })),
     );
-    const createdUsers = await usersRepository.saveEntities(usersToSave);
-    return groupedBy<UserEntity>(ENTITIES_FIELDS.EMAIL, createdUsers);
+
+    let createdUsers = await usersRepository.saveEntities(usersToSave);
+    createdUsers = usersRepository.serializeMany(createdUsers);
+
+    return toObjectByField<UserEntity>(ENTITIES_FIELDS.EMAIL, createdUsers);
   }
 }

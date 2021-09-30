@@ -1,107 +1,45 @@
-import {
-  UsersClientsRepository,
-  UsersDistrictsRepository,
-} from '../repositories';
-import { getItemsByUniqueField } from '@app/helpers/array.helpers';
-import { ENTITIES_FIELDS } from '@app/entities';
-import {
-  IDistrictLeaderIdentifyingFields,
-  IEngineerIdentifyingFields,
-  IStationWorkerIdentifyingFields,
-  IClientMemberOrStationWorkerIdentifyingFields,
-} from '../interfaces';
-import { AllowedRolesType } from '../types';
 import { USER_ROLES } from '../constants';
-import { FilteredUserForCheck } from '../types/users-general.types';
+import { AllowedRolesType } from '../types';
 
-interface IRawFilteredUser {
-  role: AllowedRolesType;
-  clientId?: number;
-  districtId?: number;
+interface IGetGroupedUsersByRoles<D, E, S, A> {
+  districtLeaders: (D & { index: number })[];
+  engineers: (E & { index: number })[];
+  stationWorkers: (S & { index: number })[];
+  accountants: (A & { index: number })[];
 }
-
-interface IGetFilteredGeneralUsers {
-  districtLeaders: FilteredUserForCheck<IDistrictLeaderIdentifyingFields>[];
-  engineers: FilteredUserForCheck<IEngineerIdentifyingFields>[];
-  stationWorkers: FilteredUserForCheck<IStationWorkerIdentifyingFields>[];
-  simples: FilteredUserForCheck<{ role: AllowedRolesType }>[];
-}
-export const getFilteredGeneralUsers = (
-  rawUsers: IRawFilteredUser[],
-): IGetFilteredGeneralUsers => {
-  const result: IGetFilteredGeneralUsers = {
+export const getGroupedUsersByRoles = <
+  D extends { role: USER_ROLES.DISTRICT_LEADER } = {
+    role: USER_ROLES.DISTRICT_LEADER;
+  },
+  E extends { role: USER_ROLES.ENGINEER } = { role: USER_ROLES.ENGINEER },
+  S extends { role: USER_ROLES.STATION_WORKER } = {
+    role: USER_ROLES.STATION_WORKER;
+  },
+  A extends { role: USER_ROLES.ACCOUNTANT } = { role: USER_ROLES.ACCOUNTANT },
+>(
+  rawUsers: { role: AllowedRolesType }[],
+): IGetGroupedUsersByRoles<D, E, S, A> => {
+  const result: IGetGroupedUsersByRoles<D, E, S, A> = {
     districtLeaders: [],
     engineers: [],
     stationWorkers: [],
-    simples: [],
+    accountants: [],
   };
 
   rawUsers.forEach((user, index) => {
-    if (user.role === USER_ROLES.DISTRICT_LEADER && user.districtId) {
-      result.districtLeaders.push({
-        ...(user as IDistrictLeaderIdentifyingFields),
-        index,
-      });
-      return;
+    if (user.role === USER_ROLES.DISTRICT_LEADER) {
+      result.districtLeaders.push({ ...(user as D), index });
     }
-    if (user.role === USER_ROLES.ENGINEER && user.districtId) {
-      result.engineers.push({ ...(user as IEngineerIdentifyingFields), index });
-      return;
+    if (user.role === USER_ROLES.ENGINEER) {
+      result.engineers.push({ ...(user as E), index });
     }
-    if (user.role === USER_ROLES.STATION_WORKER && user.clientId) {
-      result.stationWorkers.push({
-        ...(user as IStationWorkerIdentifyingFields),
-        index,
-      });
-      return;
+    if (user.role === USER_ROLES.STATION_WORKER) {
+      result.stationWorkers.push({ ...(user as S), index });
     }
-    result.simples.push({ ...user, index });
+    if (user.role === USER_ROLES.ACCOUNTANT) {
+      result.accountants.push({ ...(user as A), index });
+    }
   });
 
   return result;
-};
-
-interface IGetUsersWithNotExistsClientsOrDistrictsProps<
-  T extends IClientMemberOrStationWorkerIdentifyingFields,
-> {
-  users: T[];
-  fieldName: ENTITIES_FIELDS.CLIENT_ID | ENTITIES_FIELDS.DISTRICT_ID;
-  repository: UsersClientsRepository | UsersDistrictsRepository;
-}
-export const getUsersWithNotExistsClientsOrDistricts = async <
-  T extends IClientMemberOrStationWorkerIdentifyingFields,
->({
-  fieldName,
-  users,
-  repository,
-}: IGetUsersWithNotExistsClientsOrDistrictsProps<T>): Promise<T[]> => {
-  const searchedClientsOrDistrictsIds =
-    getItemsByUniqueField<IClientMemberOrStationWorkerIdentifyingFields>(
-      fieldName,
-      users,
-    );
-
-  const existingClientsOrDistricts = await repository
-    .createQueryBuilder('u')
-    .where('u.id IN (:...ids)', { ids: searchedClientsOrDistrictsIds })
-    .orderBy('u.id')
-    .getMany();
-
-  if (
-    existingClientsOrDistricts.length === searchedClientsOrDistrictsIds.length
-  )
-    return [];
-
-  const existingClientsOrDistrictsIds = existingClientsOrDistricts.map(
-    ({ id }) => id,
-  );
-
-  const usersWithNotExistingClientsOrDistricts = users.filter((user) => {
-    const clientOrDistrictId = user[fieldName] as number;
-    const clientOrDistrictExist =
-      existingClientsOrDistrictsIds.includes(clientOrDistrictId);
-    return !clientOrDistrictExist;
-  });
-
-  return usersWithNotExistingClientsOrDistricts;
 };

@@ -4,12 +4,7 @@ import {
   UsersDistrictsRepository,
   UsersRepository,
 } from '../../repositories';
-import { getUsersWithNotExistsClientsOrDistricts } from '../../helpers';
-import {
-  IClientMemberIdentifyingFields,
-  IGetPreparedChildrenErrorsParams,
-  IStationWorkerIdentifyingFields,
-} from '../../interfaces';
+import { IGetPreparedChildrenErrorsParams } from '../../interfaces';
 import { ExceptionsUnprocessableEntity } from '@app/exceptions/errors';
 import { ENTITIES_FIELDS } from '@app/entities';
 import { AUTH_ERRORS } from '../../../auth/constants';
@@ -18,7 +13,7 @@ import {
   getPreparingUsersWithDubbedEmail,
 } from '../../helpers/users-check-general-data.helpers';
 import { IErrorDetailItem } from '@app/exceptions/interfaces';
-import { FilteredUserForCheck } from '../../types/users-general.types';
+import { getItemsByUniqueField } from '@app/helpers';
 
 @Injectable()
 export class UsersCheckGeneralDataService {
@@ -29,7 +24,7 @@ export class UsersCheckGeneralDataService {
   ) {}
 
   public async checkExistingEmailsOrFail(
-    items: { [ENTITIES_FIELDS.EMAIL]: string }[],
+    items: { email: string }[],
   ): Promise<void> {
     const emails = items.map(({ email }) => email);
     const existingUsers = await this.usersRepository.findUsersByEmails(emails);
@@ -53,17 +48,17 @@ export class UsersCheckGeneralDataService {
   }
 
   public async checkEmptyDistrictsOrFail(
-    items: FilteredUserForCheck<{ [ENTITIES_FIELDS.DISTRICT_ID]: number }>[],
+    items: { index: number; districtId: number }[],
   ): Promise<void> {
     const districtsIds = items.map(({ districtId }) => districtId);
-    const emptyDistricts =
+    const foundDistricts =
       await this.usersDistrictsRepository.findEmptyDistrictsByIds(districtsIds);
 
-    if (emptyDistricts.length === districtsIds.length) return;
+    if (foundDistricts.length === districtsIds.length) return;
 
     const preparedNotEmptyDistricts = getPreparingUsersNotEmptyDistricts(
       items,
-      emptyDistricts,
+      foundDistricts,
     );
 
     const preparedErrors =
@@ -77,17 +72,15 @@ export class UsersCheckGeneralDataService {
     throw new ExceptionsUnprocessableEntity(preparedErrors);
   }
 
-  public async checkStationWorkersExistingClientsOrFail(
-    stationWorkers: FilteredUserForCheck<IStationWorkerIdentifyingFields>[],
+  public async checkExistingClientsInArrayOrFail(
+    stationWorkers: { clientId: number; index: number }[],
   ): Promise<void> {
     const stationWorkersWithNotExistingClients =
-      await getUsersWithNotExistsClientsOrDistricts<
-        FilteredUserForCheck<IStationWorkerIdentifyingFields>
-      >({
-        fieldName: ENTITIES_FIELDS.CLIENT_ID,
-        users: stationWorkers,
-        repository: this.usersClientsRepository,
-      });
+      await this.getUsersWithNotExistsClientsOrDistricts(
+        stationWorkers,
+        ENTITIES_FIELDS.CLIENT_ID,
+        this.usersClientsRepository,
+      );
 
     if (stationWorkersWithNotExistingClients.length) {
       const preparedErrors =
@@ -102,17 +95,15 @@ export class UsersCheckGeneralDataService {
     }
   }
 
-  public async checkClientMembersExistingDistrictsOrFail(
-    clientMembers: FilteredUserForCheck<IClientMemberIdentifyingFields>[],
+  public async checkExistingDistrictsInArrayOrFail(
+    clientMembers: { districtId: number; index: number }[],
   ): Promise<void> {
     const clientMembersWithNotExistingDistricts =
-      await getUsersWithNotExistsClientsOrDistricts<
-        FilteredUserForCheck<IClientMemberIdentifyingFields>
-      >({
-        fieldName: ENTITIES_FIELDS.DISTRICT_ID,
-        users: clientMembers,
-        repository: this.usersDistrictsRepository,
-      });
+      await this.getUsersWithNotExistsClientsOrDistricts(
+        clientMembers,
+        ENTITIES_FIELDS.DISTRICT_ID,
+        this.usersDistrictsRepository,
+      );
 
     if (clientMembersWithNotExistingDistricts.length) {
       const preparedErrors =
@@ -127,7 +118,38 @@ export class UsersCheckGeneralDataService {
     }
   }
 
-  public static getPreparedChildrenErrors(
+  private async getUsersWithNotExistsClientsOrDistricts<
+    T extends {
+      clientId?: number;
+      districtId?: number;
+    },
+  >(
+    users: T[],
+    idFieldName: ENTITIES_FIELDS.DISTRICT_ID | ENTITIES_FIELDS.CLIENT_ID,
+    repository: UsersClientsRepository | UsersDistrictsRepository,
+  ): Promise<T[]> {
+    const uniqueIds = getItemsByUniqueField<{
+      clientId?: number;
+      districtId?: number;
+    }>(idFieldName, users);
+
+    const foundEntities = await repository.getManyByIds(uniqueIds);
+    const allIdsExists = foundEntities.length === uniqueIds.length;
+
+    if (allIdsExists) return [];
+
+    const foundEntitiesIds = foundEntities.map(({ id }) => id);
+
+    const usersWithNotExistingEntityIds = users.filter((user) => {
+      const entityId = user[idFieldName] as number;
+      const entityExist = foundEntitiesIds.includes(entityId);
+      return !entityExist;
+    });
+
+    return usersWithNotExistingEntityIds;
+  }
+
+  private static getPreparedChildrenErrors(
     list: { index: number }[],
     params: IGetPreparedChildrenErrorsParams,
   ): IErrorDetailItem[] {
