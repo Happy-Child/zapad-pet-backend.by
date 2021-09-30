@@ -108,19 +108,22 @@ export class GeneralRepository<E extends BaseEntity> extends Repository<E> {
     await this.delete(conditions);
   }
 
-  public serialize(entity: E, options?: RepositorySerializeOptions): E {
+  public serialize<T extends E>(
+    entity: E,
+    options?: RepositorySerializeOptions,
+  ): T {
     const concatOptions = {
       ...this.defaultSerializeOptions,
       ...(options || null),
     };
 
-    return plainToClass(this.entitySerializer, entity, concatOptions) as E;
+    return plainToClass(this.entitySerializer, entity, concatOptions) as T;
   }
 
-  public serializeMany(
+  public serializeMany<T extends E>(
     entities: E[],
     options?: RepositorySerializeOptions,
-  ): E[] {
-    return entities.map((entity) => this.serialize(entity, options));
+  ): T[] {
+    return entities.map((entity) => this.serialize<T>(entity, options));
   }
 }

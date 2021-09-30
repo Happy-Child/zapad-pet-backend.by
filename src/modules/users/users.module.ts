@@ -4,6 +4,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import {
   UsersClientsRepository,
   UsersDistrictsRepository,
+  UsersEmailConfirmedRepository,
   UsersRepository,
 } from './repositories';
 import {
@@ -23,6 +24,7 @@ import { PugModule } from '@app/pug';
       UsersRepository,
       UsersClientsRepository,
       UsersDistrictsRepository,
+      UsersEmailConfirmedRepository,
       ClientsToStationWorkersRepository,
       DistrictsToEngineersRepository,
     ]),

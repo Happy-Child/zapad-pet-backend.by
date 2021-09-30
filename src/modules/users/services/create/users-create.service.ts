@@ -9,12 +9,20 @@ import {
 } from '../../dtos';
 import { UsersCheckBeforeCreateService } from './users-check-before-create.service';
 import { UsersCheckGeneralDataService } from '../common';
-import { UsersDistrictsRepository, UsersRepository } from '../../repositories';
+import {
+  UsersDistrictsRepository,
+  UsersEmailConfirmedRepository,
+  UsersRepository,
+} from '../../repositories';
 import { Connection, EntityManager } from 'typeorm';
 import { ClientsToStationWorkersRepository } from '../../../clients';
-import { toObjectByField } from '@app/helpers';
-import { UserEntity } from '../../entities';
-import { DistrictEntity, ENTITIES_FIELDS } from '@app/entities';
+import { generateRandomToken, toObjectByField } from '@app/helpers';
+import {
+  DistrictEntity,
+  EmailConfirmedEntity,
+  ENTITIES_FIELDS,
+  UserEntity,
+} from '@app/entities';
 import { DistrictsToEngineersRepository } from '../../../districts';
 import { getHashByPassword } from '../../../auth/helpers';
 import { UsersSendingMailService } from '../users-sending-mail.service';
@@ -87,13 +95,21 @@ export class UsersCreateService {
     await Promise.all(userCheckingRequestList);
 
     await this.connection.transaction(async (manager) => {
-      const userCreationResult = await Promise.all(
-        userCreationRequestList.map((cb) => cb(manager)),
+      await Promise.all(userCreationRequestList.map((cb) => cb(manager)));
+
+      const allUsers = [
+        ...stationWorkers,
+        ...engineers,
+        ...districtLeaders,
+        ...accountants,
+      ];
+
+      const records = await this.createRecordsOfConfirmationEmails(
+        allUsers,
+        manager,
       );
-      const createdUsers = userCreationResult.flat(1);
-      // 1. создать записи на подтверждение почты
-      // 2. отправить письма по токенам из <1>
-      // МОЖНО ДЕКОМПОЗИРОВАТЬ ???
+
+      await this.sendingEmailsCreatedUsers(allUsers, records);
     });
   }
 
@@ -183,6 +199,42 @@ export class UsersCreateService {
     let createdUsers = await usersRepository.saveEntities(usersToSave);
     createdUsers = usersRepository.serializeMany(createdUsers);
 
-    return toObjectByField<UserEntity>(ENTITIES_FIELDS.EMAIL, createdUsers);
+    return toObjectByField(ENTITIES_FIELDS.EMAIL, createdUsers);
+  }
+
+  private async createRecordsOfConfirmationEmails(
+    users: { email: string }[],
+    manager: EntityManager,
+  ): Promise<EmailConfirmedEntity[]> {
+    const records = await Promise.all(
+      users.map(async ({ email }) => ({
+        token: await generateRandomToken(),
+        email,
+      })),
+    );
+
+    const usersEmailConfirmedRepository = manager.getCustomRepository(
+      UsersEmailConfirmedRepository,
+    );
+
+    return usersEmailConfirmedRepository.saveEntities(records);
+  }
+
+  private async sendingEmailsCreatedUsers(
+    users: UsersCreateGeneralUserDTO[],
+    recordsOfConfirmationEmails: EmailConfirmedEntity[],
+  ): Promise<void> {
+    const dataToSendingEmails = recordsOfConfirmationEmails.map((record) => {
+      const user = users.find(
+        ({ email: userEmail }) => userEmail === record.email,
+      ) as UsersCreateGeneralUserDTO;
+      return { user, token: record.token };
+    });
+
+    await Promise.all(
+      dataToSendingEmails.map(async ({ token, user }) =>
+        this.usersSendingMailService.sendEmailAfterCreatedUser(user, token),
+      ),
+    );
   }
 }
