@@ -15,7 +15,7 @@ export class UsersCheckBeforeCreateService {
   public async checkStationWorkersOrFail(
     stationWorkers: (UsersCreateStationWorkerDTO & { index: number })[],
   ): Promise<void> {
-    await this.checkGeneralUsersDataService.checkExistingClientsInArrayOrFail(
+    await this.checkGeneralUsersDataService.checkExistingClientsOrFail(
       stationWorkers,
     );
   }
@@ -23,7 +23,7 @@ export class UsersCheckBeforeCreateService {
   public async checkDistrictLeadersOrFail(
     districtLeaders: (UsersCreateDistrictLeaderDTO & { index: number })[],
   ): Promise<void> {
-    await this.checkGeneralUsersDataService.checkExistingDistrictsInArrayOrFail(
+    await this.checkGeneralUsersDataService.checkExistingDistrictsOrFail(
       districtLeaders,
     );
     await this.checkGeneralUsersDataService.checkEmptyDistrictsOrFail(
@@ -34,7 +34,7 @@ export class UsersCheckBeforeCreateService {
   public async checkEngineersOrFail(
     engineer: (UsersCreateEngineerDTO & { index: number })[],
   ): Promise<void> {
-    await this.checkGeneralUsersDataService.checkExistingDistrictsInArrayOrFail(
+    await this.checkGeneralUsersDataService.checkExistingDistrictsOrFail(
       engineer,
     );
   }

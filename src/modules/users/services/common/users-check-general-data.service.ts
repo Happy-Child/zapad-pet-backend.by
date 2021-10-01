@@ -72,7 +72,7 @@ export class UsersCheckGeneralDataService {
     throw new ExceptionsUnprocessableEntity(preparedErrors);
   }
 
-  public async checkExistingClientsInArrayOrFail(
+  public async checkExistingClientsOrFail(
     stationWorkers: { clientId: number; index: number }[],
   ): Promise<void> {
     const stationWorkersWithNotExistingClients =
@@ -95,7 +95,7 @@ export class UsersCheckGeneralDataService {
     }
   }
 
-  public async checkExistingDistrictsInArrayOrFail(
+  public async checkExistingDistrictsOrFail(
     clientMembers: { districtId: number; index: number }[],
   ): Promise<void> {
     const clientMembersWithNotExistingDistricts =

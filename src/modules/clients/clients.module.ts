@@ -4,6 +4,8 @@ import {
   ClientsRepository,
   ClientsToStationWorkersRepository,
 } from './repositories';
+import { ClientsController } from './controllers/clients.controller';
+import { ClientsCreateService } from './services';
 
 @Module({
   imports: [
@@ -12,5 +14,7 @@ import {
       ClientsRepository,
     ]),
   ],
+  controllers: [ClientsController],
+  providers: [ClientsCreateService],
 })
 export class ClientsModule {}
