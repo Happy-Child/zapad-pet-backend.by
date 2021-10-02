@@ -4,10 +4,14 @@ import { ClassTransformOptions } from 'class-transformer';
 import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity';
 import { DeepPartial } from 'typeorm/common/DeepPartial';
 import { BaseEntity } from '@app/entities';
+import { FindManyOptions } from 'typeorm/find-options/FindManyOptions';
 
 export type RepositoryFindConditions<E extends BaseEntity> = FindConditions<E>;
 
 export type RepositoryFindOneOptions<E extends BaseEntity> = FindOneOptions<E>;
+
+export type RepositoryFindManyOptions<E extends BaseEntity> =
+  FindManyOptions<E>;
 
 export type RepositoryUpdateEntityInputs<E extends BaseEntity> =
   QueryDeepPartialEntity<E>;

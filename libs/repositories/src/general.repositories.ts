@@ -9,6 +9,7 @@ import {
   RepositoryCreateEntity,
   RepositoryDeleteOneConditions,
   RepositoryDeleteByIdsConditions,
+  RepositoryFindManyOptions,
 } from '@app/repositories/types';
 import {
   IRepositoryGetOneOptions,
@@ -18,6 +19,7 @@ import {
 import { DEFAULT_REPOSITORY_SERIALISE_OPTIONS } from '@app/repositories/constants';
 import { ExceptionsBadRequest } from '@app/exceptions/errors';
 import { BaseEntity } from '@app/entities';
+import { PaginationResponseDTO } from '@app/dtos';
 
 export class GeneralRepository<E extends BaseEntity> extends Repository<E> {
   protected readonly defaultSerializeOptions: RepositorySerializeOptions =
@@ -74,6 +76,17 @@ export class GeneralRepository<E extends BaseEntity> extends Repository<E> {
       .where('u.id IN (:...ids)', { ids })
       .orderBy('u.id')
       .getMany();
+  }
+
+  public async getPagination(
+    options: RepositoryFindManyOptions<E>,
+  ): Promise<PaginationResponseDTO<E>> {
+    const [items, totalItemsCount] = await this.findAndCount(options);
+
+    return {
+      items,
+      totalItemsCount,
+    };
   }
 
   public createEntity(data: RepositoryCreateEntity<E>): E {

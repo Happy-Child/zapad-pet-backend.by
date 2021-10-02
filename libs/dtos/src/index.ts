@@ -1,1 +1,2 @@
-export * from './general.dtos';
+export * from './token.dtos';
+export * from './pagination.dtos';

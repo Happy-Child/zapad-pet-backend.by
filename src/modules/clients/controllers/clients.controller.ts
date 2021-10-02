@@ -1,18 +1,27 @@
 import {
   Controller,
+  Get,
   Post,
   Body,
   Patch,
   Param,
   ParseIntPipe,
+  Query,
 } from '@nestjs/common';
 import { ClientsCreateBodyDTO } from '../dtos';
-import { ClientsService } from '../services';
-import { ClientsUpdateBodyDTO } from '../dtos/clients-update.dtos';
+import { ClientsGettingService, ClientsService } from '../services';
+import { ClientsUpdateBodyDTO } from '../dtos';
+import {
+  ClientsGettingRequestQueryDTO,
+  ClientsGettingResponseBodyDTO,
+} from '../dtos';
 
 @Controller('clients')
 export class ClientsController {
-  constructor(private readonly clientsService: ClientsService) {}
+  constructor(
+    private readonly clientsService: ClientsService,
+    private readonly clientsGettingService: ClientsGettingService,
+  ) {}
 
   @Post()
   async create(@Body() body: ClientsCreateBodyDTO): Promise<true> {
@@ -27,5 +36,12 @@ export class ClientsController {
   ): Promise<true> {
     await this.clientsService.update(id, body);
     return true;
+  }
+
+  @Get()
+  async getList(
+    @Query() query: ClientsGettingRequestQueryDTO,
+  ): Promise<ClientsGettingResponseBodyDTO> {
+    return this.clientsGettingService.getList(query);
   }
 }
