@@ -51,6 +51,24 @@ export class GeneralRepository<E extends BaseEntity> extends Repository<E> {
     return entity;
   }
 
+  public async getOneAndFail(
+    conditions: RepositoryFindConditions<E>,
+    {
+      repository,
+      serialize,
+      exception,
+    }: IRepositoryGetOneOrFailOptions<E> = {},
+  ) {
+    const entity = await this.getOne(conditions, { repository, serialize });
+
+    if (entity) {
+      const finalException = exception?.type || ExceptionsBadRequest;
+      throw new finalException(exception?.messages);
+    }
+
+    return entity;
+  }
+
   public async getManyByIds(ids: number[]): Promise<E[]> {
     return this.createQueryBuilder('u')
       .where('u.id IN (:...ids)', { ids })

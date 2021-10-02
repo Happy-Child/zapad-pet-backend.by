@@ -1,1 +1,1 @@
-export * from './clients-create.service';
+export * from './clients.service';
