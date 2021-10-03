@@ -38,6 +38,14 @@ export class ClientsService {
     }
   }
 
+  public async deleteById(id: number): Promise<void> {
+    console.log('deleteById', id);
+    return;
+    // check bids statuses (example method name allowRemoveAllClientStations)
+    // if of - remove stations
+    // if of - remove stations workers
+  }
+
   private async checkExistingClientName(name: string): Promise<void> {
     await this.clientsRepository.getOneAndFail(
       { name },

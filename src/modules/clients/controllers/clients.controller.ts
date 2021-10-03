@@ -1,6 +1,7 @@
 import {
   Controller,
   Get,
+  Delete,
   Post,
   Body,
   Patch,
@@ -35,6 +36,12 @@ export class ClientsController {
     @Body() body: ClientsUpdateBodyDTO,
   ): Promise<true> {
     await this.clientsService.update(id, body);
+    return true;
+  }
+
+  @Delete('/:id')
+  async deleteById(@Param('id', ParseIntPipe) id: number): Promise<true> {
+    await this.clientsService.deleteById(id);
     return true;
   }
 
