@@ -1,12 +1,20 @@
 import { PaginationRequestDTO, PaginationResponseDTO } from '@app/dtos';
-import { BaseEntity, ENTITIES_FIELDS } from '@app/entities';
+import { ClientEntity, ENTITIES_FIELDS } from '@app/entities';
 import { IsEnum, IsIn, IsOptional, IsString } from 'class-validator';
 import { SORT_DURATION } from '@app/constants';
+import { Expose, plainToClass } from 'class-transformer';
 
 export class ClientsGettingRequestQueryDTO extends PaginationRequestDTO {
   @IsOptional()
-  @IsIn([ENTITIES_FIELDS.NAME, ENTITIES_FIELDS.CREATED_AT])
-  sortBy?: ENTITIES_FIELDS.NAME | ENTITIES_FIELDS.CREATED_AT;
+  @IsIn([
+    ENTITIES_FIELDS.NAME,
+    ENTITIES_FIELDS.CREATED_AT,
+    ENTITIES_FIELDS.STATIONS_COUNT,
+  ])
+  sortBy?:
+    | ENTITIES_FIELDS.NAME
+    | ENTITIES_FIELDS.CREATED_AT
+    | ENTITIES_FIELDS.STATIONS_COUNT;
 
   @IsOptional()
   @IsEnum(SORT_DURATION)
@@ -17,8 +25,23 @@ export class ClientsGettingRequestQueryDTO extends PaginationRequestDTO {
   searchByName?: string;
 }
 
-export class ClientsGettingResponseBodyDTO extends PaginationResponseDTO<BaseEntity> {
+export class ClientDTO extends ClientEntity {
+  @Expose()
+  stationsCount!: number;
+
+  constructor(data: Partial<ClientDTO>) {
+    super();
+    Object.assign(
+      this,
+      plainToClass(ClientDTO, data, { excludeExtraneousValues: true }),
+    );
+  }
+}
+
+export class ClientsGettingResponseBodyDTO extends PaginationResponseDTO<ClientDTO> {
   constructor(data: ClientsGettingResponseBodyDTO) {
-    super(data);
+    super();
+    Object.assign(this, data);
+    this.items = data.items.map((item) => new ClientDTO(item));
   }
 }

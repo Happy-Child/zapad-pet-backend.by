@@ -48,7 +48,7 @@ export class StationEntity extends BaseEntity {
   @Column({ nullable: false })
   districtId!: number;
 
-  @OneToOne(() => DistrictEntity)
+  @ManyToOne(() => DistrictEntity)
   @JoinColumn({
     name: 'districtId',
     referencedColumnName: 'id',

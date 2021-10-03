@@ -10,7 +10,7 @@ export class PaginationRequestDTO {
   @IsOptional()
   @Type(() => Number)
   @Min(PAGINATION_DEFAULT_TAKE_RANGE.MIN)
-  skip!: number;
+  skip?: number;
 }
 
 export class PaginationResponseDTO<T> {
@@ -19,8 +19,4 @@ export class PaginationResponseDTO<T> {
 
   @Expose()
   items!: T[];
-
-  constructor(data: PaginationResponseDTO<T>) {
-    Object.assign(this, data);
-  }
 }

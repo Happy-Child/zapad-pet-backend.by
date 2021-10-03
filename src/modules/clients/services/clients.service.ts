@@ -4,7 +4,7 @@ import { ClientsRepository } from '../repositories';
 import { ExceptionsUnprocessableEntity } from '@app/exceptions/errors';
 import { ENTITIES_FIELDS } from '@app/entities';
 import { CLIENTS_ERRORS } from '../constants';
-import { ClientsUpdateBodyDTO } from '../dtos/clients-update.dtos';
+import { ClientsUpdateBodyDTO } from '../dtos';
 import { AUTH_ERRORS } from '../../auth/constants';
 
 @Injectable()
@@ -31,8 +31,11 @@ export class ClientsService {
         },
       },
     );
-    await this.checkExistingClientName(body.name);
-    await this.clientsRepository.updateEntity({ id }, body);
+
+    if (body.name) {
+      await this.checkExistingClientName(body.name);
+      await this.clientsRepository.updateEntity({ id }, body);
+    }
   }
 
   private async checkExistingClientName(name: string): Promise<void> {

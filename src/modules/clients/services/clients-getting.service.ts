@@ -1,12 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import {
+  ClientDTO,
   ClientsGettingRequestQueryDTO,
   ClientsGettingResponseBodyDTO,
 } from '../dtos';
 import { ClientsRepository } from '../repositories';
-import { Like } from 'typeorm';
-import { CLIENTS_DEFAULT_SORT_BY } from '../constants';
-import { SORT_DURATION_DEFAULT } from '@app/constants';
+import { ExceptionsNotFound } from '@app/exceptions/errors';
+import { ENTITIES_FIELDS } from '@app/entities';
+import { AUTH_ERRORS } from '../../auth/constants';
 
 @Injectable()
 export class ClientsGettingService {
@@ -15,21 +16,19 @@ export class ClientsGettingService {
   public async getList(
     query: ClientsGettingRequestQueryDTO,
   ): Promise<ClientsGettingResponseBodyDTO> {
-    const where = query.searchByName
-      ? { name: Like(`%${query.searchByName}%`) }
-      : undefined;
-    const order = {
-      [query.sortBy || CLIENTS_DEFAULT_SORT_BY]:
-        query.sortDuration || SORT_DURATION_DEFAULT,
-    };
-
-    const result = await this.clientsRepository.getPagination({
-      skip: query.skip || 0,
-      take: query.take,
-      order,
-      where,
-    });
-
+    const result = await this.clientsRepository.getClientsWithPagination(query);
     return new ClientsGettingResponseBodyDTO(result);
+  }
+
+  public async getByIdOrFail(id: number): Promise<ClientDTO> {
+    const client = await this.clientsRepository.getClientById(id);
+
+    if (!client) {
+      throw new ExceptionsNotFound([
+        { field: ENTITIES_FIELDS.ID, messages: [AUTH_ERRORS.CLIENT_NOT_EXIST] },
+      ]);
+    }
+
+    return new ClientDTO(client);
   }
 }

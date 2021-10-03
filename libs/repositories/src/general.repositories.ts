@@ -30,9 +30,9 @@ export class GeneralRepository<E extends BaseEntity> extends Repository<E> {
   public async getOne(
     conditions: RepositoryFindConditions<E>,
     { repository, serialize }: IRepositoryGetOneOptions<E> = {},
-  ): Promise<E | null> {
+  ): Promise<E | undefined> {
     const item = await this.findOne(conditions, repository);
-    return item ? this.serialize(item, serialize) : null;
+    return item ? this.serialize(item, serialize) : undefined;
   }
 
   public async getOneOrFail(

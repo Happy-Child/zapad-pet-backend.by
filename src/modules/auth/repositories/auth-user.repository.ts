@@ -19,10 +19,6 @@ const exceptionOnFail = {
 export class AuthUserRepository extends GeneralRepository<UserEntity> {
   protected entitySerializer = UserEntity;
 
-  async findByEmail(email: string): Promise<UserEntity | null> {
-    return this.getOne({ email });
-  }
-
   async findByEmailOrFail(email: string): Promise<UserEntity> {
     return this.getOneOrFail({ email }, { exception: exceptionOnFail });
   }
