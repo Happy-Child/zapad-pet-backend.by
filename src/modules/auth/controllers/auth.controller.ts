@@ -23,12 +23,13 @@ import {
   PasswordRecoveryRequestBodyDTO,
   PasswordRecoveryResponseBodyDTO,
   SignInRequestBodyDTO,
-  SignInResponseBodyDTO,
+  SimpleUserJWTPayloadDTO,
 } from '../dtos';
 import { COOKIE } from '../constants';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
-import { UserEntity } from '../../users/entities';
-import { GeneralJWTPayload } from '../types';
+import { TMemberDTO } from '../../users/types';
+import { SimpleUserDTO } from '../../users/dtos';
+import { TMemberJWTPayloadDTO } from '../types';
 
 @Controller('auth')
 export class AuthController {
@@ -43,9 +44,10 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   @Get('/me')
   async me(
-    @Request() { user }: { user: GeneralJWTPayload },
-  ): Promise<UserEntity> {
-    return this.authGeneralService.me(user.sub);
+    @Request()
+    { user }: { user: TMemberJWTPayloadDTO | SimpleUserJWTPayloadDTO },
+  ): Promise<TMemberDTO | SimpleUserDTO> {
+    return this.authGeneralService.me(user.userId);
   }
 
   @HttpCode(HttpStatus.OK)
@@ -59,7 +61,7 @@ export class AuthController {
       ...COOKIE.SECURE_OPTIONS,
       expires: getCookieExpiration(),
     });
-    res.send(new SignInResponseBodyDTO(response));
+    res.send(response);
   }
 
   @HttpCode(HttpStatus.OK)

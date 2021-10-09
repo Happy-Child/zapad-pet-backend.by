@@ -16,7 +16,7 @@ import { ExceptionsNotFound } from '@app/exceptions/errors';
 import { ENTITIES_FIELDS } from '@app/constants';
 import { AUTH_ERRORS } from '../../auth/constants';
 import { USER_ROLES } from '../constants';
-import { TMember } from '../types';
+import { TMemberDTO } from '../types';
 import { RepositoryFindConditions } from '@app/repositories/types';
 import { ClassTransformOptions } from 'class-transformer/types/interfaces';
 
@@ -24,11 +24,11 @@ import { ClassTransformOptions } from 'class-transformer/types/interfaces';
 export class UsersRepository extends GeneralRepository<UserEntity> {
   protected entitySerializer = UserEntity;
 
-  public async getMemberOrFail(
+  public async getUserOrFail(
     conditions: RepositoryFindConditions<UserEntity>,
     serializeOptions?: ClassTransformOptions,
-  ): Promise<TMember> {
-    const rawMember = await this.createQueryBuilder('u')
+  ): Promise<TMemberDTO | SimpleUserDTO> {
+    const rawUser = await this.createQueryBuilder('u')
       .select(
         `u.*, sw.clientId as "clientId", sw.stationId as "stationId", dl.districtId as "leaderDistrictId", e.districtId as "engineerDistrictId"`,
       )
@@ -36,30 +36,30 @@ export class UsersRepository extends GeneralRepository<UserEntity> {
       .leftJoin(StationWorkerEntity, 'sw', '"sw"."userId" = u.id')
       .leftJoin(DistrictLeaderEntity, 'dl', '"dl"."userId" = u.id')
       .leftJoin(EngineerEntity, 'e', '"e"."userId" = u.id')
-      .getRawOne<TMember>();
+      .getRawOne();
 
-    if (!rawMember) {
+    if (!rawUser) {
       throw new ExceptionsNotFound([
         { field: ENTITIES_FIELDS.ID, messages: [AUTH_ERRORS.USER_NOT_FOUND] },
       ]);
     }
 
-    return UsersRepository.getPreparedMember(rawMember, serializeOptions);
+    return UsersRepository.getPreparedMember(rawUser, serializeOptions);
   }
 
   private static getPreparedMember(
-    rawMember: TMember,
+    rawUser: any,
     serializeOptions?: ClassTransformOptions,
-  ): TMember {
-    switch (rawMember.role) {
+  ): TMemberDTO | SimpleUserDTO {
+    switch (rawUser.role) {
       case USER_ROLES.STATION_WORKER:
-        return new StationWorkerMemberDTO(rawMember, serializeOptions);
+        return new StationWorkerMemberDTO(rawUser, serializeOptions);
       case USER_ROLES.DISTRICT_LEADER:
-        return new DistrictLeaderMemberDTO(rawMember, serializeOptions);
+        return new DistrictLeaderMemberDTO(rawUser, serializeOptions);
       case USER_ROLES.ENGINEER:
-        return new EngineerMemberDTO(rawMember, serializeOptions);
+        return new EngineerMemberDTO(rawUser, serializeOptions);
       default:
-        return new SimpleUserDTO(rawMember, serializeOptions);
+        return new SimpleUserDTO(rawUser, serializeOptions);
     }
   }
 }

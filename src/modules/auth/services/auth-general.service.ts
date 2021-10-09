@@ -1,12 +1,13 @@
 import { Injectable } from '@nestjs/common';
-import { UserEntity } from '../../users/entities';
 import { UsersRepository } from '../../users/repositories';
+import { TMemberDTO } from '../../users/types';
+import { SimpleUserDTO } from '../../users/dtos';
 
 @Injectable()
 export class AuthGeneralService {
   constructor(private readonly usersRepository: UsersRepository) {}
 
-  public async me(id: number): Promise<UserEntity> {
-    return this.usersRepository.getMemberOrFail({ id });
+  public async me(id: number): Promise<TMemberDTO | SimpleUserDTO> {
+    return this.usersRepository.getUserOrFail({ id });
   }
 }

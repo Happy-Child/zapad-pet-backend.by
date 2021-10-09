@@ -23,7 +23,7 @@ export class AuthPasswordRecoveryService {
   async passwordRecovery(
     email: string,
   ): Promise<PasswordRecoveryResponseBodyDTO> {
-    await this.usersRepository.getMemberOrFail({ email });
+    await this.usersRepository.getUserOrFail({ email });
 
     const prevPasswordRecoveryData =
       await this.authPasswordRecoveryRepository.getOne({
@@ -109,7 +109,7 @@ export class AuthPasswordRecoveryService {
     const passwordRecoveryData =
       await this.authPasswordRecoveryRepository.findByTokenOrFail(body.token);
 
-    const member = await this.usersRepository.getMemberOrFail({
+    const user = await this.usersRepository.getUserOrFail({
       email: passwordRecoveryData.email,
     });
 
@@ -118,7 +118,7 @@ export class AuthPasswordRecoveryService {
     await this.connection.transaction(async (manager) => {
       const usersRepository = manager.getCustomRepository(UsersRepository);
       await usersRepository.updateEntity(
-        { id: member.id },
+        { id: user.id },
         { password: newPasswordHash },
       );
 

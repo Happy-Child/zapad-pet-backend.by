@@ -22,10 +22,10 @@ export class AuthEmailConfirmedService {
       body.token,
     );
 
-    const member = await this.usersRepository.getMemberOrFail({
+    const user = await this.usersRepository.getUserOrFail({
       email: record.email,
     });
-    if (member.emailConfirmed) {
+    if (user.emailConfirmed) {
       throw new ExceptionsUnprocessableEntity([
         {
           field: ENTITIES_FIELDS.EMAIL,

@@ -135,13 +135,10 @@ export class UsersGeneralCheckService {
 
     const foundEntitiesIds = foundEntities.map(({ id }) => id);
 
-    const usersWithNotExistingEntityIds = users.filter((user) => {
+    return users.filter((user) => {
       const entityId = user[idFieldName] as number;
-      const entityExist = foundEntitiesIds.includes(entityId);
-      return !entityExist;
+      return !foundEntitiesIds.includes(entityId);
     });
-
-    return usersWithNotExistingEntityIds;
   }
 
   private static getPreparedChildrenErrors(

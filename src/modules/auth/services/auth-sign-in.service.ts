@@ -6,9 +6,10 @@ import { AUTH_ERRORS } from '../constants';
 import { comparePasswords } from '../helpers';
 import { ENTITIES_FIELDS } from '@app/constants';
 import { UsersRepository } from '../../users/repositories';
-import { TMember } from '../../users/types';
-import { USER_EXPOSE_GROUPS, USER_ROLES } from '../../users/constants';
-import { isNull } from '@app/helpers';
+import { TFullMemberDTO, TMemberDTO } from '../../users/types';
+import { USER_EXPOSE_GROUPS } from '../../users/constants';
+import { isFullMember, isMember } from '../../users/helpers';
+import { plainToClass } from 'class-transformer';
 
 @Injectable()
 export class AuthSignInService {
@@ -18,7 +19,7 @@ export class AuthSignInService {
   ) {}
 
   async signIn(body: SignInRequestBodyDTO): Promise<SignInResponseBodyDTO> {
-    const member = await this.usersRepository.getMemberOrFail(
+    const user = await this.usersRepository.getUserOrFail(
       {
         email: body.email,
       },
@@ -27,15 +28,13 @@ export class AuthSignInService {
 
     await AuthSignInService.checkComparePasswordsOrFail(
       body.password,
-      member.password as string,
+      user.password as string,
     );
-    AuthSignInService.checkEmailConfirmedOrFail(member.emailConfirmed);
-    AuthSignInService.checkFullMemberOrFail(member);
+    AuthSignInService.checkEmailConfirmedOrFail(user.emailConfirmed);
+    if (isMember(user)) AuthSignInService.isFullMemberOrFail(user);
 
-    const payload = {};
-    const accessToken = this.jwtService.sign(payload);
-
-    return { user: this.usersRepository.serialize(member), accessToken };
+    const accessToken = this.jwtService.sign({ sub: user.id });
+    return plainToClass(SignInResponseBodyDTO, { user, accessToken });
   }
 
   public static checkEmailConfirmedOrFail(emailConfirmed: boolean): void {
@@ -47,6 +46,19 @@ export class AuthSignInService {
         },
       ]);
     }
+  }
+
+  public static isFullMemberOrFail(
+    member: TMemberDTO,
+  ): member is TFullMemberDTO {
+    if (isFullMember(member)) return true;
+
+    throw new ExceptionsUnprocessableEntity([
+      {
+        field: ENTITIES_FIELDS.UNKNOWN,
+        messages: [AUTH_ERRORS.MEMBER_IS_NOT_FULL],
+      },
+    ]);
   }
 
   private static async checkComparePasswordsOrFail(
@@ -62,29 +74,5 @@ export class AuthSignInService {
         messages: [AUTH_ERRORS.INVALID_PASSWORD],
       },
     ]);
-  }
-
-  private static checkFullMemberOrFail(member: TMember): void {
-    if (AuthSignInService.isFullMemberByFields(member)) return;
-
-    throw new ExceptionsUnprocessableEntity([
-      {
-        field: ENTITIES_FIELDS.UNKNOWN,
-        messages: [AUTH_ERRORS.MEMBER_IS_NOT_FULL],
-      },
-    ]);
-  }
-
-  private static isFullMemberByFields(member: TMember): boolean {
-    switch (member.role) {
-      case USER_ROLES.STATION_WORKER:
-        return !isNull(member.clientId) || !isNull(member.stationId);
-      case USER_ROLES.DISTRICT_LEADER:
-        return !isNull(member.leaderDistrictId);
-      case USER_ROLES.ENGINEER:
-        return !isNull(member.engineerDistrictId);
-      default:
-        return true;
-    }
   }
 }

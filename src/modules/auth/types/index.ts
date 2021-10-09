@@ -1,1 +1,1 @@
-export * from './auth-payload.types';
+export * from './auth-jwt.types';

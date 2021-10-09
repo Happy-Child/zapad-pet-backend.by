@@ -5,8 +5,13 @@ import { ExtractJwt, Strategy } from 'passport-jwt';
 import { readFile } from '@app/helpers';
 import { COOKIE } from '../constants';
 import { AuthSignInService } from '../services';
-import { GeneralJWTPayload } from '../types';
+import { IAuthJWTTokenPayload } from '../interfaces';
 import { UsersRepository } from '../../users/repositories';
+import { getJWTPayloadByMember } from '../helpers';
+import { SimpleUserJWTPayloadDTO } from '../dtos';
+import { TMemberJWTPayloadDTO } from '../types';
+import { isMember } from '../../users/helpers';
+import { TFullMemberDTO } from '../../users/types';
 
 @Injectable()
 export class AuthJwtStrategy extends PassportStrategy(Strategy) {
@@ -35,16 +40,22 @@ export class AuthJwtStrategy extends PassportStrategy(Strategy) {
   }
 
   public async validate(
-    payload: Partial<GeneralJWTPayload>,
-  ): Promise<GeneralJWTPayload> {
-    const member = await this.usersRepository.getMemberOrFail({
+    payload: IAuthJWTTokenPayload,
+  ): Promise<TMemberJWTPayloadDTO | SimpleUserJWTPayloadDTO> {
+    const user = await this.usersRepository.getUserOrFail({
       id: payload.sub,
     });
 
-    AuthSignInService.checkEmailConfirmedOrFail(member.emailConfirmed);
+    AuthSignInService.checkEmailConfirmedOrFail(user.emailConfirmed);
 
-    // HOW CHECK ACTUAL DATA?
-
-    return payload as any;
+    if (isMember(user)) {
+      AuthSignInService.isFullMemberOrFail(user);
+      return getJWTPayloadByMember(user as TFullMemberDTO);
+    } else {
+      return {
+        userId: user.id,
+        role: user.role,
+      };
+    }
   }
 }
