@@ -2,8 +2,8 @@ import { EntityRepository } from 'typeorm';
 import { EmailConfirmedEntity } from '../entities';
 import { ExceptionsUnprocessableEntity } from '@app/exceptions/errors';
 import { AUTH_ERRORS } from '../constants';
-import { ENTITIES_FIELDS } from '@app/entities';
 import { GeneralRepository } from '@app/repositories';
+import { ENTITIES_FIELDS } from '@app/constants';
 
 @EntityRepository(EmailConfirmedEntity)
 export class AuthEmailConfirmedRepository extends GeneralRepository<EmailConfirmedEntity> {

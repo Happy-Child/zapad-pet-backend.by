@@ -1,7 +1,7 @@
 import { PaginationRequestDTO, PaginationResponseDTO } from '@app/dtos';
-import { ClientEntity, ENTITIES_FIELDS } from '@app/entities';
+import { ClientEntity } from '../../clients/entities';
 import { IsEnum, IsIn, IsOptional, IsString } from 'class-validator';
-import { SORT_DURATION } from '@app/constants';
+import { ENTITIES_FIELDS, SORT_DURATION } from '@app/constants';
 import { Expose, plainToClass } from 'class-transformer';
 
 export class ClientsGettingRequestQueryDTO extends PaginationRequestDTO {
@@ -29,7 +29,7 @@ export class ClientDTO extends ClientEntity {
   @Expose()
   stationsCount!: number;
 
-  constructor(data: Partial<ClientDTO>) {
+  constructor(data: ClientDTO) {
     super();
     Object.assign(
       this,

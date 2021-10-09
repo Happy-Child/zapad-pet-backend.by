@@ -3,19 +3,14 @@ import { PassportStrategy } from '@nestjs/passport';
 import { JWT, RSA } from 'config';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { readFile } from '@app/helpers';
-import { ExceptionsUnauthorized } from '@app/exceptions/errors';
-import { AuthUserRepository } from '../repositories';
-import { AUTH_ERRORS, COOKIE } from '../constants';
-import { IAuthJwtPayload } from '../interfaces';
+import { COOKIE } from '../constants';
 import { AuthSignInService } from '../services';
-import { ENTITIES_FIELDS } from '@app/entities';
+import { GeneralJWTPayload } from '../types';
+import { UsersRepository } from '../../users/repositories';
 
 @Injectable()
 export class AuthJwtStrategy extends PassportStrategy(Strategy) {
-  constructor(
-    private readonly userRepository: AuthUserRepository,
-    private readonly authSignInService: AuthSignInService,
-  ) {
+  constructor(private readonly usersRepository: UsersRepository) {
     super({
       jwtFromRequest: ExtractJwt.fromExtractors([
         (req) => {
@@ -39,27 +34,17 @@ export class AuthJwtStrategy extends PassportStrategy(Strategy) {
     });
   }
 
-  public async validate(payload: any): Promise<IAuthJwtPayload> {
-    const user = await this.userRepository.getOneOrFail(
-      { id: payload?.sub },
-      {
-        exception: {
-          type: ExceptionsUnauthorized,
-          messages: [
-            {
-              field: ENTITIES_FIELDS.UNKNOWN,
-              messages: [AUTH_ERRORS.UNAUTHORIZED],
-            },
-          ],
-        },
-      },
-    );
-
-    await this.authSignInService.isCompleteUserRoleOrFail(user);
-
-    return {
+  public async validate(
+    payload: Partial<GeneralJWTPayload>,
+  ): Promise<GeneralJWTPayload> {
+    const member = await this.usersRepository.getMemberOrFail({
       id: payload.sub,
-      role: payload.role,
-    };
+    });
+
+    AuthSignInService.checkEmailConfirmedOrFail(member.emailConfirmed);
+
+    // HOW CHECK ACTUAL DATA?
+
+    return payload as any;
   }
 }

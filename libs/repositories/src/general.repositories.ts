@@ -71,10 +71,13 @@ export class GeneralRepository<E extends BaseEntity> extends Repository<E> {
     return entity;
   }
 
-  public async getManyByIds(ids: number[]): Promise<E[]> {
+  public async getManyByColumn(
+    values: (number | string)[],
+    column: keyof E = 'id',
+  ): Promise<E[]> {
     return this.createQueryBuilder('u')
-      .where('u.id IN (:...ids)', { ids })
-      .orderBy('u.id')
+      .where(`u.${column} IN (:...values)`, { values })
+      .orderBy(`u.${column}`)
       .getMany();
   }
 

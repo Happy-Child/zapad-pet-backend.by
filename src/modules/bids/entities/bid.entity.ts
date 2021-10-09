@@ -8,15 +8,13 @@ import {
   OneToMany,
 } from 'typeorm';
 import { Expose } from 'class-transformer';
-import {
-  BaseEntity,
-  UserEntity,
-  File,
-  BidTodoEntity,
-  StationEntity,
-} from '@app/entities';
+import { BaseEntity } from '@app/entities';
 import { VARCHAR_DEFAULT_LENGTH } from '@app/constants';
 import { BID_PRIORITY, BID_STATUS } from '../constants';
+import { StationEntity } from '../../stations';
+import { UserEntity } from '../../users/entities';
+import { BidTodoEntity } from './bid-todo.entity';
+import { FileEntity } from '@app/files/entities';
 
 @Entity({ name: 'bid' })
 export class BidEntity extends BaseEntity {
@@ -66,7 +64,7 @@ export class BidEntity extends BaseEntity {
     referencedColumnName: 'id',
   })
   @Expose()
-  engineer?: UserEntity;
+  engineer!: UserEntity | null;
 
   @Column({ nullable: true })
   rejectedUserId!: number | null;
@@ -77,7 +75,7 @@ export class BidEntity extends BaseEntity {
     referencedColumnName: 'id',
   })
   @Expose()
-  rejectedUser?: UserEntity;
+  rejectedUser!: UserEntity | null;
 
   @Column({ nullable: true })
   confirmedStationWorkerId!: number | null;
@@ -88,22 +86,22 @@ export class BidEntity extends BaseEntity {
     referencedColumnName: 'id',
   })
   @Expose()
-  confirmedStationWorker?: UserEntity;
+  confirmedStationWorker!: UserEntity | null;
 
   @Column({ nullable: true })
   finalPhotoId!: number | null;
 
-  @OneToOne(() => File)
+  @OneToOne(() => FileEntity)
   @JoinColumn({
     name: 'finalPhotoId',
     referencedColumnName: 'id',
   })
   @Expose()
-  finalPhoto?: File;
+  finalPhoto!: FileEntity | null;
 
   @OneToMany(() => BidTodoEntity, (todo) => todo.bid)
   @Expose()
-  todos?: BidTodoEntity[];
+  todos!: BidTodoEntity[];
 
   @CreateDateColumn({ type: 'timestamptz', nullable: false })
   @Expose()

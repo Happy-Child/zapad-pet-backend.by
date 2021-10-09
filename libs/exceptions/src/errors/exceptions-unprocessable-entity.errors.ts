@@ -1,6 +1,6 @@
-import { ENTITIES_FIELDS } from '@app/entities';
 import { UnprocessableEntityException } from '@nestjs/common';
 import { IAbstractError, IErrorDetailItem } from '@app/exceptions/interfaces';
+import { ENTITIES_FIELDS } from '@app/constants';
 
 const defaultErrors = [
   {

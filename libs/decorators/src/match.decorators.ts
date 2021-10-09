@@ -5,7 +5,7 @@ import {
   ValidationOptions,
   ValidatorConstraintInterface,
 } from 'class-validator';
-import { ENTITIES_FIELDS } from '@app/entities';
+import { ENTITIES_FIELDS } from '@app/constants';
 
 @ValidatorConstraint({ name: 'Match' })
 class MatchConstraint implements ValidatorConstraintInterface {

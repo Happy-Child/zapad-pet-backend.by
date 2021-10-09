@@ -2,7 +2,7 @@ import { Entity, Column, OneToMany } from 'typeorm';
 import { BaseEntity } from '@app/entities/base.entity';
 import { VARCHAR_DEFAULT_LENGTH } from '@app/constants';
 import { Expose } from 'class-transformer';
-import { StationEntity } from '../../stations';
+import { StationWorkerEntity } from '../../users/entities';
 
 @Entity({ name: 'client' })
 export class ClientEntity extends BaseEntity {
@@ -15,7 +15,6 @@ export class ClientEntity extends BaseEntity {
   @Expose()
   name!: string;
 
-  @OneToMany(() => StationEntity, (station) => station.client)
-  @Expose()
-  stations?: StationEntity[];
+  @OneToMany(() => StationWorkerEntity, (worker) => worker.client)
+  stationsWorkers!: StationWorkerEntity[];
 }

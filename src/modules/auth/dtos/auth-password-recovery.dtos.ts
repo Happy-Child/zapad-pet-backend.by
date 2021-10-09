@@ -3,7 +3,7 @@ import { TokenRequestDTO } from '@app/dtos';
 import { Expose } from 'class-transformer';
 import { AUTH_ERRORS, PASSWORD_LENGTH, PASSWORD_REGEX } from '../constants';
 import { Match } from '@app/decorators';
-import { ENTITIES_FIELDS } from '@app/entities';
+import { ENTITIES_FIELDS } from '@app/constants';
 
 export class PasswordRecoveryRequestBodyDTO {
   @IsEmail()

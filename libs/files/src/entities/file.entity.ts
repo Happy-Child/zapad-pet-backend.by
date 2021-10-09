@@ -4,7 +4,7 @@ import { VARCHAR_DEFAULT_LENGTH } from '@app/constants';
 import { Expose } from 'class-transformer';
 
 @Entity({ name: 'file' })
-export class File extends BaseEntity {
+export class FileEntity extends BaseEntity {
   @Column({ type: 'varchar', length: VARCHAR_DEFAULT_LENGTH, nullable: false })
   @Expose()
   filename!: string;

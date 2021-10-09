@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import {
-  UsersCreateAccountantDTO,
   UsersCreateDistrictLeaderDTO,
   UsersCreateEngineerDTO,
   UsersCreateGeneralUserDTO,
@@ -8,46 +7,48 @@ import {
   UsersCreateStationWorkerDTO,
 } from '../../dtos';
 import { UsersCheckBeforeCreateService } from './users-check-before-create.service';
-import { UsersCheckGeneralDataService } from '../common';
+import { UsersGeneralCheckService } from '../general';
 import {
-  UsersDistrictsRepository,
+  UsersDistrictsLeadersRepository,
   UsersEmailConfirmedRepository,
+  UsersEngineersRepository,
   UsersRepository,
+  UsersStationsWorkersRepository,
 } from '../../repositories';
 import { Connection, EntityManager } from 'typeorm';
-import { ClientsToStationWorkersRepository } from '../../../clients';
 import { generateRandomToken, toObjectByField } from '@app/helpers';
-import {
-  DistrictEntity,
-  EmailConfirmedEntity,
-  ENTITIES_FIELDS,
-  UserEntity,
-} from '@app/entities';
-import { DistrictsToEngineersRepository } from '../../../districts';
 import { getHashByPassword } from '../../../auth/helpers';
 import { UsersSendingMailService } from '../users-sending-mail.service';
-import { getGroupedUsersByRoles } from '../../helpers';
-import { IRepositoryUpdateEntitiesItem } from '@app/repositories/interfaces';
+import { getGroupedFullUsersByRoles } from '../../helpers';
+import { ENTITIES_FIELDS } from '@app/constants';
+import {
+  DistrictLeaderEntity,
+  EngineerEntity,
+  StationWorkerEntity,
+  UserEntity,
+} from '../../entities';
+import { EmailConfirmedEntity } from '../../../auth/entities';
 
 @Injectable()
 export class UsersCreateService {
   constructor(
     private readonly usersRepository: UsersRepository,
-    private readonly checkGeneralUsersDataService: UsersCheckGeneralDataService,
+    private readonly checkGeneralUsersDataService: UsersGeneralCheckService,
     private readonly usersCheckBeforeCreateService: UsersCheckBeforeCreateService,
     private readonly usersSendingMailService: UsersSendingMailService,
     private readonly connection: Connection,
   ) {}
 
   public async create({ users }: UsersCreateRequestBodyDTO) {
-    await this.checkGeneralUsersDataService.checkExistingEmailsOrFail(users);
+    const emails = users.map(({ email }) => email);
+    await this.checkGeneralUsersDataService.checkExistingEmailsOrFail(emails);
 
-    const { stationWorkers, engineers, districtLeaders, accountants } =
-      getGroupedUsersByRoles<
+    const { stationWorkers, engineers, districtLeaders, simpleUsers } =
+      getGroupedFullUsersByRoles<
         UsersCreateDistrictLeaderDTO,
         UsersCreateEngineerDTO,
         UsersCreateStationWorkerDTO,
-        UsersCreateAccountantDTO
+        UsersCreateGeneralUserDTO
       >(users);
 
     const userCheckingRequestList: Promise<void>[] = [];
@@ -86,9 +87,9 @@ export class UsersCreateService {
       );
     }
 
-    if (accountants.length) {
+    if (simpleUsers.length) {
       userCreationRequestList.push((manager: EntityManager) =>
-        this.saveAccountants(accountants, manager),
+        this.saveSimpleUsers(simpleUsers, manager),
       );
     }
 
@@ -101,7 +102,7 @@ export class UsersCreateService {
         ...stationWorkers,
         ...engineers,
         ...districtLeaders,
-        ...accountants,
+        ...simpleUsers,
       ];
 
       const records = await this.createRecordsOfConfirmationEmails(
@@ -119,15 +120,16 @@ export class UsersCreateService {
   ): Promise<UserEntity[]> {
     const createdUsers = await this.saveUsers(districtsLeaders, manager);
 
-    const usersDistrictsRepository = manager.getCustomRepository(
-      UsersDistrictsRepository,
+    const districtsLeadersRepository = manager.getCustomRepository(
+      UsersDistrictsLeadersRepository,
     );
-    const districtsToUpdate: IRepositoryUpdateEntitiesItem<DistrictEntity>[] =
-      districtsLeaders.map(({ districtId: id, email }) => ({
-        criteria: { id },
-        inputs: { districtLeaderId: createdUsers[email].id },
-      }));
-    await usersDistrictsRepository.updateEntities(districtsToUpdate);
+    const records: Partial<DistrictLeaderEntity>[] = districtsLeaders.map(
+      ({ districtId, email }) => ({
+        userId: createdUsers[email].id,
+        districtId,
+      }),
+    );
+    await districtsLeadersRepository.saveEntities(records);
 
     return Object.values(createdUsers);
   }
@@ -138,16 +140,16 @@ export class UsersCreateService {
   ): Promise<UserEntity[]> {
     const createdUsers = await this.saveUsers(stationWorkers, manager);
 
-    const usersClientsRepository = manager.getCustomRepository(
-      ClientsToStationWorkersRepository,
+    const stationsWorkersRepository = manager.getCustomRepository(
+      UsersStationsWorkersRepository,
     );
-    const clientsToStationWorkersEntities = stationWorkers.map(
-      ({ email, clientId }) => ({
+    const records: Partial<StationWorkerEntity>[] = stationWorkers.map(
+      ({ clientId, email }) => ({
+        userId: createdUsers[email].id,
         clientId,
-        stationWorkerId: createdUsers[email].id,
       }),
     );
-    await usersClientsRepository.saveEntities(clientsToStationWorkersEntities);
+    await stationsWorkersRepository.saveEntities(records);
 
     return Object.values(createdUsers);
   }
@@ -158,24 +160,22 @@ export class UsersCreateService {
   ): Promise<UserEntity[]> {
     const createdUsers = await this.saveUsers(engineers, manager);
 
-    const districtsToEngineersRepository = manager.getCustomRepository(
-      DistrictsToEngineersRepository,
+    const engineersRepository = manager.getCustomRepository(
+      UsersEngineersRepository,
     );
-    const districtsToEngineersEntities = engineers.map(
-      ({ email, districtId }) => ({
+    const records: Partial<EngineerEntity>[] = engineers.map(
+      ({ districtId, email }) => ({
+        userId: createdUsers[email].id,
         districtId,
-        engineerId: createdUsers[email].id,
       }),
     );
-    await districtsToEngineersRepository.saveEntities(
-      districtsToEngineersEntities,
-    );
+    await engineersRepository.saveEntities(records);
 
     return Object.values(createdUsers);
   }
 
-  private async saveAccountants(
-    users: UsersCreateAccountantDTO[],
+  private async saveSimpleUsers(
+    users: UsersCreateGeneralUserDTO[],
     manager: EntityManager,
   ): Promise<UserEntity[]> {
     const data = await this.saveUsers(users, manager);

@@ -6,17 +6,15 @@ import {
 } from '../dtos';
 import { generateRandomToken } from '@app/helpers';
 import { checkTimeAllowedSendMail, getHashByPassword } from '../helpers';
-import {
-  AuthPasswordRecoveryRepository,
-  AuthUserRepository,
-} from '../repositories';
+import { AuthPasswordRecoveryRepository } from '../repositories';
 import { AuthSendingMailService } from './auth-sending-mail.service';
 import { PasswordRecoveryEntity } from '../entities';
+import { UsersRepository } from '../../users/repositories';
 
 @Injectable()
 export class AuthPasswordRecoveryService {
   constructor(
-    private readonly authUserRepository: AuthUserRepository,
+    private readonly usersRepository: UsersRepository,
     private readonly authPasswordRecoveryRepository: AuthPasswordRecoveryRepository,
     private readonly authSendingMailService: AuthSendingMailService,
     private readonly connection: Connection,
@@ -25,7 +23,7 @@ export class AuthPasswordRecoveryService {
   async passwordRecovery(
     email: string,
   ): Promise<PasswordRecoveryResponseBodyDTO> {
-    await this.authUserRepository.findByEmailOrFail(email);
+    await this.usersRepository.getMemberOrFail({ email });
 
     const prevPasswordRecoveryData =
       await this.authPasswordRecoveryRepository.getOne({
@@ -44,17 +42,17 @@ export class AuthPasswordRecoveryService {
   ): Promise<PasswordRecoveryResponseBodyDTO> {
     const token = await generateRandomToken();
 
-    await this.authSendingMailService.sendEmailRecoveryPassword({
-      email,
-      token,
-    });
-
     const { attemptCount, updatedAt } =
       await this.authPasswordRecoveryRepository.saveEntity({
         token,
         email,
         attemptCount: 1,
       });
+
+    await this.authSendingMailService.sendEmailRecoveryPassword({
+      email,
+      token,
+    });
 
     return new PasswordRecoveryResponseBodyDTO({
       attemptCount,
@@ -75,11 +73,6 @@ export class AuthPasswordRecoveryService {
     });
 
     if (allowedSendMail) {
-      await this.authSendingMailService.sendEmailRecoveryPassword({
-        email,
-        token,
-      });
-
       await this.authPasswordRecoveryRepository.updateEntity(
         { id },
         {
@@ -87,14 +80,18 @@ export class AuthPasswordRecoveryService {
         },
       );
 
-      const updatedPasswordRecoveryData =
-        (await this.authPasswordRecoveryRepository.getOne({
-          id,
-        })) as PasswordRecoveryEntity;
+      const updatedData = (await this.authPasswordRecoveryRepository.getOne({
+        id,
+      })) as PasswordRecoveryEntity;
+
+      await this.authSendingMailService.sendEmailRecoveryPassword({
+        email,
+        token,
+      });
 
       return new PasswordRecoveryResponseBodyDTO({
-        attemptCount: updatedPasswordRecoveryData.attemptCount,
-        updatedAt: updatedPasswordRecoveryData.updatedAt,
+        attemptCount: updatedData.attemptCount,
+        updatedAt: updatedData.updatedAt,
         wasSent: true,
       });
     }
@@ -112,25 +109,24 @@ export class AuthPasswordRecoveryService {
     const passwordRecoveryData =
       await this.authPasswordRecoveryRepository.findByTokenOrFail(body.token);
 
-    const user = await this.authUserRepository.findByEmailOrFail(
-      passwordRecoveryData.email,
-    );
+    const member = await this.usersRepository.getMemberOrFail({
+      email: passwordRecoveryData.email,
+    });
 
     const newPasswordHash = await getHashByPassword(body.password);
 
     await this.connection.transaction(async (manager) => {
+      const usersRepository = manager.getCustomRepository(UsersRepository);
+      await usersRepository.updateEntity(
+        { id: member.id },
+        { password: newPasswordHash },
+      );
+
       const authPasswordRecoveryRepository = manager.getCustomRepository(
         AuthPasswordRecoveryRepository,
       );
       await authPasswordRecoveryRepository.deleteEntity(
         passwordRecoveryData.id,
-      );
-
-      const authUserRepository =
-        manager.getCustomRepository(AuthUserRepository);
-      await authUserRepository.updateEntity(
-        { id: user.id },
-        { password: newPasswordHash },
       );
     });
   }

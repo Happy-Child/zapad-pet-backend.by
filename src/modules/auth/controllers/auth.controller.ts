@@ -27,8 +27,8 @@ import {
 } from '../dtos';
 import { COOKIE } from '../constants';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
-import { IAppRequest } from '@app/interfaces';
 import { UserEntity } from '../../users/entities';
+import { GeneralJWTPayload } from '../types';
 
 @Controller('auth')
 export class AuthController {
@@ -42,8 +42,10 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @UseGuards(JwtAuthGuard)
   @Get('/me')
-  async me(@Request() { user }: IAppRequest): Promise<UserEntity> {
-    return this.authGeneralService.me(user.id);
+  async me(
+    @Request() { user }: { user: GeneralJWTPayload },
+  ): Promise<UserEntity> {
+    return this.authGeneralService.me(user.sub);
   }
 
   @HttpCode(HttpStatus.OK)

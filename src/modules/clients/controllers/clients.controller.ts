@@ -10,7 +10,7 @@ import {
   Query,
 } from '@nestjs/common';
 import { ClientDTO, ClientsCreateBodyDTO } from '../dtos';
-import { ClientsGettingService, ClientsService } from '../services';
+import { ClientsGettingService, ClientsGeneralService } from '../services';
 import { ClientsUpdateBodyDTO } from '../dtos';
 import {
   ClientsGettingRequestQueryDTO,
@@ -20,13 +20,13 @@ import {
 @Controller('clients')
 export class ClientsController {
   constructor(
-    private readonly clientsService: ClientsService,
+    private readonly clientsGeneralService: ClientsGeneralService,
     private readonly clientsGettingService: ClientsGettingService,
   ) {}
 
   @Post()
   async create(@Body() body: ClientsCreateBodyDTO): Promise<true> {
-    await this.clientsService.create(body);
+    await this.clientsGeneralService.create(body);
     return true;
   }
 
@@ -35,13 +35,13 @@ export class ClientsController {
     @Param('id', ParseIntPipe) id: number,
     @Body() body: ClientsUpdateBodyDTO,
   ): Promise<true> {
-    await this.clientsService.update(id, body);
+    await this.clientsGeneralService.update(id, body);
     return true;
   }
 
   @Delete('/:id')
   async deleteById(@Param('id', ParseIntPipe) id: number): Promise<true> {
-    await this.clientsService.deleteById(id);
+    await this.clientsGeneralService.deleteById(id);
     return true;
   }
 

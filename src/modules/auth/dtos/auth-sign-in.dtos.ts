@@ -1,7 +1,7 @@
 import { IsEmail, IsString, Length, Matches } from 'class-validator';
 import { Expose } from 'class-transformer';
 import { PASSWORD_LENGTH, PASSWORD_REGEX } from '../constants';
-import { UserEntity } from '@app/entities';
+import { UserEntity } from '../../users/entities';
 
 export class SignInRequestBodyDTO {
   @IsEmail()

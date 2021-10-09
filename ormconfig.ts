@@ -1,9 +1,30 @@
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { POSTGRES } from 'config';
-import * as Entities from '@app/entities';
+import * as FilesEntity from '@app/files/entities';
+import * as AuthEntities from './src/modules/auth/entities';
+import * as UsersEntities from './src/modules/users/entities';
+import * as BidsEntities from './src/modules/bids/entities';
+import * as ClientsEntities from './src/modules/clients/entities';
+import * as DistrictsEntities from './src/modules/districts/entities';
+import * as RegionsEntities from './src/modules/regions/entities';
+import * as StationsEntities from './src/modules/stations/entities';
 import * as Migrations from './migration';
+import { EntitySchema } from 'typeorm/entity-schema/EntitySchema';
 
-const entities = Object.values(Entities);
+const entities = [
+  FilesEntity,
+  AuthEntities,
+  UsersEntities,
+  BidsEntities,
+  ClientsEntities,
+  DistrictsEntities,
+  RegionsEntities,
+  StationsEntities,
+].reduce<(Function | string | EntitySchema<any>)[]>(
+  (map, entity) => [...map, ...Object.values(entity)],
+  [],
+);
+
 const migrations = Object.values(Migrations);
 
 export = {

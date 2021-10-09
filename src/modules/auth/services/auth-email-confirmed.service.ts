@@ -1,32 +1,31 @@
 import { Injectable } from '@nestjs/common';
 import { Connection } from 'typeorm';
-import { ENTITIES_FIELDS } from '@app/entities';
-import {
-  AuthEmailConfirmedRepository,
-  AuthUserRepository,
-} from '../repositories';
+import { AuthEmailConfirmedRepository } from '../repositories';
 import { EmailConfirmationRequestBodyDTO } from '../dtos';
 import { ExceptionsUnprocessableEntity } from '@app/exceptions/errors';
 import { AUTH_ERRORS } from '../constants';
+import { ENTITIES_FIELDS } from '@app/constants';
+import { UsersRepository } from '../../users/repositories';
 
 @Injectable()
 export class AuthEmailConfirmedService {
   constructor(
     private readonly authEmailConfirmedRepository: AuthEmailConfirmedRepository,
-    private readonly authUserRepository: AuthUserRepository,
+    private readonly usersRepository: UsersRepository,
     private readonly connection: Connection,
   ) {}
 
   async emailConfirmation(
     body: EmailConfirmationRequestBodyDTO,
   ): Promise<void> {
-    const emailConfirmationData =
-      await this.authEmailConfirmedRepository.findByTokenOrFail(body.token);
-
-    const user = await this.authUserRepository.findByEmailOrFail(
-      emailConfirmationData.email,
+    const record = await this.authEmailConfirmedRepository.findByTokenOrFail(
+      body.token,
     );
-    if (user.emailConfirmed) {
+
+    const member = await this.usersRepository.getMemberOrFail({
+      email: record.email,
+    });
+    if (member.emailConfirmed) {
       throw new ExceptionsUnprocessableEntity([
         {
           field: ENTITIES_FIELDS.EMAIL,
@@ -39,11 +38,13 @@ export class AuthEmailConfirmedService {
       const authEmailConfirmedRepository = manager.getCustomRepository(
         AuthEmailConfirmedRepository,
       );
-      await authEmailConfirmedRepository.deleteEntity(emailConfirmationData.id);
+      await authEmailConfirmedRepository.deleteEntity(record.id);
 
-      const authUserRepository =
-        manager.getCustomRepository(AuthUserRepository);
-      await authUserRepository.saveEntity({ ...user, emailConfirmed: true });
+      const usersRepository = manager.getCustomRepository(UsersRepository);
+      await usersRepository.updateEntity(
+        { email: record.email },
+        { emailConfirmed: true },
+      );
     });
   }
 }

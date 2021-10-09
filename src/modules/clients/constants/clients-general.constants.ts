@@ -1,4 +1,4 @@
-import { ENTITIES_FIELDS } from '@app/entities';
+import { ENTITIES_FIELDS } from '@app/constants';
 
 export const CLIENT_NAME_LENGTH = {
   MIN: 2,

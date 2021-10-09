@@ -1,16 +1,8 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import {
-  DistrictsRepository,
-  DistrictsToEngineersRepository,
-} from './repositories';
+import { DistrictsRepository } from './repositories';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([
-      DistrictsToEngineersRepository,
-      DistrictsRepository,
-    ]),
-  ],
+  imports: [TypeOrmModule.forFeature([DistrictsRepository])],
 })
 export class DistrictsModule {}

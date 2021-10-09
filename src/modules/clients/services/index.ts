@@ -1,2 +1,2 @@
-export * from './clients.service';
+export * from './clients-general.service';
 export * from './clients-getting.service';

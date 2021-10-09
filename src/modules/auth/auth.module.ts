@@ -3,8 +3,8 @@ import { Module } from '@nestjs/common';
 import { AuthController } from './controllers/auth.controller';
 import {
   AuthEmailConfirmedRepository,
-  AuthUserRepository,
   AuthPasswordRecoveryRepository,
+  AuthStationsRepository,
 } from './repositories';
 import {
   AuthSignInService,
@@ -19,21 +19,17 @@ import { MailSenderModule } from '@app/mail-sender';
 import { PugModule } from '@app/pug';
 import { JwtModule } from '@nestjs/jwt';
 import { readFile } from '@app/helpers';
-import {
-  DistrictsRepository,
-  DistrictsToEngineersRepository,
-} from '../districts';
-import { ClientsToStationWorkersRepository } from '../clients';
+import { DistrictsRepository } from '../districts';
+import { UsersRepository } from '../users/repositories';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([
-      AuthUserRepository,
       AuthEmailConfirmedRepository,
       AuthPasswordRecoveryRepository,
       DistrictsRepository,
-      DistrictsToEngineersRepository,
-      ClientsToStationWorkersRepository,
+      AuthStationsRepository,
+      UsersRepository,
     ]),
     JwtModule.register({
       privateKey: readFile(config.RSA.PRIVATE_KEY_PATH).toString(),

@@ -1,6 +1,6 @@
 import { ValidationError } from 'class-validator';
 import { IErrorDetailItem } from '@app/exceptions/interfaces';
-import { ENTITIES_FIELDS } from '@app/entities';
+import { ENTITIES_FIELDS } from '@app/constants';
 
 const getSingleValidationErrorMessages = ({
   property,

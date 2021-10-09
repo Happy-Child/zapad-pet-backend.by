@@ -1,15 +1,15 @@
 import { ValidateBy, ARRAY_UNIQUE } from 'class-validator';
 import { USER_ROLES, USERS_ERRORS } from '../constants';
 import { getUniquePrimitiveArray } from '@app/helpers';
-import { getGroupedUsersByRoles } from '../helpers';
-import { AllowedRolesType } from '../types';
+import { getGroupedFullUsersByRoles } from '../helpers';
+import { AllowedRoles } from '../types';
 
-const identifier = <T extends { role: AllowedRolesType; districtId?: number }>(
+const identifier = <T extends { role: AllowedRoles; districtId?: number }>(
   items: T[] | undefined,
 ): boolean => {
   if (!items || !Array.isArray(items)) return false;
 
-  const { districtLeaders } = getGroupedUsersByRoles<{
+  const { districtLeaders } = getGroupedFullUsersByRoles<{
     districtId: number;
     role: USER_ROLES.DISTRICT_LEADER;
   }>(items);
@@ -25,7 +25,7 @@ const identifier = <T extends { role: AllowedRolesType; districtId?: number }>(
 };
 
 export function UniqueDistrictLeadersInArray<
-  T extends { role: AllowedRolesType; districtId?: number },
+  T extends { role: AllowedRoles; districtId?: number },
 >() {
   return ValidateBy({
     name: ARRAY_UNIQUE,

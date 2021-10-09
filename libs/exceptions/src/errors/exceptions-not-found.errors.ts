@@ -1,6 +1,6 @@
-import { ENTITIES_FIELDS } from '@app/entities';
 import { IAbstractError, IErrorDetailItem } from '@app/exceptions/interfaces';
 import { NotFoundException } from '@nestjs/common';
+import { ENTITIES_FIELDS } from '@app/constants';
 
 const defaultErrors = [
   {

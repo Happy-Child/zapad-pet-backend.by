@@ -1,9 +1,8 @@
-import { Entity, Column, ManyToOne, OneToOne, JoinColumn } from 'typeorm';
+import { Entity, Column, OneToMany } from 'typeorm';
 import { BaseEntity } from '@app/entities/base.entity';
 import { VARCHAR_DEFAULT_LENGTH } from '@app/constants';
 import { Expose } from 'class-transformer';
-import { RegionEntity } from '../../regions';
-import { UserEntity } from '@app/entities';
+import { EngineerEntity } from '../../users/entities';
 
 @Entity({ name: 'district' })
 export class DistrictEntity extends BaseEntity {
@@ -29,22 +28,6 @@ export class DistrictEntity extends BaseEntity {
   @Expose()
   regionSlug!: string;
 
-  @ManyToOne(() => RegionEntity)
-  @JoinColumn({
-    name: 'regionSlug',
-    referencedColumnName: 'slug',
-  })
-  @Expose()
-  region?: RegionEntity;
-
-  @Column({ nullable: true })
-  districtLeaderId!: number | null;
-
-  @OneToOne(() => UserEntity)
-  @JoinColumn({
-    name: 'districtLeaderId',
-    referencedColumnName: 'id',
-  })
-  @Expose()
-  districtLeader?: UserEntity;
+  @OneToMany(() => EngineerEntity, (engineer) => engineer.district)
+  engineers!: EngineerEntity[];
 }

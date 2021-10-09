@@ -1,20 +1,12 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import {
-  ClientsRepository,
-  ClientsToStationWorkersRepository,
-} from './repositories';
+import { ClientsRepository } from './repositories';
 import { ClientsController } from './controllers/clients.controller';
-import { ClientsService, ClientsGettingService } from './services';
+import { ClientsGeneralService, ClientsGettingService } from './services';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([
-      ClientsToStationWorkersRepository,
-      ClientsRepository,
-    ]),
-  ],
+  imports: [TypeOrmModule.forFeature([ClientsRepository])],
   controllers: [ClientsController],
-  providers: [ClientsService, ClientsGettingService],
+  providers: [ClientsGeneralService, ClientsGettingService],
 })
 export class ClientsModule {}

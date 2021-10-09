@@ -7,9 +7,8 @@ import {
   ClientsGettingResponseBodyDTO,
 } from '../dtos';
 import { CLIENTS_DEFAULT_SORT_BY } from '../constants';
-import { SORT_DURATION_DEFAULT } from '@app/constants';
+import { ENTITIES_FIELDS, SORT_DURATION_DEFAULT } from '@app/constants';
 import { StationEntity } from '../../stations';
-import { ENTITIES_FIELDS } from '@app/entities';
 
 @EntityRepository(ClientEntity)
 export class ClientsRepository extends GeneralRepository<ClientEntity> {

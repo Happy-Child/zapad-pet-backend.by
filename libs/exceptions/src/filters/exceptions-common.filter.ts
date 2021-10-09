@@ -4,9 +4,8 @@ import {
   ExceptionFilter,
   HttpException,
 } from '@nestjs/common';
-import { APP_CONTEXT } from '@app/constants';
+import { APP_CONTEXT, ENTITIES_FIELDS } from '@app/constants';
 import { isValidException } from '@app/exceptions/helpers';
-import { ENTITIES_FIELDS } from '@app/entities';
 
 @Catch()
 export class ExceptionsCommonFilter implements ExceptionFilter {
