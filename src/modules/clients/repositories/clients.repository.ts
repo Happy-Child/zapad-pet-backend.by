@@ -27,6 +27,7 @@ export class ClientsRepository extends GeneralRepository<ClientEntity> {
   }
 
   // TODO replace join on relationAndCount? If use relationAndCount - orderBy "stationsCount" not working
+  // leftJoinAndSelect(cl.stations, 'clsts');
   public async getClientsWithPagination(
     data: ClientsGettingRequestQueryDTO,
   ): Promise<ClientsGettingResponseBodyDTO> {

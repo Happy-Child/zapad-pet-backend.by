@@ -13,6 +13,7 @@ import {
   UsersCreateService,
   UsersGeneralCheckService,
   UsersSendingMailService,
+  UsersGettingService,
 } from './services';
 import { MailSenderModule } from '@app/mail-sender';
 import { PugModule } from '@app/pug';
@@ -39,6 +40,7 @@ import { ClientsRepository } from '../clients';
     UsersCheckBeforeCreateService,
     UsersCreateService,
     UsersSendingMailService,
+    UsersGettingService,
   ],
 })
 export class UsersModule {}

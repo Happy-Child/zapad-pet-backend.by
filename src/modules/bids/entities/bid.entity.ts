@@ -12,7 +12,11 @@ import { BaseEntity } from '@app/entities';
 import { VARCHAR_DEFAULT_LENGTH } from '@app/constants';
 import { BID_PRIORITY, BID_STATUS } from '../constants';
 import { StationEntity } from '../../stations';
-import { UserEntity } from '../../users/entities';
+import {
+  EngineerEntity,
+  StationWorkerEntity,
+  UserEntity,
+} from '../../users/entities';
 import { BidTodoEntity } from './bid-todo.entity';
 import { FileEntity } from '@app/files/entities';
 
@@ -58,13 +62,13 @@ export class BidEntity extends BaseEntity {
   @Column({ nullable: true })
   engineerId!: number | null;
 
-  @ManyToOne(() => UserEntity)
+  @ManyToOne(() => EngineerEntity)
   @JoinColumn({
     name: 'engineerId',
-    referencedColumnName: 'id',
+    referencedColumnName: 'userId',
   })
   @Expose()
-  engineer!: UserEntity | null;
+  engineer!: EngineerEntity | null;
 
   @Column({ nullable: true })
   rejectedUserId!: number | null;
@@ -80,13 +84,13 @@ export class BidEntity extends BaseEntity {
   @Column({ nullable: true })
   confirmedStationWorkerId!: number | null;
 
-  @ManyToOne(() => UserEntity)
+  @ManyToOne(() => StationWorkerEntity)
   @JoinColumn({
     name: 'confirmedStationWorkerId',
-    referencedColumnName: 'id',
+    referencedColumnName: 'userId',
   })
   @Expose()
-  confirmedStationWorker!: UserEntity | null;
+  confirmedStationWorker!: StationWorkerEntity | null;
 
   @Column({ nullable: true })
   finalPhotoId!: number | null;
