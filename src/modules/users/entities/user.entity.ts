@@ -6,6 +6,7 @@ import { Expose } from 'class-transformer';
 
 @Entity({ name: 'user' })
 export class UserEntity extends BaseEntity {
+  @Expose()
   @Column({ type: 'varchar', length: VARCHAR_DEFAULT_LENGTH, nullable: false })
   name!: string;
 

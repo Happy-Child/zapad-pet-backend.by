@@ -22,7 +22,7 @@ export class AuthEmailConfirmedService {
       body.token,
     );
 
-    const user = await this.usersRepository.getUserOrFail({
+    const user = await this.usersRepository.getFullUserOrFail({
       email: record.email,
     });
     if (user.emailConfirmed) {

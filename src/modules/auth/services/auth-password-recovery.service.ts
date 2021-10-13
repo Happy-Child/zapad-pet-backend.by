@@ -23,7 +23,7 @@ export class AuthPasswordRecoveryService {
   async passwordRecovery(
     email: string,
   ): Promise<PasswordRecoveryResponseBodyDTO> {
-    await this.usersRepository.getUserOrFail({ email });
+    await this.usersRepository.getFullUserOrFail({ email });
 
     const prevPasswordRecoveryData =
       await this.authPasswordRecoveryRepository.getOne({
@@ -109,7 +109,7 @@ export class AuthPasswordRecoveryService {
     const passwordRecoveryData =
       await this.authPasswordRecoveryRepository.findByTokenOrFail(body.token);
 
-    const user = await this.usersRepository.getUserOrFail({
+    const user = await this.usersRepository.getFullUserOrFail({
       email: passwordRecoveryData.email,
     });
 

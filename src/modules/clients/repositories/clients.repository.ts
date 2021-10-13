@@ -31,22 +31,24 @@ export class ClientsRepository extends GeneralRepository<ClientEntity> {
   public async getClientsWithPagination(
     data: ClientsGettingRequestQueryDTO,
   ): Promise<ClientsGettingResponseBodyDTO> {
-    const query = await this.createQueryBuilder('cl').select(
+    const totalSkip = data.skip || 0;
+
+    const queryBuilder = await this.createQueryBuilder('cl').select(
       `cl.*, COUNT(st.clientId)::int AS "${ENTITIES_FIELDS.STATIONS_COUNT}"`,
     );
 
     if (data.searchByName) {
-      query.where(`name LIKE '%${data.searchByName}%'`);
+      queryBuilder.where(`name LIKE '%${data.searchByName}%'`);
     }
 
-    const items = await query
+    const items = await queryBuilder
       .leftJoin(StationEntity, 'st', '"st"."clientId" = cl.id')
       .groupBy('cl.id')
       .orderBy(
         `"${data.sortBy || CLIENTS_DEFAULT_SORT_BY}"`,
         data.sortDuration || SORT_DURATION_DEFAULT,
       )
-      .offset(data.skip || 0)
+      .offset(totalSkip)
       .limit(data.take)
       .getRawMany<ClientDTO>();
 
@@ -55,6 +57,8 @@ export class ClientsRepository extends GeneralRepository<ClientEntity> {
     return {
       totalItemsCount,
       items,
+      skip: totalSkip,
+      take: data.take,
     };
   }
 }

@@ -1,4 +1,4 @@
-import { EntityRepository } from 'typeorm';
+import { EntityRepository, SelectQueryBuilder } from 'typeorm';
 import {
   DistrictLeaderEntity,
   EngineerEntity,
@@ -6,37 +6,38 @@ import {
   UserEntity,
 } from '../entities';
 import { GeneralRepository } from '@app/repositories';
-import {
-  DistrictLeaderMemberDTO,
-  EngineerMemberDTO,
-  SimpleUserDTO,
-  StationWorkerMemberDTO,
-} from '../dtos';
+import { SimpleUserDTO } from '../dtos';
 import { ExceptionsNotFound } from '@app/exceptions/errors';
-import { ENTITIES_FIELDS } from '@app/constants';
+import { ENTITIES_FIELDS, SORT_DURATION_DEFAULT } from '@app/constants';
 import { AUTH_ERRORS } from '../../auth/constants';
-import { USER_ROLES } from '../constants';
 import { TMemberDTO } from '../types';
 import { RepositoryFindConditions } from '@app/repositories/types';
 import { ClassTransformOptions } from 'class-transformer/types/interfaces';
+import { getSerializedMemberUser } from '../helpers';
+import {
+  UsersGetListRequestQueryDTO,
+  UsersGetListResponseBodyDTO,
+} from '../dtos/users-getting.dtos';
+import { USERS_LIST_DEFAULT_SORT_BY } from '../constants/clients-general.constants';
+import { USER_ROLES } from '../constants';
+
+const rawSelect = `u.*, sw.clientId as "clientId", sw.stationId as "stationId", dl.districtId as "leaderDistrictId", e.districtId as "engineerDistrictId"`;
 
 @EntityRepository(UserEntity)
 export class UsersRepository extends GeneralRepository<UserEntity> {
   protected entitySerializer = UserEntity;
 
-  public async getUserOrFail(
+  public async getFullUserOrFail(
     conditions: RepositoryFindConditions<UserEntity>,
     serializeOptions?: ClassTransformOptions,
   ): Promise<TMemberDTO | SimpleUserDTO> {
-    const rawUser = await this.createQueryBuilder('u')
-      .select(
-        `u.*, sw.clientId as "clientId", sw.stationId as "stationId", dl.districtId as "leaderDistrictId", e.districtId as "engineerDistrictId"`,
-      )
-      .where(conditions)
-      .leftJoin(StationWorkerEntity, 'sw', '"sw"."userId" = u.id')
-      .leftJoin(DistrictLeaderEntity, 'dl', '"dl"."userId" = u.id')
-      .leftJoin(EngineerEntity, 'e', '"e"."userId" = u.id')
-      .getRawOne();
+    const queryBuilder = this.createQueryBuilder('u')
+      .select(rawSelect)
+      .where(conditions);
+
+    UsersRepository.addMemberJoins(queryBuilder);
+
+    const rawUser = await queryBuilder.getRawOne();
 
     if (!rawUser) {
       throw new ExceptionsNotFound([
@@ -44,22 +45,54 @@ export class UsersRepository extends GeneralRepository<UserEntity> {
       ]);
     }
 
-    return UsersRepository.getPreparedMember(rawUser, serializeOptions);
+    return getSerializedMemberUser(rawUser, serializeOptions);
   }
 
-  private static getPreparedMember(
-    rawUser: any,
-    serializeOptions?: ClassTransformOptions,
-  ): TMemberDTO | SimpleUserDTO {
-    switch (rawUser.role) {
-      case USER_ROLES.STATION_WORKER:
-        return new StationWorkerMemberDTO(rawUser, serializeOptions);
-      case USER_ROLES.DISTRICT_LEADER:
-        return new DistrictLeaderMemberDTO(rawUser, serializeOptions);
-      case USER_ROLES.ENGINEER:
-        return new EngineerMemberDTO(rawUser, serializeOptions);
-      default:
-        return new SimpleUserDTO(rawUser, serializeOptions);
+  public async getUsersWithPagination(
+    data: UsersGetListRequestQueryDTO,
+  ): Promise<UsersGetListResponseBodyDTO> {
+    const totalSkip = data.skip || 0;
+    const totalSortBy = data.sortBy || USERS_LIST_DEFAULT_SORT_BY;
+    const totalSortDuration = data.sortDuration || SORT_DURATION_DEFAULT;
+
+    const queryBuilder = this.createQueryBuilder('u')
+      .select(rawSelect)
+      .where(`u.role NOT IN ('${USER_ROLES.MASTER}')`);
+
+    if (data.search) {
+      queryBuilder.andWhere(
+        `name LIKE '%${data.search}%' OR email LIKE '%${data.search}%'`,
+      );
     }
+
+    if (data.role) {
+      queryBuilder.andWhere(`role IN (:...values)`, { values: data.role });
+    }
+
+    UsersRepository.addMemberJoins(queryBuilder);
+
+    const items = await queryBuilder
+      .orderBy(`"${totalSortBy}"`, totalSortDuration)
+      .offset(totalSkip)
+      .limit(data.take)
+      .getRawMany<TMemberDTO | SimpleUserDTO>();
+
+    const totalItemsCount = await this.count({
+      where: `"UserEntity"."role" NOT IN ('${USER_ROLES.MASTER}')`,
+    });
+
+    return {
+      totalItemsCount,
+      items,
+      skip: totalSkip,
+      take: data.take,
+    };
+  }
+
+  private static addMemberJoins(builder: SelectQueryBuilder<UserEntity>): void {
+    builder
+      .leftJoin(StationWorkerEntity, 'sw', '"sw"."userId" = u.id')
+      .leftJoin(DistrictLeaderEntity, 'dl', '"dl"."userId" = u.id')
+      .leftJoin(EngineerEntity, 'e', '"e"."userId" = u.id');
   }
 }

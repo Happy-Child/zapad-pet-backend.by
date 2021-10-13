@@ -8,6 +8,6 @@ export class AuthGeneralService {
   constructor(private readonly usersRepository: UsersRepository) {}
 
   public async me(id: number): Promise<TMemberDTO | SimpleUserDTO> {
-    return this.usersRepository.getUserOrFail({ id });
+    return this.usersRepository.getFullUserOrFail({ id });
   }
 }

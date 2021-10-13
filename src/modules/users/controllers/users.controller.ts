@@ -1,6 +1,7 @@
 import { Controller, Post, Body, Delete, Get, Query } from '@nestjs/common';
 import { UsersCreateRequestBodyDTO, UsersDeleteRequestQueryDTO } from '../dtos';
 import { UsersCreateService, UsersGettingService } from '../services';
+import { UsersGetListRequestQueryDTO } from '../dtos/users-getting.dtos';
 
 @Controller('users')
 export class UsersController {
@@ -16,7 +17,7 @@ export class UsersController {
   }
 
   @Get()
-  async getList(@Query() query: any): Promise<any> {
+  async getList(@Query() query: UsersGetListRequestQueryDTO): Promise<any> {
     return this.usersGettingService.getList(query);
   }
 

@@ -19,7 +19,7 @@ export class AuthSignInService {
   ) {}
 
   async signIn(body: SignInRequestBodyDTO): Promise<SignInResponseBodyDTO> {
-    const user = await this.usersRepository.getUserOrFail(
+    const user = await this.usersRepository.getFullUserOrFail(
       {
         email: body.email,
       },

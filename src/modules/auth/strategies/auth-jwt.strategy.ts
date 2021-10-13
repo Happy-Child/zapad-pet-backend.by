@@ -42,7 +42,7 @@ export class AuthJwtStrategy extends PassportStrategy(Strategy) {
   public async validate(
     payload: IAuthJWTTokenPayload,
   ): Promise<TMemberJWTPayloadDTO | SimpleUserJWTPayloadDTO> {
-    const user = await this.usersRepository.getUserOrFail({
+    const user = await this.usersRepository.getFullUserOrFail({
       id: payload.sub,
     });
 

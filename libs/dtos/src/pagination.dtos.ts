@@ -19,4 +19,10 @@ export class PaginationResponseDTO<T> {
 
   @Expose()
   items!: T[];
+
+  @Expose()
+  take!: number;
+
+  @Expose()
+  skip!: number;
 }
