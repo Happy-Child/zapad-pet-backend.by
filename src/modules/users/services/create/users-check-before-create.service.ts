@@ -5,35 +5,42 @@ import {
   UsersCreateEngineerDTO,
   UsersCreateStationWorkerDTO,
 } from '../../dtos';
+import { UsersDistrictsLeadersRepository } from '../../repositories';
+import { ClientsRepository } from '../../../clients/repositories';
+import { DistrictsRepository } from '../../../districts/repositories';
+import { NonEmptyArray } from '@app/types';
 
 @Injectable()
 export class UsersCheckBeforeCreateService {
   constructor(
     private readonly usersGeneralCheckService: UsersGeneralCheckService,
+    private readonly usersDistrictsLeadersRepository: UsersDistrictsLeadersRepository,
+    private readonly clientsRepository: ClientsRepository,
+    private readonly districtsRepository: DistrictsRepository,
   ) {}
 
   public async checkStationWorkersOrFail(
-    stationWorkers: (UsersCreateStationWorkerDTO & { index: number })[],
+    stationWorkers: NonEmptyArray<
+      UsersCreateStationWorkerDTO & { index: number }
+    >,
   ): Promise<void> {
-    await this.usersGeneralCheckService.checkExistingClientsOrFail(
-      stationWorkers,
-    );
+    await this.clientsRepository.clientsExistsOrFail(stationWorkers);
   }
 
   public async checkDistrictLeadersOrFail(
-    districtLeaders: (UsersCreateDistrictLeaderDTO & { index: number })[],
+    districtLeaders: NonEmptyArray<
+      UsersCreateDistrictLeaderDTO & { index: number }
+    >,
   ): Promise<void> {
-    await this.usersGeneralCheckService.checkExistingDistrictsOrFail(
-      districtLeaders,
-    );
-    await this.usersGeneralCheckService.checkEmptyDistrictsOrFail(
+    await this.districtsRepository.districtsExistsOrFail(districtLeaders);
+    await this.usersDistrictsLeadersRepository.districtsWithoutLeadersOrFail(
       districtLeaders,
     );
   }
 
   public async checkEngineersOrFail(
-    engineer: (UsersCreateEngineerDTO & { index: number })[],
+    engineer: NonEmptyArray<UsersCreateEngineerDTO & { index: number }>,
   ): Promise<void> {
-    await this.usersGeneralCheckService.checkExistingDistrictsOrFail(engineer);
+    await this.districtsRepository.districtsExistsOrFail(engineer);
   }
 }

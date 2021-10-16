@@ -1,6 +1,6 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 import clients from '../static/clients.json';
-import { ClientEntity } from '../src/modules/clients';
+import { ClientEntity } from '@app/entities';
 
 export class FillClients1632588333687 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {

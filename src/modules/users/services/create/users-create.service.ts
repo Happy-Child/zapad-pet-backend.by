@@ -16,18 +16,24 @@ import {
   UsersStationsWorkersRepository,
 } from '../../repositories';
 import { Connection, EntityManager } from 'typeorm';
-import { generateRandomToken, toObjectByField } from '@app/helpers';
+import {
+  generateRandomToken,
+  getIndexedArray,
+  isNonEmptyArray,
+  toObjectByField,
+} from '@app/helpers';
 import { getHashByPassword } from '../../../auth/helpers';
 import { UsersSendingMailService } from '../users-sending-mail.service';
 import { getGroupedFullUsersByRoles } from '../../helpers';
 import { ENTITIES_FIELDS } from '@app/constants';
 import {
   DistrictLeaderEntity,
+  EmailConfirmedEntity,
   EngineerEntity,
   StationWorkerEntity,
   UserEntity,
-} from '../../entities';
-import { EmailConfirmedEntity } from '../../../auth/entities';
+} from '@app/entities';
+import { NonEmptyArray } from '@app/types';
 
 @Injectable()
 export class UsersCreateService {
@@ -39,24 +45,25 @@ export class UsersCreateService {
     private readonly connection: Connection,
   ) {}
 
-  public async create({ users }: UsersCreateRequestBodyDTO) {
-    const emails = users.map(({ email }) => email);
+  public async create({ users }: UsersCreateRequestBodyDTO): Promise<void> {
+    const emails = users.map(({ email }) => email) as NonEmptyArray<string>;
     await this.checkGeneralUsersDataService.checkExistingEmailsOrFail(emails);
 
+    const preparedUsers = getIndexedArray(users);
     const { stationWorkers, engineers, districtLeaders, simpleUsers } =
       getGroupedFullUsersByRoles<
-        UsersCreateDistrictLeaderDTO,
-        UsersCreateEngineerDTO,
-        UsersCreateStationWorkerDTO,
-        UsersCreateGeneralUserDTO
-      >(users);
+        UsersCreateDistrictLeaderDTO & { index: number },
+        UsersCreateEngineerDTO & { index: number },
+        UsersCreateStationWorkerDTO & { index: number },
+        UsersCreateGeneralUserDTO & { index: number }
+      >(preparedUsers);
 
     const userCheckingRequestList: Promise<void>[] = [];
     const userCreationRequestList: ((
       manager: EntityManager,
     ) => Promise<UserEntity[]>)[] = [];
 
-    if (districtLeaders.length) {
+    if (isNonEmptyArray(districtLeaders)) {
       userCheckingRequestList.push(
         this.usersCheckBeforeCreateService.checkDistrictLeadersOrFail(
           districtLeaders,
@@ -67,7 +74,7 @@ export class UsersCreateService {
       );
     }
 
-    if (stationWorkers.length) {
+    if (isNonEmptyArray(stationWorkers)) {
       userCheckingRequestList.push(
         this.usersCheckBeforeCreateService.checkStationWorkersOrFail(
           stationWorkers,
@@ -78,7 +85,7 @@ export class UsersCreateService {
       );
     }
 
-    if (engineers.length) {
+    if (isNonEmptyArray(engineers)) {
       userCheckingRequestList.push(
         this.usersCheckBeforeCreateService.checkEngineersOrFail(engineers),
       );
@@ -87,7 +94,7 @@ export class UsersCreateService {
       );
     }
 
-    if (simpleUsers.length) {
+    if (isNonEmptyArray(simpleUsers)) {
       userCreationRequestList.push((manager: EntityManager) =>
         this.saveSimpleUsers(simpleUsers, manager),
       );

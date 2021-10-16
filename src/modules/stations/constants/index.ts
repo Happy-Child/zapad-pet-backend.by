@@ -1,1 +1,1 @@
-export * from './stations-common.constants';
+export * from './stations-general.constants';

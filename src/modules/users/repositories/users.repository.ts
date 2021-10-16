@@ -4,7 +4,7 @@ import {
   EngineerEntity,
   StationWorkerEntity,
   UserEntity,
-} from '../entities';
+} from '@app/entities';
 import { GeneralRepository } from '@app/repositories';
 import { SimpleUserDTO } from '../dtos';
 import { ExceptionsNotFound } from '@app/exceptions/errors';
@@ -65,7 +65,7 @@ export class UsersRepository extends GeneralRepository<UserEntity> {
       );
     }
 
-    if (data.role) {
+    if (data.role?.length) {
       queryBuilder.andWhere(`role IN (:...values)`, { values: data.role });
     }
 

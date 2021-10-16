@@ -1,7 +1,5 @@
-import { ENTITIES_FIELDS } from '@app/constants';
-
 export interface IErrorDetailItem {
-  field: ENTITIES_FIELDS | number;
+  field: string | number;
   messages?: string[];
   children?: IErrorDetailItem[];
 }

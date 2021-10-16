@@ -1,4 +1,4 @@
-import { UserEntity } from '../entities';
+import { UserEntity } from '@app/entities';
 import { USER_ROLES } from '../constants';
 import { Expose, plainToClass } from 'class-transformer';
 import { MembersRoles } from '../types';

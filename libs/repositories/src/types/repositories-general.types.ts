@@ -3,8 +3,8 @@ import { FindConditions } from 'typeorm/find-options/FindConditions';
 import { ClassTransformOptions } from 'class-transformer';
 import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity';
 import { DeepPartial } from 'typeorm/common/DeepPartial';
-import { BaseEntity } from '@app/entities';
 import { FindManyOptions } from 'typeorm/find-options/FindManyOptions';
+import { BaseEntity } from '@app/entities/base.entity';
 
 export type RepositoryFindConditions<E extends BaseEntity> = FindConditions<E>;
 

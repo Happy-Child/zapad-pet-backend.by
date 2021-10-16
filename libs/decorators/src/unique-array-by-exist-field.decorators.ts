@@ -1,5 +1,6 @@
 import { ARRAY_UNIQUE, ValidateBy } from 'class-validator';
 import { getUniquePrimitiveArray, isObject } from '@app/helpers';
+import { NonEmptyArray } from '@app/types';
 
 const identifier = <T>(arr: T[] | undefined, field: keyof T): boolean => {
   if (!arr || !Array.isArray(arr)) return false;
@@ -8,7 +9,9 @@ const identifier = <T>(arr: T[] | undefined, field: keyof T): boolean => {
 
   if (!itemsWithField.length) return true;
 
-  const fieldValues = itemsWithField.map((item) => item[field]);
+  const fieldValues = itemsWithField.map(
+    (item) => item[field],
+  ) as unknown as NonEmptyArray<keyof T>;
 
   const uniqueFieldsValues = getUniquePrimitiveArray(fieldValues);
 

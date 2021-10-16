@@ -17,8 +17,9 @@ import {
 } from './services';
 import { MailSenderModule } from '@app/mail-sender';
 import { PugModule } from '@app/pug';
-import { DistrictsRepository } from '../districts';
-import { ClientsRepository } from '../clients';
+import { DistrictsRepository } from '../districts/repositories';
+import { ClientsRepository } from '../clients/repositories';
+import { UsersStationsWorkersGeneralService } from './services/general/users-stations-workers-general.service';
 
 @Module({
   imports: [
@@ -37,6 +38,7 @@ import { ClientsRepository } from '../clients';
   controllers: [UsersController],
   providers: [
     UsersGeneralCheckService,
+    UsersStationsWorkersGeneralService,
     UsersCheckBeforeCreateService,
     UsersCreateService,
     UsersSendingMailService,

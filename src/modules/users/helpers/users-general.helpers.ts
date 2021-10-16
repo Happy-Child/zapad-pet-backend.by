@@ -29,10 +29,10 @@ interface IRawUser {
 }
 
 interface IGetGroupedFullUsersByRoles<D, E, S, A> {
-  districtLeaders: (D & { index: number })[];
-  engineers: (E & { index: number })[];
-  stationWorkers: (S & { index: number })[];
-  simpleUsers: (A & { index: number })[];
+  districtLeaders: D[];
+  engineers: E[];
+  stationWorkers: S[];
+  simpleUsers: A[];
 }
 export const getGroupedFullUsersByRoles = <
   D extends FullDistrictLeader = FullDistrictLeader,
@@ -49,17 +49,17 @@ export const getGroupedFullUsersByRoles = <
     simpleUsers: [],
   };
 
-  rawUsers.forEach((user, index) => {
+  rawUsers.forEach((user) => {
     if (user.role === USER_ROLES.DISTRICT_LEADER && user.districtId) {
-      result.districtLeaders.push({ ...(user as D), index });
+      result.districtLeaders.push(user as D);
     }
     if (user.role === USER_ROLES.ENGINEER && user.districtId) {
-      result.engineers.push({ ...(user as E), index });
+      result.engineers.push(user as E);
     }
     if (user.role === USER_ROLES.STATION_WORKER && user.clientId) {
-      result.stationWorkers.push({ ...(user as S), index });
+      result.stationWorkers.push(user as S);
     }
-    result.simpleUsers.push({ ...(user as A), index });
+    result.simpleUsers.push(user as A);
   });
 
   return result;

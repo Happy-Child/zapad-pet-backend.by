@@ -27,6 +27,7 @@ import {
 } from '../../auth/constants';
 import { ArrayWithObjects, UniqueArrayByExistField } from '@app/decorators';
 import { ENTITIES_FIELDS } from '@app/constants';
+import { NonEmptyArray } from '@app/types';
 
 export class UsersCreateGeneralUserDTO {
   name!: string;
@@ -99,5 +100,5 @@ export class UsersCreateRequestBodyDTO {
   @UniqueDistrictLeadersInArray()
   @ValidateNested({ each: true })
   @Type(() => UsersCreateItemDTO)
-  users!: UsersCreateItemDTO[];
+  users!: NonEmptyArray<UsersCreateItemDTO>;
 }

@@ -1,5 +1,5 @@
 import { EntityRepository } from 'typeorm';
-import { EngineerEntity } from '../entities';
+import { EngineerEntity } from '@app/entities';
 import { GeneralRepository } from '@app/repositories';
 
 @EntityRepository(EngineerEntity)

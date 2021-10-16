@@ -1,5 +1,5 @@
 import { EntityRepository } from 'typeorm';
-import { ClientEntity } from '../entities';
+import { ClientEntity } from '@app/entities';
 import { GeneralRepository } from '@app/repositories';
 import {
   ClientDTO,
@@ -8,7 +8,11 @@ import {
 } from '../dtos';
 import { CLIENTS_DEFAULT_SORT_BY } from '../constants';
 import { ENTITIES_FIELDS, SORT_DURATION_DEFAULT } from '@app/constants';
-import { StationEntity } from '../../stations';
+import { AUTH_ERRORS } from '../../auth/constants';
+import { ExceptionsUnprocessableEntity } from '@app/exceptions/errors';
+import { getItemsByUniqueField } from '@app/helpers';
+import { getPreparedChildrenErrors } from '@app/helpers/prepared-errors.helpers';
+import { NonEmptyArray } from '@app/types';
 
 @EntityRepository(ClientEntity)
 export class ClientsRepository extends GeneralRepository<ClientEntity> {
@@ -42,7 +46,7 @@ export class ClientsRepository extends GeneralRepository<ClientEntity> {
     }
 
     const items = await queryBuilder
-      .leftJoin(StationEntity, 'st', '"st"."clientId" = cl.id')
+      .leftJoin('station', 'st', '"st"."clientId" = cl.id')
       .groupBy('cl.id')
       .orderBy(
         `"${data.sortBy || CLIENTS_DEFAULT_SORT_BY}"`,
@@ -60,5 +64,33 @@ export class ClientsRepository extends GeneralRepository<ClientEntity> {
       skip: totalSkip,
       take: data.take,
     };
+  }
+
+  public async clientsExistsOrFail(
+    items: NonEmptyArray<{ clientId: number; index: number }>,
+  ): Promise<void> {
+    // TODO метод за это не отвечат
+    const uniqueIds = getItemsByUniqueField<{ clientId: number }>(
+      'clientId',
+      items,
+    );
+
+    const foundEntities = await this.getManyByColumn(uniqueIds);
+    const allIdsExists = foundEntities.length === uniqueIds.length;
+
+    if (allIdsExists) return;
+
+    const foundEntitiesIds = foundEntities.map(({ id }) => id);
+    const result = items.filter(
+      (item) => !foundEntitiesIds.includes(item.clientId),
+    );
+
+    if (result.length) {
+      const preparedErrors = getPreparedChildrenErrors(result, {
+        field: ENTITIES_FIELDS.CLIENT_ID,
+        messages: [AUTH_ERRORS.CLIENT_NOT_EXIST],
+      });
+      throw new ExceptionsUnprocessableEntity(preparedErrors);
+    }
   }
 }

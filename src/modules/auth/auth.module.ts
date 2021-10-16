@@ -19,8 +19,8 @@ import { MailSenderModule } from '@app/mail-sender';
 import { PugModule } from '@app/pug';
 import { JwtModule } from '@nestjs/jwt';
 import { readFile } from '@app/helpers';
-import { DistrictsRepository } from '../districts';
 import { UsersRepository } from '../users/repositories';
+import { DistrictsRepository } from '../districts/repositories';
 
 @Module({
   imports: [

@@ -1,5 +1,5 @@
 import { EntityRepository } from 'typeorm';
-import { PasswordRecoveryEntity } from '../entities';
+import { PasswordRecoveryEntity } from '@app/entities';
 import { ExceptionsUnprocessableEntity } from '@app/exceptions/errors';
 import { AUTH_ERRORS } from '../constants';
 import { GeneralRepository } from '@app/repositories';

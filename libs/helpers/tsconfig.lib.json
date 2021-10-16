@@ -4,6 +4,9 @@
     "declaration": true,
     "outDir": "../../dist/libs/helpers"
   },
-  "include": ["src/**/*"],
+  "include": [
+    "src/**/*",
+    "../../global.d.ts"
+  ],
   "exclude": ["node_modules", "dist", "test", "**/*spec.ts"]
 }

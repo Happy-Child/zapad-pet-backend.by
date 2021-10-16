@@ -3,7 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { PugGeneralService } from '@app/pug/services';
 import { MailSenderGeneralService } from '@app/mail-sender/services';
 import { PUG_TEMPLATES_NAMES } from '@app/pug/constants';
-import { UserEntity } from '../entities';
+import { UserEntity } from '@app/entities';
 
 @Injectable()
 export class UsersSendingMailService {

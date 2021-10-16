@@ -3,6 +3,7 @@ import { USER_ROLES, USERS_ERRORS } from '../constants';
 import { getUniquePrimitiveArray } from '@app/helpers';
 import { getGroupedFullUsersByRoles } from '../helpers';
 import { AllowedRoles } from '../types';
+import { NonEmptyArray } from '@app/types';
 
 const identifier = <T extends { role: AllowedRoles; districtId?: number }>(
   items: T[] | undefined,
@@ -18,7 +19,7 @@ const identifier = <T extends { role: AllowedRoles; districtId?: number }>(
 
   const groupedFields = districtLeaders.map(
     ({ role, districtId }) => `${role}-${districtId}`,
-  );
+  ) as NonEmptyArray<string>;
   const uniqueGroupedFields = getUniquePrimitiveArray(groupedFields);
 
   return groupedFields.length === uniqueGroupedFields.length;

@@ -8,7 +8,7 @@ import { generateRandomToken } from '@app/helpers';
 import { checkTimeAllowedSendMail, getHashByPassword } from '../helpers';
 import { AuthPasswordRecoveryRepository } from '../repositories';
 import { AuthSendingMailService } from './auth-sending-mail.service';
-import { PasswordRecoveryEntity } from '../entities';
+import { PasswordRecoveryEntity } from '@app/entities';
 import { UsersRepository } from '../../users/repositories';
 
 @Injectable()

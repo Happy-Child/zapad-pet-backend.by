@@ -1,5 +1,5 @@
 import { PaginationRequestDTO, PaginationResponseDTO } from '@app/dtos';
-import { ClientEntity } from '../../clients/entities';
+import { ClientEntity } from '@app/entities';
 import { IsEnum, IsIn, IsOptional, IsString } from 'class-validator';
 import { ENTITIES_FIELDS, SORT_DURATION } from '@app/constants';
 import { Expose, plainToClass } from 'class-transformer';

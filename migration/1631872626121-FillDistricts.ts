@@ -1,6 +1,6 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 import districts from '../static/districts.json';
-import { DistrictEntity } from '../src/modules/districts';
+import { DistrictEntity } from '@app/entities';
 
 export class FillDistricts1631872626121 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {

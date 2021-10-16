@@ -1,4 +1,4 @@
-import { StationEntity } from '../../stations';
+import { StationEntity } from '@app/entities';
 import { EntityRepository } from 'typeorm';
 import { GeneralRepository } from '@app/repositories';
 

@@ -6,7 +6,7 @@ import {
   RepositoryUpdateEntityInputs,
 } from '@app/repositories/types';
 import { IErrorDetailItem } from '@app/exceptions/interfaces';
-import { BaseEntity } from '@app/entities';
+import { BaseEntity } from '@app/entities/base.entity';
 
 export interface IRepositoryException {
   type?: typeof BadRequestException;
