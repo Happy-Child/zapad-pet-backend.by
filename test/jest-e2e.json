@@ -33,15 +33,9 @@
     "@app/interfaces": "<rootDir>/../libs/interfaces/src",
     "@app/types/(.*)": "<rootDir>/../libs/types/src/$1",
     "@app/types": "<rootDir>/../libs/types/src",
-    "@app/validators/(.*)": "<rootDir>/../libs/validators/src/$1",
-    "@app/validators": "<rootDir>/../libs/validators/src",
     "@app/files/(.*)": "<rootDir>/../libs/files/src/$1",
     "@app/files": "<rootDir>/../libs/files/src",
-    "@app/auth2/(.*)": "<rootDir>/../libs/auth2/src/$1",
-    "@app/auth2": "<rootDir>/../libs/auth2/src",
     "@app/auth/(.*)": "<rootDir>/../libs/auth/src/$1",
-    "@app/auth": "<rootDir>/../libs/auth/src",
-    "@app/user/(.*)": "<rootDir>/../libs/user/src/$1",
-    "@app/user": "<rootDir>/../libs/user/src"
+    "@app/auth": "<rootDir>/../libs/auth/src"
   }
 }

@@ -9,13 +9,14 @@ import {
   ParseIntPipe,
   Query,
 } from '@nestjs/common';
-import { ClientDTO, ClientsCreateBodyDTO } from '../dtos';
+import { ClientDTO } from '../dtos';
 import { ClientsGettingService, ClientsGeneralService } from '../services';
 import { ClientsUpdateBodyDTO } from '../dtos';
 import {
   ClientsGettingRequestQueryDTO,
   ClientsGettingResponseBodyDTO,
 } from '../dtos';
+import { ClientEntity } from '@app/entities';
 
 @Controller('clients')
 export class ClientsController {
@@ -25,7 +26,7 @@ export class ClientsController {
   ) {}
 
   @Post()
-  async create(@Body() body: ClientsCreateBodyDTO): Promise<true> {
+  async create(@Body() body: ClientEntity): Promise<true> {
     await this.clientsGeneralService.create(body);
     return true;
   }

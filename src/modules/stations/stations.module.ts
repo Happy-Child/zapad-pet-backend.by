@@ -7,6 +7,7 @@ import { UsersStationsWorkersRepository } from '../users/repositories';
 import { ClientsRepository } from '../clients/repositories';
 import { DistrictsRepository } from '../districts/repositories';
 import { StationsCheckBeforeCreateService } from './services/create/stations-check-before-create.service';
+import { AggrStationBidStatusCountRepository } from './repositories/aggr-station-bid-status-count.repository';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { StationsCheckBeforeCreateService } from './services/create/stations-che
       ClientsRepository,
       DistrictsRepository,
       UsersStationsWorkersRepository,
+      AggrStationBidStatusCountRepository,
     ]),
   ],
   controllers: [StationsController],

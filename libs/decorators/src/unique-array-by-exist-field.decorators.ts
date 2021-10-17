@@ -1,6 +1,8 @@
-import { ARRAY_UNIQUE, ValidateBy } from 'class-validator';
+import { ValidateBy } from 'class-validator';
 import { getUniquePrimitiveArray, isObject } from '@app/helpers';
 import { NonEmptyArray } from '@app/types';
+
+const VALIDATION_NAME = 'UNIQUE_ARRAY_BY_EXIST_FIELD';
 
 const identifier = <T>(arr: T[] | undefined, field: keyof T): boolean => {
   if (!arr || !Array.isArray(arr)) return false;
@@ -23,7 +25,7 @@ export function UniqueArrayByExistField<T>(
   errorMessage: string,
 ): PropertyDecorator {
   return ValidateBy({
-    name: ARRAY_UNIQUE,
+    name: VALIDATION_NAME,
     validator: {
       validate: (value): boolean => identifier(value as T[], field),
       defaultMessage: () => errorMessage,

@@ -20,7 +20,7 @@ export class StationsCheckBeforeCreateService {
     private readonly usersStationsWorkersRepository: UsersStationsWorkersRepository,
   ) {}
 
-  public async generalCheckSOfStations(
+  public async generalCheckOfStationsOrFail(
     stations: NonEmptyArray<StationsCreateItemDTO & { index: number }>,
   ): Promise<void> {
     await this.stationsRepository.stationsNumbersEmptyOrFail(stations);

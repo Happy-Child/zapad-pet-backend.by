@@ -7,7 +7,6 @@ import {
   Get,
   HttpCode,
   HttpStatus,
-  UseGuards,
   Query,
 } from '@nestjs/common';
 import { getCookieExpiration } from '../helpers';
@@ -26,10 +25,10 @@ import {
   SimpleUserJWTPayloadDTO,
 } from '../dtos';
 import { COOKIE } from '../constants';
-import { JwtAuthGuard } from '../guards/jwt-auth.guard';
 import { TMemberDTO } from '../../users/types';
 import { SimpleUserDTO } from '../../users/dtos';
 import { TMemberJWTPayloadDTO } from '../types';
+import { AuthRoles } from '../decorators/auth-roles.decorators';
 
 @Controller('auth')
 export class AuthController {
@@ -41,7 +40,7 @@ export class AuthController {
   ) {}
 
   @HttpCode(HttpStatus.OK)
-  @UseGuards(JwtAuthGuard)
+  @AuthRoles()
   @Get('/me')
   async me(
     @Request()

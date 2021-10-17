@@ -1,17 +1,17 @@
 import { Injectable } from '@nestjs/common';
-import { ClientsCreateBodyDTO } from '../dtos';
 import { ClientsRepository } from '../repositories';
 import { ExceptionsUnprocessableEntity } from '@app/exceptions/errors';
 import { CLIENTS_ERRORS } from '../constants';
 import { ClientsUpdateBodyDTO } from '../dtos';
 import { AUTH_ERRORS } from '../../auth/constants';
 import { ENTITIES_FIELDS } from '@app/constants';
+import { ClientEntity } from '@app/entities';
 
 @Injectable()
 export class ClientsGeneralService {
   constructor(private readonly clientsRepository: ClientsRepository) {}
 
-  async create(body: ClientsCreateBodyDTO): Promise<void> {
+  async create(body: ClientEntity): Promise<void> {
     await this.checkExistingClientName(body.name);
     await this.clientsRepository.saveEntity(body);
   }
