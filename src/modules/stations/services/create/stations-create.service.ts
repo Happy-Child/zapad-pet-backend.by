@@ -2,13 +2,12 @@ import { Injectable } from '@nestjs/common';
 import { StationsCreateRequestBodyDTO } from '../../dtos';
 import { StationsCheckBeforeCreateService } from './stations-check-before-create.service';
 import { Connection } from 'typeorm';
-import { StationsRepository } from '../../repositories/stations.repository';
+import { StationsRepository } from '../../repositories';
 import { getIndexedArray, isNonEmptyArray } from '@app/helpers';
 import { UsersStationsWorkersRepository } from '../../../users/repositories';
 import { TStationsCreateItemWithWorker } from '../../types';
 import { UsersStationsWorkersGeneralService } from '../../../users/services';
 import { StationEntity } from '@app/entities';
-import { AggrStationBidStatusCountRepository } from '../../repositories/aggr-station-bid-status-count.repository';
 
 @Injectable()
 export class StationsCreateService {
@@ -40,15 +39,6 @@ export class StationsCreateService {
           number,
           clientId,
           districtId,
-        })),
-      );
-
-      const aggrStationRepository = manager.getCustomRepository(
-        AggrStationBidStatusCountRepository,
-      );
-      await aggrStationRepository.saveEntities(
-        createdStations.map(({ id }) => ({
-          stationId: id,
         })),
       );
 
