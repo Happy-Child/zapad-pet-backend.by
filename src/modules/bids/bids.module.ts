@@ -1,13 +1,17 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { BidsRepository } from './repositories';
-import { BidsGeneralService } from './services';
+import {
+  BidsCreateService,
+  BidsGeneralService,
+  BidsUpdateService,
+} from './services';
 import { BidsController } from './controllers/bids.controller';
-import { BidsTodosRepository } from './repositories/bids-todos.repository';
+import { BidsTodosRepository } from './repositories';
 
 @Module({
   imports: [TypeOrmModule.forFeature([BidsRepository, BidsTodosRepository])],
-  providers: [BidsGeneralService],
+  providers: [BidsGeneralService, BidsCreateService, BidsUpdateService],
   controllers: [BidsController],
 })
 export class BidsModule {}

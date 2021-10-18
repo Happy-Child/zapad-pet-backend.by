@@ -1,4 +1,4 @@
-import { Column, Entity, JoinColumn, OneToOne } from 'typeorm';
+import { Check, Column, Entity, JoinColumn, OneToOne } from 'typeorm';
 import { StationEntity } from './station.entity';
 import { BaseEntity } from './base.entity';
 import { BID_STATUS } from '../../../src/modules/bids/constants';
@@ -19,42 +19,52 @@ export class AggrStationBidStatusCountEntity extends BaseEntity {
   station?: StationEntity;
 
   @Column({ nullable: false, default: 0 })
+  @Check(`"${BID_STATUS.EDITING}" >= 0`)
   @Expose()
   [BID_STATUS.EDITING]!: number;
 
   @Column({ nullable: false, default: 0 })
+  @Check(`"${BID_STATUS.PENDING_ASSIGNMENT_TO_ENGINEER}" >= 0`)
   @Expose()
   [BID_STATUS.PENDING_ASSIGNMENT_TO_ENGINEER]!: number;
 
   @Column({ nullable: false, default: 0 })
+  @Check(`"${BID_STATUS.PENDING_START_WORK_FROM_ENGINEER}" >= 0`)
   @Expose()
   [BID_STATUS.PENDING_START_WORK_FROM_ENGINEER]!: number;
 
   @Column({ nullable: false, default: 0 })
+  @Check(`"${BID_STATUS.IN_WORK}" >= 0`)
   @Expose()
   [BID_STATUS.IN_WORK]!: number;
 
   @Column({ nullable: false, default: 0 })
+  @Check(`"${BID_STATUS.PENDING_REVIEW_FROM_DISTRICT_LEADER}" >= 0`)
   @Expose()
   [BID_STATUS.PENDING_REVIEW_FROM_DISTRICT_LEADER]!: number;
 
   @Column({ nullable: false, default: 0 })
+  @Check(`"${BID_STATUS.PENDING_REVIEW_FROM_STATION_WORKER}" >= 0`)
   @Expose()
   [BID_STATUS.PENDING_REVIEW_FROM_STATION_WORKER]!: number;
 
   @Column({ nullable: false, default: 0 })
+  @Check(`"${BID_STATUS.FAIL_REVIEW_FROM_DISTRICT_LEADER}" >= 0`)
   @Expose()
   [BID_STATUS.FAIL_REVIEW_FROM_DISTRICT_LEADER]!: number;
 
   @Column({ nullable: false, default: 0 })
+  @Check(`"${BID_STATUS.FAIL_REVIEW_FROM_STATION_WORKER}" >= 0`)
   @Expose()
   [BID_STATUS.FAIL_REVIEW_FROM_STATION_WORKER]!: number;
 
   @Column({ nullable: false, default: 0 })
+  @Check(`"${BID_STATUS.COMPLETED}" >= 0`)
   @Expose()
   [BID_STATUS.COMPLETED]!: number;
 
   @Column({ nullable: false, default: 0 })
+  @Check(`"${BID_STATUS.REJECTED}" >= 0`)
   @Expose()
   [BID_STATUS.REJECTED]!: number;
 }

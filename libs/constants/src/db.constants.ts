@@ -1,1 +1,4 @@
 export const VARCHAR_DEFAULT_LENGTH = 256;
+export const POSTGRES_PARAMS_LIMIT = 65535;
+export const MAX_INTEGER = 2147483647;
+export const MIN_INTEGER = -2147483648;

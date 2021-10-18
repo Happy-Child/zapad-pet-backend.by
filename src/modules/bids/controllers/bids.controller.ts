@@ -9,15 +9,28 @@ import {
   Post,
   Request,
 } from '@nestjs/common';
-import { BidsCreateBodyDTO, BidsUpdateBodyDTO } from '../dtos';
-import { BidsGeneralService } from '../services';
+import {
+  BidsChangeEditableStatusParamsDTO,
+  BidsCreateBodyDTO,
+  BidsUpdateBodyDTO,
+} from '../dtos';
+import {
+  BidsCreateService,
+  BidsGeneralService,
+  BidsUpdateService,
+} from '../services';
 import { AuthRoles } from '../../auth/decorators/auth-roles.decorators';
 import { USER_ROLES } from '../../users/constants';
 import { StationWorkerMemberJWTPayloadDTO } from '../../auth/dtos';
+import { BID_EDITABLE_STATUS } from '../constants';
 
 @Controller('bids')
 export class BidsController {
-  constructor(private readonly bidsGeneralService: BidsGeneralService) {}
+  constructor(
+    private readonly bidsGeneralService: BidsGeneralService,
+    private readonly bidsCreateService: BidsCreateService,
+    private readonly bidsUpdateService: BidsUpdateService,
+  ) {}
 
   @HttpCode(HttpStatus.OK)
   @AuthRoles(USER_ROLES.STATION_WORKER)
@@ -26,7 +39,7 @@ export class BidsController {
     @Request() { user }: { user: StationWorkerMemberJWTPayloadDTO },
     @Body() body: BidsCreateBodyDTO,
   ): Promise<true> {
-    await this.bidsGeneralService.create(body, user.stationId);
+    await this.bidsCreateService.create(body, user.stationId);
     return true;
   }
 
@@ -38,7 +51,24 @@ export class BidsController {
     @Param('id', ParseIntPipe) id: number,
     @Body() body: BidsUpdateBodyDTO,
   ): Promise<true> {
-    await this.bidsGeneralService.update(id, user.stationId, body);
+    await this.bidsUpdateService.update(id, user.stationId, body);
+    return true;
+  }
+
+  @HttpCode(HttpStatus.OK)
+  @AuthRoles(USER_ROLES.STATION_WORKER)
+  @Post(
+    `/:id/:isEditable(${BID_EDITABLE_STATUS.EDITABLE}|${BID_EDITABLE_STATUS.UNEDITABLE})`,
+  )
+  async changeEditableStatus(
+    @Request() { user }: { user: StationWorkerMemberJWTPayloadDTO },
+    @Param() { id, isEditable }: BidsChangeEditableStatusParamsDTO,
+  ): Promise<true> {
+    await this.bidsGeneralService.changeEditableStatus(
+      id,
+      user.stationId,
+      isEditable,
+    );
     return true;
   }
 }

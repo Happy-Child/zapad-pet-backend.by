@@ -1,5 +1,6 @@
 import {
   IsArray,
+  IsBoolean,
   IsDateString,
   IsEnum,
   IsOptional,
@@ -7,7 +8,7 @@ import {
   Length,
   ValidateNested,
 } from 'class-validator';
-import { Type } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 import {
   ArrayWithObjects,
   MinDateWithFormatter,
@@ -18,8 +19,10 @@ import {
   BID_PRIORITY,
   BID_TODO_MAX_LENGTH,
   BIDS_ERRORS,
+  BID_EDITABLE_STATUS,
 } from '../constants';
 import moment from 'moment';
+import { IdParamDTO } from '@app/dtos';
 
 export class BidsUpdateTodoDTO {
   @IsString()
@@ -53,4 +56,13 @@ export class BidsUpdateBodyDTO {
   @ValidateNested({ each: true })
   @Type(() => BidsUpdateTodoDTO)
   todos?: BidsUpdateTodoDTO[];
+}
+
+export class BidsChangeEditableStatusParamsDTO extends IdParamDTO {
+  @IsBoolean()
+  @Transform(
+    ({ value }) =>
+      value === true || String(value) === BID_EDITABLE_STATUS.EDITABLE,
+  )
+  isEditable!: boolean;
 }

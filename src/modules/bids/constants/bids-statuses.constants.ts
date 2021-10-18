@@ -18,5 +18,10 @@ export enum BID_TODO_STATUS {
   DELETED = 'DELETED',
 }
 
-export const BID_STATUS_FOR_UPDATING =
+export const BID_STATUS_ALLOWING_UPDATES =
   BID_STATUS.PENDING_ASSIGNMENT_TO_ENGINEER;
+
+export enum BID_EDITABLE_STATUS {
+  EDITABLE = 'editable',
+  UNEDITABLE = 'uneditable',
+}
