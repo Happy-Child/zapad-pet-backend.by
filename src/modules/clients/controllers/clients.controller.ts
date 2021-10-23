@@ -4,7 +4,7 @@ import {
   Delete,
   Post,
   Body,
-  Patch,
+  Put,
   Param,
   ParseIntPipe,
   Query,
@@ -31,7 +31,7 @@ export class ClientsController {
     return true;
   }
 
-  @Patch('/:id')
+  @Put('/:id')
   async update(
     @Param('id', ParseIntPipe) id: number,
     @Body() body: ClientsUpdateBodyDTO,

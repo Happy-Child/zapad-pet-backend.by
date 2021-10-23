@@ -1,8 +1,16 @@
-import { Entity, Column, OneToMany, ManyToOne, JoinColumn } from 'typeorm';
+import {
+  Entity,
+  Column,
+  OneToMany,
+  ManyToOne,
+  JoinColumn,
+  OneToOne,
+} from 'typeorm';
 import { BaseEntity } from './base.entity';
 import { STATION_NUMBER_LENGTH } from '../../../src/modules/stations/constants';
 import { BidEntity } from '@app/entities/bid.entity';
 import { ClientEntity } from '@app/entities/client.entity';
+import { StationWorkerEntity } from '@app/entities/stations-workers.entity';
 
 @Entity({ name: 'station' })
 export class StationEntity extends BaseEntity {
@@ -29,4 +37,7 @@ export class StationEntity extends BaseEntity {
 
   @OneToMany(() => BidEntity, (bid) => bid.station)
   bids?: BidEntity[];
+
+  @OneToOne(() => StationWorkerEntity)
+  stationWorker!: StationWorkerEntity | null;
 }

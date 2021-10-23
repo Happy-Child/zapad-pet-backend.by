@@ -31,12 +31,10 @@ export class DistrictsRepository extends GeneralRepository<DistrictEntity> {
       (item) => !foundEntitiesIds.includes(item.districtId),
     );
 
-    if (result.length) {
-      const preparedErrors = getPreparedChildrenErrors(result, {
-        field: ENTITIES_FIELDS.DISTRICT_ID,
-        messages: [AUTH_ERRORS.DISTRICT_NOT_EXIST],
-      });
-      throw new ExceptionsUnprocessableEntity(preparedErrors);
-    }
+    const preparedErrors = getPreparedChildrenErrors(result, {
+      field: ENTITIES_FIELDS.DISTRICT_ID,
+      messages: [AUTH_ERRORS.DISTRICT_NOT_EXIST],
+    });
+    throw new ExceptionsUnprocessableEntity(preparedErrors);
   }
 }

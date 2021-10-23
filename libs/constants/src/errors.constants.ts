@@ -1,0 +1,3 @@
+export const GENERAL_ERRORS = {
+  ID_SHOULD_BE_UNIQUES: 'ID_SHOULD_BE_UNIQUES',
+};

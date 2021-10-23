@@ -10,7 +10,7 @@ import { NonEmptyArray } from '@app/types';
 export class UsersStationsWorkersRepository extends GeneralRepository<StationWorkerEntity> {
   protected entitySerializer = StationWorkerEntity;
 
-  public async getExistedStationsWorkersOrFail(
+  public async getStationsWorkersOrFail(
     items: NonEmptyArray<{ stationWorkerId: number; index: number }>,
   ): Promise<StationWorkerEntity[]> {
     const ids = items.map(

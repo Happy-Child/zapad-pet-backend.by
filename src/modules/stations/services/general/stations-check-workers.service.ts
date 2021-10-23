@@ -1,50 +1,27 @@
 import { Injectable } from '@nestjs/common';
-import { StationsCreateItemDTO } from '../../dtos';
-import { StationsRepository } from '../../repositories/stations.repository';
-import { UsersStationsWorkersRepository } from '../../../users/repositories';
 import { isNull } from '@app/helpers';
 import { getPreparedChildrenErrors } from '@app/helpers/prepared-errors.helpers';
 import { STATIONS_ERRORS } from '../../constants/stations-errors.constants';
 import { ExceptionsUnprocessableEntity } from '@app/exceptions/errors';
-import { ClientsRepository } from '../../../clients/repositories';
-import { DistrictsRepository } from '../../../districts/repositories';
 import { StationWorkerEntity } from '@app/entities';
 import { NonEmptyArray } from '@app/types';
 
 @Injectable()
-export class StationsCheckBeforeCreateService {
-  constructor(
-    private readonly stationsRepository: StationsRepository,
-    private readonly clientsRepository: ClientsRepository,
-    private readonly districtsRepository: DistrictsRepository,
-    private readonly usersStationsWorkersRepository: UsersStationsWorkersRepository,
-  ) {}
-
-  public async generalCheckOfStationsOrFail(
-    stations: NonEmptyArray<StationsCreateItemDTO & { index: number }>,
-  ): Promise<void> {
-    await this.stationsRepository.stationsNumbersEmptyOrFail(stations);
-    await this.clientsRepository.clientsExistsOrFail(stations);
-    await this.districtsRepository.districtsExistsOrFail(stations);
-  }
-
-  public async checkStationsWorkersOrFail(
+export class StationsCheckWorkersService {
+  public workersCanBeAddToStationsOrFail(
+    workers: StationWorkerEntity[],
     stationsData: NonEmptyArray<{
       stationWorkerId: number;
       clientId: number;
       index: number;
     }>,
-  ): Promise<void> {
-    const foundWorkers =
-      await this.usersStationsWorkersRepository.getExistedStationsWorkersOrFail(
-        stationsData,
-      );
-    await this.clientsHaveWorkersOrFail(foundWorkers, stationsData);
-    await this.stationsWorkersWithoutStationsOrFail(foundWorkers, stationsData);
+  ): void {
+    this.workersMatchOfClientsOrFail(workers, stationsData);
+    this.workersWithoutStationsOrFail(workers, stationsData);
   }
 
-  private clientsHaveWorkersOrFail(
-    foundWorkers: StationWorkerEntity[],
+  public workersMatchOfClientsOrFail(
+    existingWorkers: StationWorkerEntity[],
     stationsData: {
       stationWorkerId: number;
       clientId: number;
@@ -53,7 +30,7 @@ export class StationsCheckBeforeCreateService {
   ): void {
     const workersWithInvalidClients = stationsData.filter(
       ({ stationWorkerId: userId, clientId }) =>
-        !foundWorkers.find(
+        !existingWorkers.find(
           (item) => item.userId === userId && item.clientId === clientId,
         ),
     );
@@ -70,7 +47,7 @@ export class StationsCheckBeforeCreateService {
     throw new ExceptionsUnprocessableEntity(preparedErrors);
   }
 
-  private stationsWorkersWithoutStationsOrFail(
+  public workersWithoutStationsOrFail(
     workersShouldBeWithoutStations: StationWorkerEntity[],
     stationsData: {
       stationWorkerId: number;

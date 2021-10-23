@@ -1,5 +1,5 @@
 import { EntityRepository } from 'typeorm';
-import { ClientEntity } from '@app/entities';
+import { ClientEntity, StationEntity } from '@app/entities';
 import { GeneralRepository } from '@app/repositories';
 import {
   ClientDTO,
@@ -46,7 +46,7 @@ export class ClientsRepository extends GeneralRepository<ClientEntity> {
     }
 
     const items = await queryBuilder
-      .leftJoin('station', 'st', '"st"."clientId" = cl.id')
+      .leftJoin(StationEntity, 'st', '"st"."clientId" = cl.id')
       .groupBy('cl.id')
       .orderBy(
         `"${data.sortBy || CLIENTS_DEFAULT_SORT_BY}"`,
@@ -85,12 +85,10 @@ export class ClientsRepository extends GeneralRepository<ClientEntity> {
       (item) => !foundEntitiesIds.includes(item.clientId),
     );
 
-    if (result.length) {
-      const preparedErrors = getPreparedChildrenErrors(result, {
-        field: ENTITIES_FIELDS.CLIENT_ID,
-        messages: [AUTH_ERRORS.CLIENT_NOT_EXIST],
-      });
-      throw new ExceptionsUnprocessableEntity(preparedErrors);
-    }
+    const preparedErrors = getPreparedChildrenErrors(result, {
+      field: ENTITIES_FIELDS.CLIENT_ID,
+      messages: [AUTH_ERRORS.CLIENT_NOT_EXIST],
+    });
+    throw new ExceptionsUnprocessableEntity(preparedErrors);
   }
 }

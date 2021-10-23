@@ -74,9 +74,9 @@ export class GeneralRepository<E extends BaseEntity> extends Repository<E> {
     values: NonEmptyArray<number | string>,
     column: keyof E = 'id',
   ): Promise<E[]> {
-    return this.createQueryBuilder('u')
-      .where(`u.${column} IN (:...values)`, { values })
-      .orderBy(`u.${column}`)
+    return this.createQueryBuilder('t')
+      .where(`t.${column} IN (:...values)`, { values })
+      .orderBy(`t.${column}`)
       .getMany();
   }
 

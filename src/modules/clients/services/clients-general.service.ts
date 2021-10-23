@@ -12,7 +12,7 @@ export class ClientsGeneralService {
   constructor(private readonly clientsRepository: ClientsRepository) {}
 
   async create(body: ClientEntity): Promise<void> {
-    await this.checkExistingClientName(body.name);
+    await this.clientNameNotExistsOrFail(body.name);
     await this.clientsRepository.saveEntity(body);
   }
 
@@ -32,10 +32,8 @@ export class ClientsGeneralService {
       },
     );
 
-    if (body.name) {
-      await this.checkExistingClientName(body.name);
-      await this.clientsRepository.updateEntity({ id }, body);
-    }
+    await this.clientNameNotExistsOrFail(body.name);
+    await this.clientsRepository.updateEntity({ id }, body);
   }
 
   public async deleteById(id: number): Promise<void> {
@@ -46,7 +44,7 @@ export class ClientsGeneralService {
     // if of - remove stations workers
   }
 
-  private async checkExistingClientName(name: string): Promise<void> {
+  private async clientNameNotExistsOrFail(name: string): Promise<void> {
     await this.clientsRepository.getOneAndFail(
       { name },
       {

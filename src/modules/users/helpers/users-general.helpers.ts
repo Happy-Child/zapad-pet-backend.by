@@ -52,12 +52,15 @@ export const getGroupedFullUsersByRoles = <
   rawUsers.forEach((user) => {
     if (user.role === USER_ROLES.DISTRICT_LEADER && user.districtId) {
       result.districtLeaders.push(user as D);
+      return;
     }
     if (user.role === USER_ROLES.ENGINEER && user.districtId) {
       result.engineers.push(user as E);
+      return;
     }
     if (user.role === USER_ROLES.STATION_WORKER && user.clientId) {
       result.stationWorkers.push(user as S);
+      return;
     }
     result.simpleUsers.push(user as A);
   });

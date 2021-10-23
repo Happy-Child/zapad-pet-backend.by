@@ -2,12 +2,13 @@ import { Module } from '@nestjs/common';
 import { StationsController } from './controllers/stations.controller';
 import { StationsCreateService } from './services';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { StationsRepository } from './repositories/stations.repository';
+import { StationsRepository } from './repositories';
 import { UsersStationsWorkersRepository } from '../users/repositories';
 import { ClientsRepository } from '../clients/repositories';
 import { DistrictsRepository } from '../districts/repositories';
-import { StationsCheckBeforeCreateService } from './services/create/stations-check-before-create.service';
-import { AggrStationBidStatusCountRepository } from './repositories/aggr-station-bid-status-count.repository';
+import { StationsCheckWorkersService } from './services';
+import { AggrStationBidStatusCountRepository } from './repositories';
+import { StationsUpdateService } from './services';
 
 @Module({
   imports: [
@@ -20,6 +21,10 @@ import { AggrStationBidStatusCountRepository } from './repositories/aggr-station
     ]),
   ],
   controllers: [StationsController],
-  providers: [StationsCreateService, StationsCheckBeforeCreateService],
+  providers: [
+    StationsCheckWorkersService,
+    StationsCreateService,
+    StationsUpdateService,
+  ],
 })
 export class StationsModule {}
