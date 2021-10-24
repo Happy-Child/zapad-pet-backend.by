@@ -35,7 +35,7 @@ export class UsersRepository extends GeneralRepository<UserEntity> {
       .select(rawSelect)
       .where(conditions);
 
-    UsersRepository.addMemberJoins(queryBuilder);
+    this.addMembersJoins(queryBuilder);
 
     const rawUser = await queryBuilder.getRawOne();
 
@@ -65,21 +65,28 @@ export class UsersRepository extends GeneralRepository<UserEntity> {
       );
     }
 
+    // TODO if role.includes(dl & e) result is empty
     if (data.role?.length) {
       queryBuilder.andWhere(`role IN (:...values)`, { values: data.role });
     }
+    if (data.role?.includes(USER_ROLES.STATION_WORKER) && data.clientId) {
+      queryBuilder.andWhere(`"sw"."clientId" = :id`, { id: data.clientId });
+    }
+    if (data.role?.includes(USER_ROLES.DISTRICT_LEADER) && data.districtId) {
+      queryBuilder.andWhere(`"dl"."districtId" = :id`, { id: data.districtId });
+    }
+    if (data.role?.includes(USER_ROLES.ENGINEER) && data.districtId) {
+      queryBuilder.andWhere(`"e"."districtId" = :id`, { id: data.districtId });
+    }
 
-    UsersRepository.addMemberJoins(queryBuilder);
+    this.addMembersJoins(queryBuilder);
 
+    const totalItemsCount = await queryBuilder.getCount();
     const items = await queryBuilder
       .orderBy(`"${totalSortBy}"`, totalSortDuration)
       .offset(totalSkip)
       .limit(data.take)
       .getRawMany<TMemberDTO | SimpleUserDTO>();
-
-    const totalItemsCount = await this.count({
-      where: `"UserEntity"."role" NOT IN ('${USER_ROLES.MASTER}')`,
-    });
 
     return {
       totalItemsCount,
@@ -89,7 +96,7 @@ export class UsersRepository extends GeneralRepository<UserEntity> {
     };
   }
 
-  private static addMemberJoins(builder: SelectQueryBuilder<UserEntity>): void {
+  private addMembersJoins(builder: SelectQueryBuilder<UserEntity>): void {
     builder
       .leftJoin(StationWorkerEntity, 'sw', '"sw"."userId" = u.id')
       .leftJoin(DistrictLeaderEntity, 'dl', '"dl"."userId" = u.id')

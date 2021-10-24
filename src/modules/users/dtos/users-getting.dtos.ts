@@ -5,12 +5,14 @@ import {
   IsIn,
   IsOptional,
   IsString,
+  IsInt,
 } from 'class-validator';
 import { ENTITIES_FIELDS, SORT_DURATION } from '@app/constants';
 import { ALLOWED_ROLES } from '../constants';
 import { AllowedRoles, TMemberDTO } from '../types';
 import { SimpleUserDTO } from './users-members.dtos';
 import { getSerializedMemberUser } from '../helpers';
+import { Type } from 'class-transformer';
 
 export class UsersGetListRequestQueryDTO extends PaginationRequestDTO {
   @IsOptional()
@@ -38,6 +40,16 @@ export class UsersGetListRequestQueryDTO extends PaginationRequestDTO {
   @IsOptional()
   @IsString()
   search?: string;
+
+  @IsOptional()
+  @Type(() => Number)
+  @IsInt()
+  clientId?: number;
+
+  @IsOptional()
+  @Type(() => Number)
+  @IsInt()
+  districtId?: number;
 }
 
 export class UsersGetListResponseBodyDTO extends PaginationResponseDTO<
