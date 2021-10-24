@@ -49,7 +49,12 @@ export class UsersGetListRequestQueryDTO extends PaginationRequestDTO {
   @IsOptional()
   @Type(() => Number)
   @IsInt()
-  districtId?: number;
+  leaderDistrictId?: number;
+
+  @IsOptional()
+  @Type(() => Number)
+  @IsInt()
+  engineerDistrictId?: number;
 }
 
 export class UsersGetListResponseBodyDTO extends PaginationResponseDTO<

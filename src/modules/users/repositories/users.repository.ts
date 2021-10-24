@@ -35,7 +35,7 @@ export class UsersRepository extends GeneralRepository<UserEntity> {
       .select(rawSelect)
       .where(conditions);
 
-    this.addMembersJoins(queryBuilder);
+    this.addJoinsForMembersData(queryBuilder);
 
     const rawUser = await queryBuilder.getRawOne();
 
@@ -65,21 +65,11 @@ export class UsersRepository extends GeneralRepository<UserEntity> {
       );
     }
 
-    // TODO if role.includes(dl & e) result is empty
     if (data.role?.length) {
       queryBuilder.andWhere(`role IN (:...values)`, { values: data.role });
+      this.addJoinFilterMembersByRole(queryBuilder, data);
     }
-    if (data.role?.includes(USER_ROLES.STATION_WORKER) && data.clientId) {
-      queryBuilder.andWhere(`"sw"."clientId" = :id`, { id: data.clientId });
-    }
-    if (data.role?.includes(USER_ROLES.DISTRICT_LEADER) && data.districtId) {
-      queryBuilder.andWhere(`"dl"."districtId" = :id`, { id: data.districtId });
-    }
-    if (data.role?.includes(USER_ROLES.ENGINEER) && data.districtId) {
-      queryBuilder.andWhere(`"e"."districtId" = :id`, { id: data.districtId });
-    }
-
-    this.addMembersJoins(queryBuilder);
+    this.addJoinsForMembersData(queryBuilder);
 
     const totalItemsCount = await queryBuilder.getCount();
     const items = await queryBuilder
@@ -96,7 +86,34 @@ export class UsersRepository extends GeneralRepository<UserEntity> {
     };
   }
 
-  private addMembersJoins(builder: SelectQueryBuilder<UserEntity>): void {
+  // TODO empty result if set 'role[dl & e] & leaderDistrictId & engineerDistrictId'
+  private addJoinFilterMembersByRole(
+    builder: SelectQueryBuilder<UserEntity>,
+    data: UsersGetListRequestQueryDTO,
+  ): void {
+    const filterStationsWorkers =
+      data.role?.includes(USER_ROLES.STATION_WORKER) && data.clientId;
+    const filterDistrictLeaders =
+      data.role?.includes(USER_ROLES.DISTRICT_LEADER) && data.leaderDistrictId;
+    const filterEngineers =
+      data.role?.includes(USER_ROLES.ENGINEER) && data.engineerDistrictId;
+
+    if (filterStationsWorkers) {
+      builder.andWhere(`"sw"."clientId" = :id`, { id: data.clientId });
+    } else if (filterDistrictLeaders) {
+      builder.andWhere(`"dl"."districtId" = :id`, {
+        id: data.leaderDistrictId,
+      });
+    } else if (filterEngineers) {
+      builder.andWhere(`"e"."districtId" = :id`, {
+        id: data.engineerDistrictId,
+      });
+    }
+  }
+
+  private addJoinsForMembersData(
+    builder: SelectQueryBuilder<UserEntity>,
+  ): void {
     builder
       .leftJoin(StationWorkerEntity, 'sw', '"sw"."userId" = u.id')
       .leftJoin(DistrictLeaderEntity, 'dl', '"dl"."userId" = u.id')
