@@ -6,6 +6,7 @@ import {
   UsersCreateFullEngineerDTO,
   UsersCreateFullStationWorkerDTO,
   UsersCreateGeneralUserDTO,
+  UsersCreateItemDTO,
   UsersCreateRequestBodyDTO,
 } from '../../dtos';
 import {
@@ -36,6 +37,11 @@ import { StationsWorkersCheckBeforeCreateService } from './stations-workers-chec
 import { UsersSendingMailService } from '../users-sending-mail.service';
 import { UsersGeneralService } from '../users-general.service';
 
+type TGetRequestsToCheckingAndCreationReturn = [
+  Promise<void>[],
+  ((manager: EntityManager) => Promise<UserEntity[]>)[],
+];
+
 @Injectable()
 export class UsersCreateService {
   constructor(
@@ -51,74 +57,75 @@ export class UsersCreateService {
     const emails = users.map(({ email }) => email) as NonEmptyArray<string>;
     await this.usersGeneralService.allEmailsNotExistingOrFail(emails);
 
-    const preparedUsers = getIndexedArray(users);
+    const [requestsToCheckingUsers, requestsToCreationUsers] =
+      this.getRequestsToCheckingAndCreation(users);
+
+    await Promise.all(requestsToCheckingUsers);
+
+    await this.connection.transaction(async (manager) => {
+      await Promise.all(requestsToCreationUsers.map((cb) => cb(manager)));
+
+      const records = await this.createRecordsOfConfirmationEmails(
+        users,
+        manager,
+      );
+      await this.sendingEmailsCreatedUsers(users, records);
+    });
+  }
+
+  private getRequestsToCheckingAndCreation(
+    users: NonEmptyArray<UsersCreateItemDTO>,
+  ): TGetRequestsToCheckingAndCreationReturn {
+    const indexedUsers = getIndexedArray(users);
     const { stationWorkers, engineers, districtLeaders, simpleUsers } =
       getGroupedFullUsersByRoles<
         UsersCreateFullDistrictLeaderDTO,
         UsersCreateFullEngineerDTO,
         UsersCreateFullStationWorkerDTO,
         UsersCreateGeneralUserDTO
-      >(preparedUsers);
+      >(indexedUsers);
 
-    const userCheckingRequestList: Promise<void>[] = [];
-    const userCreationRequestList: ((
-      manager: EntityManager,
-    ) => Promise<UserEntity[]>)[] = [];
+    const requestsToCheckingUsers: TGetRequestsToCheckingAndCreationReturn[0] =
+      [];
+    const requestsToCreationUsers: TGetRequestsToCheckingAndCreationReturn[1] =
+      [];
 
     if (isNonEmptyArray(districtLeaders)) {
-      userCheckingRequestList.push(
+      requestsToCheckingUsers.push(
         this.usersCheckBeforeCreateService.checkDistrictLeadersOrFail(
           districtLeaders,
         ),
       );
-      userCreationRequestList.push((manager: EntityManager) =>
+      requestsToCreationUsers.push((manager: EntityManager) =>
         this.saveDistrictsLeaders(districtLeaders, manager),
       );
     }
 
     if (isNonEmptyArray(stationWorkers)) {
-      userCheckingRequestList.push(
+      requestsToCheckingUsers.push(
         this.stationsWorkersCheckBeforeCreateService.execute(stationWorkers),
       );
-      userCreationRequestList.push((manager: EntityManager) =>
+      requestsToCreationUsers.push((manager: EntityManager) =>
         this.saveStationWorkers(stationWorkers, manager),
       );
     }
 
     if (isNonEmptyArray(engineers)) {
-      userCheckingRequestList.push(
+      requestsToCheckingUsers.push(
         this.usersCheckBeforeCreateService.checkEngineersOrFail(engineers),
       );
-      userCreationRequestList.push((manager: EntityManager) =>
+      requestsToCreationUsers.push((manager: EntityManager) =>
         this.saveEngineers(engineers, manager),
       );
     }
 
     if (isNonEmptyArray(simpleUsers)) {
-      userCreationRequestList.push((manager: EntityManager) =>
+      requestsToCreationUsers.push((manager: EntityManager) =>
         this.saveSimpleUsers(simpleUsers, manager),
       );
     }
 
-    await Promise.all(userCheckingRequestList);
-
-    await this.connection.transaction(async (manager) => {
-      await Promise.all(userCreationRequestList.map((cb) => cb(manager)));
-
-      const allUsers = [
-        ...stationWorkers,
-        ...engineers,
-        ...districtLeaders,
-        ...simpleUsers,
-      ];
-
-      const records = await this.createRecordsOfConfirmationEmails(
-        allUsers,
-        manager,
-      );
-
-      await this.sendingEmailsCreatedUsers(allUsers, records);
-    });
+    return [requestsToCheckingUsers, requestsToCreationUsers];
   }
 
   private async saveDistrictsLeaders(
@@ -228,7 +235,7 @@ export class UsersCreateService {
   }
 
   private async sendingEmailsCreatedUsers(
-    users: UsersCreateGeneralUserDTO[],
+    users: { email: string }[],
     recordsOfConfirmationEmails: EmailConfirmedEntity[],
   ): Promise<void> {
     const dataToSendingEmails = recordsOfConfirmationEmails.map((record) => {

@@ -1,11 +1,4 @@
-import {
-  Entity,
-  Column,
-  OneToOne,
-  ManyToOne,
-  JoinColumn,
-  Check,
-} from 'typeorm';
+import { Entity, Column, OneToOne, ManyToOne, JoinColumn } from 'typeorm';
 import { BaseEntity } from './base.entity';
 import { Expose } from 'class-transformer';
 import { UserEntity } from './user.entity';
