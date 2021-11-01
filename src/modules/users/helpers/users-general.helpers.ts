@@ -1,31 +1,28 @@
 import { USER_ROLES } from '../constants';
 import { AllowedRoles } from '../types';
-import {
-  UsersCreateDistrictLeaderDTO,
-  UsersCreateEngineerDTO,
-  UsersCreateStationWorkerDTO,
-} from '../dtos';
-import { ENTITIES_FIELDS } from '@app/constants';
 
-type FullDistrictLeader = Pick<
-  UsersCreateDistrictLeaderDTO,
-  ENTITIES_FIELDS.DISTRICT_ID | ENTITIES_FIELDS.ROLE
->;
+interface IFullDistrictLeader {
+  role: USER_ROLES.DISTRICT_LEADER;
+  leaderDistrictId: number;
+}
 
-type FullEngineer = Pick<
-  UsersCreateEngineerDTO,
-  ENTITIES_FIELDS.DISTRICT_ID | ENTITIES_FIELDS.ROLE
->;
+interface IFullEngineer {
+  role: USER_ROLES.ENGINEER;
+  engineerDistrictId: number;
+}
 
-type FullStationWorker = Pick<
-  UsersCreateStationWorkerDTO,
-  ENTITIES_FIELDS.CLIENT_ID | ENTITIES_FIELDS.ROLE
->;
+interface IFullStationWorker {
+  role: USER_ROLES.STATION_WORKER;
+  clientId: number;
+  stationId: number | null;
+}
 
 interface IRawUser {
   role: AllowedRoles;
-  clientId?: number;
-  districtId?: number;
+  clientId?: number | null;
+  stationId?: number | null;
+  leaderDistrictId?: number | null;
+  engineerDistrictId?: number | null;
 }
 
 interface IGetGroupedFullUsersByRoles<D, E, S, A> {
@@ -35,9 +32,9 @@ interface IGetGroupedFullUsersByRoles<D, E, S, A> {
   simpleUsers: A[];
 }
 export const getGroupedFullUsersByRoles = <
-  D extends FullDistrictLeader = FullDistrictLeader,
-  E extends FullEngineer = FullEngineer,
-  S extends FullStationWorker = FullStationWorker,
+  D extends IFullDistrictLeader,
+  E extends IFullEngineer,
+  S extends IFullStationWorker,
   A extends { role: AllowedRoles } = { role: AllowedRoles },
 >(
   rawUsers: IRawUser[],
@@ -50,11 +47,11 @@ export const getGroupedFullUsersByRoles = <
   };
 
   rawUsers.forEach((user) => {
-    if (user.role === USER_ROLES.DISTRICT_LEADER && user.districtId) {
+    if (user.role === USER_ROLES.DISTRICT_LEADER && user.leaderDistrictId) {
       result.districtLeaders.push(user as D);
       return;
     }
-    if (user.role === USER_ROLES.ENGINEER && user.districtId) {
+    if (user.role === USER_ROLES.ENGINEER && user.engineerDistrictId) {
       result.engineers.push(user as E);
       return;
     }

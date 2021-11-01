@@ -7,46 +7,21 @@ import {
 } from '@app/entities';
 import { GeneralRepository } from '@app/repositories';
 import { SimpleUserDTO } from '../dtos';
-import { ExceptionsNotFound } from '@app/exceptions/errors';
-import { ENTITIES_FIELDS, SORT_DURATION_DEFAULT } from '@app/constants';
-import { AUTH_ERRORS } from '../../auth/constants';
+import { SORT_DURATION_DEFAULT } from '@app/constants';
 import { TMemberDTO } from '../types';
-import { RepositoryFindConditions } from '@app/repositories/types';
-import { ClassTransformOptions } from 'class-transformer/types/interfaces';
-import { getSerializedMemberUser } from '../helpers';
 import {
   UsersGetListRequestQueryDTO,
   UsersGetListResponseBodyDTO,
 } from '../dtos/users-getting.dtos';
-import { USERS_LIST_DEFAULT_SORT_BY } from '../constants/clients-general.constants';
-import { USER_ROLES } from '../constants';
-
-const rawSelect = `u.*, sw.clientId as "clientId", sw.stationId as "stationId", dl.districtId as "leaderDistrictId", e.districtId as "engineerDistrictId"`;
+import {
+  USER_ROLES,
+  USERS_LIST_DEFAULT_SORT_BY,
+  USERS_MEMBER_RAW_SELECT,
+} from '../constants';
 
 @EntityRepository(UserEntity)
 export class UsersRepository extends GeneralRepository<UserEntity> {
   protected entitySerializer = UserEntity;
-
-  public async getFullUserOrFail(
-    conditions: RepositoryFindConditions<UserEntity>,
-    serializeOptions?: ClassTransformOptions,
-  ): Promise<TMemberDTO | SimpleUserDTO> {
-    const queryBuilder = this.createQueryBuilder('u')
-      .select(rawSelect)
-      .where(conditions);
-
-    this.addJoinsForMembersData(queryBuilder);
-
-    const rawUser = await queryBuilder.getRawOne();
-
-    if (!rawUser) {
-      throw new ExceptionsNotFound([
-        { field: ENTITIES_FIELDS.ID, messages: [AUTH_ERRORS.USER_NOT_FOUND] },
-      ]);
-    }
-
-    return getSerializedMemberUser(rawUser, serializeOptions);
-  }
 
   public async getUsersWithPagination(
     data: UsersGetListRequestQueryDTO,
@@ -56,7 +31,7 @@ export class UsersRepository extends GeneralRepository<UserEntity> {
     const totalSortDuration = data.sortDuration || SORT_DURATION_DEFAULT;
 
     const queryBuilder = this.createQueryBuilder('u')
-      .select(rawSelect)
+      .select(USERS_MEMBER_RAW_SELECT)
       .where(`u.role NOT IN ('${USER_ROLES.MASTER}')`);
 
     if (data.search) {
@@ -111,9 +86,7 @@ export class UsersRepository extends GeneralRepository<UserEntity> {
     }
   }
 
-  private addJoinsForMembersData(
-    builder: SelectQueryBuilder<UserEntity>,
-  ): void {
+  public addJoinsForMembersData(builder: SelectQueryBuilder<UserEntity>): void {
     builder
       .leftJoin(StationWorkerEntity, 'sw', '"sw"."userId" = u.id')
       .leftJoin(DistrictLeaderEntity, 'dl', '"dl"."userId" = u.id')

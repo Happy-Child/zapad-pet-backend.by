@@ -1,30 +1,37 @@
 import { Module } from '@nestjs/common';
 import { StationsController } from './controllers/stations.controller';
-import { StationsCreateService } from './services';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { StationsRepository } from './repositories';
-import { UsersStationsWorkersRepository } from '../users/repositories';
-import { ClientsRepository } from '../clients/repositories';
-import { DistrictsRepository } from '../districts/repositories';
-import { StationsCheckWorkersService } from './services';
-import { AggrStationBidStatusCountRepository } from './repositories';
-import { StationsUpdateService } from './services';
+import {
+  AggrStationBidStatusCountRepository,
+  StationsRepository,
+} from './repositories';
+import {
+  StationsUpdateService,
+  StationsGeneralCheckingService,
+  StationsCreateService,
+} from './services';
+import { ClientsModule } from '../clients';
+import { DistrictsModule } from '../districts';
+import { StationsWorkersModule } from '../stations-workers';
+import { StationsCheckBeforeUpdateService } from './services/update';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([
       StationsRepository,
-      ClientsRepository,
-      DistrictsRepository,
-      UsersStationsWorkersRepository,
       AggrStationBidStatusCountRepository,
     ]),
+    StationsWorkersModule,
+    ClientsModule,
+    DistrictsModule,
   ],
   controllers: [StationsController],
   providers: [
-    StationsCheckWorkersService,
+    StationsGeneralCheckingService,
     StationsCreateService,
+    StationsCheckBeforeUpdateService,
     StationsUpdateService,
   ],
+  exports: [StationsGeneralCheckingService],
 })
 export class StationsModule {}

@@ -3,6 +3,7 @@ import { MembersRoles } from '../../users/types';
 
 export class SimpleUserJWTPayloadDTO {
   userId!: number;
+
   role!: Exclude<USER_ROLES, MembersRoles>;
 }
 

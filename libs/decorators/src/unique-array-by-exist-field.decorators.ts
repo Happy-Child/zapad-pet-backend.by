@@ -4,10 +4,17 @@ import { NonEmptyArray } from '@app/types';
 
 const VALIDATION_NAME = 'UNIQUE_ARRAY_BY_EXIST_FIELD';
 
-const identifier = <T>(arr: T[] | undefined, field: keyof T): boolean => {
+const identifier = <T>(
+  arr: T[] | undefined,
+  field: keyof T,
+  ignoreValues: any[],
+): boolean => {
   if (!arr || !Array.isArray(arr)) return false;
 
-  const itemsWithField = arr.filter((item) => isObject(item) && item[field]);
+  let itemsWithField = arr.filter((item) => isObject(item) && field in item);
+  itemsWithField = itemsWithField.filter(
+    (val) => !ignoreValues.includes(val[field]),
+  );
 
   if (!itemsWithField.length) return true;
 
@@ -23,11 +30,13 @@ const identifier = <T>(arr: T[] | undefined, field: keyof T): boolean => {
 export function UniqueArrayByExistField<T>(
   field: keyof T,
   errorMessage: string,
+  ignoreValues: any[] = [null],
 ): PropertyDecorator {
   return ValidateBy({
     name: VALIDATION_NAME,
     validator: {
-      validate: (value): boolean => identifier(value as T[], field),
+      validate: (value): boolean =>
+        identifier(value as T[], field, ignoreValues),
       defaultMessage: () => errorMessage,
     },
   });

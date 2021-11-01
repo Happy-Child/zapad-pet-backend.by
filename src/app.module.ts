@@ -8,6 +8,8 @@ import { StationsModule } from './modules/stations';
 import { ClientsModule } from './modules/clients';
 import { RegionsModule } from './modules/regions';
 import { AuthModule } from './modules/auth';
+import { StationsWorkersModule } from './modules/stations-workers/stations-workers.module';
+import { DistrictsLeadersModule } from './modules/districts-leaders/districts-leaders.module';
 import ormconfig from '../ormconfig';
 
 @Module({
@@ -21,6 +23,8 @@ import ormconfig from '../ormconfig';
     StationsModule,
     ClientsModule,
     RegionsModule,
+    StationsWorkersModule,
+    DistrictsLeadersModule,
   ],
 })
 export class AppModule {}

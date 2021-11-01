@@ -36,7 +36,7 @@ export class StationEntity extends BaseEntity {
   districtId!: number;
 
   @OneToMany(() => BidEntity, (bid) => bid.station)
-  bids?: BidEntity[];
+  bids!: BidEntity[];
 
   @OneToOne(() => StationWorkerEntity)
   stationWorker!: StationWorkerEntity | null;

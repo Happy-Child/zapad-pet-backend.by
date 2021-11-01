@@ -1,7 +1,6 @@
 import {
   Controller,
   Get,
-  Delete,
   Post,
   Body,
   Put,
@@ -10,7 +9,11 @@ import {
   Query,
 } from '@nestjs/common';
 import { ClientDTO } from '../dtos';
-import { ClientsGettingService, ClientsGeneralService } from '../services';
+import {
+  ClientsGettingService,
+  ClientsCreateService,
+  ClientsUpdateService,
+} from '../services';
 import { ClientsUpdateBodyDTO } from '../dtos';
 import {
   ClientsGettingRequestQueryDTO,
@@ -21,13 +24,14 @@ import { ClientEntity } from '@app/entities';
 @Controller('clients')
 export class ClientsController {
   constructor(
-    private readonly clientsGeneralService: ClientsGeneralService,
+    private readonly clientsCreateService: ClientsCreateService,
+    private readonly clientsUpdateService: ClientsUpdateService,
     private readonly clientsGettingService: ClientsGettingService,
   ) {}
 
   @Post()
   async create(@Body() body: ClientEntity): Promise<true> {
-    await this.clientsGeneralService.create(body);
+    await this.clientsCreateService.create(body);
     return true;
   }
 
@@ -36,13 +40,7 @@ export class ClientsController {
     @Param('id', ParseIntPipe) id: number,
     @Body() body: ClientsUpdateBodyDTO,
   ): Promise<true> {
-    await this.clientsGeneralService.update(id, body);
-    return true;
-  }
-
-  @Delete('/:id')
-  async deleteById(@Param('id', ParseIntPipe) id: number): Promise<true> {
-    await this.clientsGeneralService.deleteById(id);
+    await this.clientsUpdateService.update(id, body);
     return true;
   }
 

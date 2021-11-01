@@ -3,8 +3,6 @@ import {
   IsArray,
   IsEmail,
   IsIn,
-  IsInt,
-  IsOptional,
   IsString,
   Length,
   Matches,
@@ -13,20 +11,22 @@ import {
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import {
-  DISTRICT_MEMBERS_ROLES,
   USER_ROLES,
   USERS_CREATE_ALLOWED_ROLES,
+  USERS_ERRORS,
 } from '../constants';
 import { AUTH_ERRORS } from '../../auth/constants';
-import { UniqueDistrictLeadersInArray } from '../decorators';
 import { AllowedRoles } from '../types';
 import {
   PASSWORD_LENGTH,
   PASSWORD_REGEX,
   USER_NAME_LENGTH,
 } from '../../auth/constants';
-import { ArrayWithObjects, UniqueArrayByExistField } from '@app/decorators';
-import { ENTITIES_FIELDS } from '@app/constants';
+import {
+  ArrayWithObjects,
+  NullOrNumber,
+  UniqueArrayByExistField,
+} from '@app/decorators';
 import { NonEmptyArray } from '@app/types';
 
 export class UsersCreateGeneralUserDTO {
@@ -37,24 +37,28 @@ export class UsersCreateGeneralUserDTO {
   role!: AllowedRoles;
 
   password!: string;
+
+  index!: number;
 }
 
-export class UsersCreateStationWorkerDTO extends UsersCreateGeneralUserDTO {
+export class UsersCreateFullStationWorkerDTO extends UsersCreateGeneralUserDTO {
   role!: USER_ROLES.STATION_WORKER;
 
   clientId!: number;
+
+  stationId!: number | null;
 }
 
-export class UsersCreateDistrictLeaderDTO extends UsersCreateGeneralUserDTO {
+export class UsersCreateFullDistrictLeaderDTO extends UsersCreateGeneralUserDTO {
   role!: USER_ROLES.DISTRICT_LEADER;
 
-  districtId!: number;
+  leaderDistrictId!: number;
 }
 
-export class UsersCreateEngineerDTO extends UsersCreateGeneralUserDTO {
+export class UsersCreateFullEngineerDTO extends UsersCreateGeneralUserDTO {
   role!: USER_ROLES.ENGINEER;
 
-  districtId!: number;
+  engineerDistrictId!: number;
 }
 
 export class UsersCreateItemDTO {
@@ -69,19 +73,29 @@ export class UsersCreateItemDTO {
   @IsIn(USERS_CREATE_ALLOWED_ROLES, { message: AUTH_ERRORS.INVALID_ROLE })
   role!: AllowedRoles;
 
-  @IsOptional()
   @ValidateIf((data) => data.role === USER_ROLES.STATION_WORKER, {
     message: AUTH_ERRORS.CLIENT_ID_IS_REQUIRED,
   })
-  @IsInt()
-  clientId?: number;
+  @NullOrNumber()
+  clientId?: number | null;
 
-  @IsOptional()
-  @ValidateIf((data) => DISTRICT_MEMBERS_ROLES.includes(data.role), {
+  @ValidateIf((data) => data.role === USER_ROLES.STATION_WORKER, {
+    message: AUTH_ERRORS.STATION_ID_IS_REQUIRED,
+  })
+  @NullOrNumber()
+  stationId?: number | null;
+
+  @ValidateIf((data) => data.role === USER_ROLES.DISTRICT_LEADER, {
     message: AUTH_ERRORS.DISTRICT_ID_IS_REQUIRED,
   })
-  @IsInt()
-  districtId?: number;
+  @NullOrNumber()
+  leaderDistrictId?: number | null;
+
+  @ValidateIf((data) => data.role === USER_ROLES.ENGINEER, {
+    message: AUTH_ERRORS.DISTRICT_ID_IS_REQUIRED,
+  })
+  @NullOrNumber()
+  engineerDistrictId?: number | null;
 
   @IsString()
   @Length(PASSWORD_LENGTH.MIN, PASSWORD_LENGTH.MAX)
@@ -94,10 +108,17 @@ export class UsersCreateRequestBodyDTO {
   @ArrayNotEmpty()
   @ArrayWithObjects()
   @UniqueArrayByExistField<UsersCreateItemDTO>(
-    ENTITIES_FIELDS.EMAIL,
+    'email',
     AUTH_ERRORS.EMAILS_SHOULD_BE_UNIQUES,
   )
-  @UniqueDistrictLeadersInArray()
+  @UniqueArrayByExistField<UsersCreateItemDTO>(
+    'leaderDistrictId',
+    USERS_ERRORS.DISTRICT_LEADERS_SHOULD_HAVE_UNIQUE_DISTRICT_ID,
+  )
+  @UniqueArrayByExistField<UsersCreateItemDTO>(
+    'stationId',
+    USERS_ERRORS.STATIONS_WORKERS_SHOULD_HAVE_UNIQUE_STATION_ID,
+  )
   @ValidateNested({ each: true })
   @Type(() => UsersCreateItemDTO)
   users!: NonEmptyArray<UsersCreateItemDTO>;

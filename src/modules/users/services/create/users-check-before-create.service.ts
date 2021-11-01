@@ -1,46 +1,48 @@
 import { Injectable } from '@nestjs/common';
-import { UsersGeneralCheckService } from '../general';
-import {
-  UsersCreateDistrictLeaderDTO,
-  UsersCreateEngineerDTO,
-  UsersCreateStationWorkerDTO,
-} from '../../dtos';
-import { UsersDistrictsLeadersRepository } from '../../repositories';
-import { ClientsRepository } from '../../../clients/repositories';
-import { DistrictsRepository } from '../../../districts/repositories';
 import { NonEmptyArray } from '@app/types';
+import { DistrictsGeneralCheckingService } from '../../../districts/services';
+import { DistrictsLeadersGeneralService } from '../../../districts-leaders/services';
+import {
+  UsersCreateFullDistrictLeaderDTO,
+  UsersCreateFullEngineerDTO,
+} from '../../dtos';
 
 @Injectable()
 export class UsersCheckBeforeCreateService {
   constructor(
-    private readonly usersGeneralCheckService: UsersGeneralCheckService,
-    private readonly usersDistrictsLeadersRepository: UsersDistrictsLeadersRepository,
-    private readonly clientsRepository: ClientsRepository,
-    private readonly districtsRepository: DistrictsRepository,
+    private readonly districtsGeneralCheckingService: DistrictsGeneralCheckingService,
+    private readonly districtsLeadersGeneralService: DistrictsLeadersGeneralService,
   ) {}
 
-  public async checkStationWorkersOrFail(
-    stationWorkers: NonEmptyArray<
-      UsersCreateStationWorkerDTO & { index: number }
-    >,
-  ): Promise<void> {
-    await this.clientsRepository.clientsExistsOrFail(stationWorkers);
-  }
-
   public async checkDistrictLeadersOrFail(
-    districtLeaders: NonEmptyArray<
-      UsersCreateDistrictLeaderDTO & { index: number }
-    >,
+    districtLeaders: NonEmptyArray<UsersCreateFullDistrictLeaderDTO>,
   ): Promise<void> {
-    await this.districtsRepository.districtsExistsOrFail(districtLeaders);
-    await this.usersDistrictsLeadersRepository.districtsWithoutLeadersOrFail(
+    const preparedDistrictsRecords = districtLeaders.map(
+      ({ index, leaderDistrictId }) => ({
+        index,
+        districtId: leaderDistrictId,
+      }),
+    ) as NonEmptyArray<{ districtId: number; index: number }>;
+    await this.districtsGeneralCheckingService.allDistrictsExistsOrFail(
+      preparedDistrictsRecords,
+    );
+    await this.districtsLeadersGeneralService.allDistrictsWithoutLeadersOrFail(
       districtLeaders,
     );
   }
 
   public async checkEngineersOrFail(
-    engineer: NonEmptyArray<UsersCreateEngineerDTO & { index: number }>,
+    engineer: NonEmptyArray<UsersCreateFullEngineerDTO>,
   ): Promise<void> {
-    await this.districtsRepository.districtsExistsOrFail(engineer);
+    const preparedDistrictsRecords = engineer.map(
+      ({ index, engineerDistrictId }) => ({
+        index,
+        districtId: engineerDistrictId,
+      }),
+    ) as NonEmptyArray<{ districtId: number; index: number }>;
+    await this.districtsGeneralCheckingService.allDistrictsExistsOrFail(
+      preparedDistrictsRecords,
+      'engineerDistrictId',
+    );
   }
 }

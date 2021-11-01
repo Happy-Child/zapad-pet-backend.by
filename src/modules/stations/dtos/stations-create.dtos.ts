@@ -13,8 +13,7 @@ import {
   NullOrNumber,
   UniqueArrayByExistField,
 } from '@app/decorators';
-import { STATIONS_ERRORS } from '../constants/stations-errors.constants';
-import { STATION_NUMBER_LENGTH } from '../constants';
+import { STATIONS_ERRORS, STATION_NUMBER_LENGTH } from '../constants';
 
 export class StationsCreateItemDTO {
   @IsString()

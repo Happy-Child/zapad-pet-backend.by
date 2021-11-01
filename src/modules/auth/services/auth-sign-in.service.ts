@@ -1,29 +1,30 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { plainToClass } from 'class-transformer';
 import { ExceptionsUnprocessableEntity } from '@app/exceptions/errors';
 import { SignInRequestBodyDTO, SignInResponseBodyDTO } from '../dtos';
 import { AUTH_ERRORS } from '../constants';
 import { comparePasswords } from '../helpers';
 import { ENTITIES_FIELDS } from '@app/constants';
-import { UsersRepository } from '../../users/repositories';
-import { TFullMemberDTO, TMemberDTO } from '../../users/types';
 import { USER_EXPOSE_GROUPS } from '../../users/constants';
-import { isFullMember, isMember } from '../../users/helpers';
-import { plainToClass } from 'class-transformer';
+import { isMember } from '../../users/helpers';
+import { UsersGettingService } from '../../users/services';
+import { AuthGeneralService } from './auth-general.service';
 
 @Injectable()
 export class AuthSignInService {
   constructor(
-    private readonly usersRepository: UsersRepository,
+    private readonly usersGettingService: UsersGettingService,
     private readonly jwtService: JwtService,
   ) {}
 
   async signIn(body: SignInRequestBodyDTO): Promise<SignInResponseBodyDTO> {
-    const user = await this.usersRepository.getFullUserOrFail(
+    const user = await this.usersGettingService.getFullUserOrFail(
       {
         email: body.email,
       },
       { groups: [USER_EXPOSE_GROUPS.PASSWORD] },
+      'email',
     );
 
     await AuthSignInService.checkComparePasswordsOrFail(
@@ -31,7 +32,7 @@ export class AuthSignInService {
       user.password as string,
     );
     AuthSignInService.checkEmailConfirmedOrFail(user.emailConfirmed);
-    if (isMember(user)) AuthSignInService.isFullMemberOrFail(user);
+    if (isMember(user)) AuthGeneralService.isFullMemberOrFail(user);
 
     const accessToken = this.jwtService.sign({ sub: user.id });
     return plainToClass(SignInResponseBodyDTO, { user, accessToken });
@@ -46,19 +47,6 @@ export class AuthSignInService {
         },
       ]);
     }
-  }
-
-  public static isFullMemberOrFail(
-    member: TMemberDTO,
-  ): member is TFullMemberDTO {
-    if (isFullMember(member)) return true;
-
-    throw new ExceptionsUnprocessableEntity([
-      {
-        field: ENTITIES_FIELDS.UNKNOWN,
-        messages: [AUTH_ERRORS.MEMBER_IS_NOT_FULL],
-      },
-    ]);
   }
 
   private static async checkComparePasswordsOrFail(

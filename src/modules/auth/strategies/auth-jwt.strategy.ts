@@ -4,18 +4,18 @@ import { JWT, RSA } from 'config';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { readFile } from '@app/helpers';
 import { COOKIE } from '../constants';
-import { AuthSignInService } from '../services';
+import { AuthGeneralService, AuthSignInService } from '../services';
 import { IAuthJWTTokenPayload } from '../interfaces';
-import { UsersRepository } from '../../users/repositories';
 import { getJWTPayloadByMember } from '../helpers';
 import { SimpleUserJWTPayloadDTO } from '../dtos';
 import { TMemberJWTPayloadDTO } from '../types';
 import { isMember } from '../../users/helpers';
 import { TFullMemberDTO } from '../../users/types';
+import { UsersGettingService } from '../../users/services';
 
 @Injectable()
 export class AuthJwtStrategy extends PassportStrategy(Strategy) {
-  constructor(private readonly usersRepository: UsersRepository) {
+  constructor(private readonly usersGettingService: UsersGettingService) {
     super({
       jwtFromRequest: ExtractJwt.fromExtractors([
         (req) => {
@@ -42,14 +42,14 @@ export class AuthJwtStrategy extends PassportStrategy(Strategy) {
   public async validate(
     payload: IAuthJWTTokenPayload,
   ): Promise<TMemberJWTPayloadDTO | SimpleUserJWTPayloadDTO> {
-    const user = await this.usersRepository.getFullUserOrFail({
+    const user = await this.usersGettingService.getFullUserOrFail({
       id: payload.sub,
     });
 
     AuthSignInService.checkEmailConfirmedOrFail(user.emailConfirmed);
 
     if (isMember(user)) {
-      AuthSignInService.isFullMemberOrFail(user);
+      AuthGeneralService.isFullMemberOrFail(user);
       return getJWTPayloadByMember(user as TFullMemberDTO);
     } else {
       return {

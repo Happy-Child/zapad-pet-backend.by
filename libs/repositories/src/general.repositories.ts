@@ -71,13 +71,22 @@ export class GeneralRepository<E extends BaseEntity> extends Repository<E> {
   }
 
   public async getManyByColumn(
-    values: NonEmptyArray<number | string>,
+    values: NonEmptyArray<E[keyof E]>,
     column: keyof E = 'id',
   ): Promise<E[]> {
     return this.createQueryBuilder('t')
       .where(`t.${column} IN (:...values)`, { values })
       .orderBy(`t.${column}`)
       .getMany();
+  }
+
+  public async returnNotExistingColumnValues(
+    column: keyof E = 'id',
+    values: NonEmptyArray<E[keyof E]>,
+  ): Promise<E[keyof E][]> {
+    const records = await this.getManyByColumn(values, column);
+    const recordsIds = records.map((r) => r[column]);
+    return values.filter((v) => !recordsIds.includes(v));
   }
 
   public createEntity(data: RepositoryCreateEntity<E>): E {

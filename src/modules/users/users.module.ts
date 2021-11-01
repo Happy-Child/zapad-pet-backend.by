@@ -2,47 +2,48 @@ import { Module } from '@nestjs/common';
 import { UsersController } from './controllers/users.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import {
-  UsersDistrictsLeadersRepository,
-  UsersEngineersRepository,
-  UsersStationsWorkersRepository,
+  EngineersRepository,
   UsersEmailConfirmedRepository,
   UsersRepository,
 } from './repositories';
 import {
   UsersCheckBeforeCreateService,
   UsersCreateService,
-  UsersGeneralCheckService,
+  UsersGeneralService,
   UsersSendingMailService,
   UsersGettingService,
+  StationsWorkersCheckBeforeCreateService,
 } from './services';
 import { MailSenderModule } from '@app/mail-sender';
 import { PugModule } from '@app/pug';
-import { DistrictsRepository } from '../districts/repositories';
-import { ClientsRepository } from '../clients/repositories';
-import { UsersStationsWorkersGeneralService } from './services/general/users-stations-workers-general.service';
+import { DistrictsModule } from '../districts';
+import { ClientsModule } from '../clients';
+import { DistrictsLeadersModule } from '../districts-leaders';
+import { StationsModule } from '../stations';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([
-      UsersDistrictsLeadersRepository,
-      UsersEngineersRepository,
-      UsersStationsWorkersRepository,
+      EngineersRepository,
       UsersRepository,
       UsersEmailConfirmedRepository,
-      DistrictsRepository,
-      ClientsRepository,
     ]),
+    ClientsModule,
+    DistrictsModule,
+    StationsModule,
+    DistrictsLeadersModule,
     MailSenderModule,
     PugModule,
   ],
   controllers: [UsersController],
   providers: [
-    UsersGeneralCheckService,
-    UsersStationsWorkersGeneralService,
+    UsersGeneralService,
+    StationsWorkersCheckBeforeCreateService,
     UsersCheckBeforeCreateService,
     UsersCreateService,
     UsersSendingMailService,
     UsersGettingService,
   ],
+  exports: [UsersGettingService],
 })
 export class UsersModule {}

@@ -10,11 +10,14 @@ import { AuthPasswordRecoveryRepository } from '../repositories';
 import { AuthSendingMailService } from './auth-sending-mail.service';
 import { PasswordRecoveryEntity } from '@app/entities';
 import { UsersRepository } from '../../users/repositories';
+import { UsersGettingService } from '../../users/services';
+import { ExceptionsUnprocessableEntity } from '@app/exceptions/errors';
+import { AUTH_ERRORS } from '../constants';
 
 @Injectable()
 export class AuthPasswordRecoveryService {
   constructor(
-    private readonly usersRepository: UsersRepository,
+    private readonly usersGettingService: UsersGettingService,
     private readonly authPasswordRecoveryRepository: AuthPasswordRecoveryRepository,
     private readonly authSendingMailService: AuthSendingMailService,
     private readonly connection: Connection,
@@ -23,7 +26,7 @@ export class AuthPasswordRecoveryService {
   async passwordRecovery(
     email: string,
   ): Promise<PasswordRecoveryResponseBodyDTO> {
-    await this.usersRepository.getFullUserOrFail({ email });
+    await this.usersGettingService.getFullUserOrFail({ email });
 
     const prevPasswordRecoveryData =
       await this.authPasswordRecoveryRepository.getOne({
@@ -107,9 +110,22 @@ export class AuthPasswordRecoveryService {
     body: CreateNewPasswordRequestBodyDTO,
   ): Promise<void> {
     const passwordRecoveryData =
-      await this.authPasswordRecoveryRepository.findByTokenOrFail(body.token);
+      await this.authPasswordRecoveryRepository.getOneOrFail(
+        { token: body.token },
+        {
+          exception: {
+            type: ExceptionsUnprocessableEntity,
+            messages: [
+              {
+                field: 'token',
+                messages: [AUTH_ERRORS.TOKEN_NOT_FOUND],
+              },
+            ],
+          },
+        },
+      );
 
-    const user = await this.usersRepository.getFullUserOrFail({
+    const user = await this.usersGettingService.getFullUserOrFail({
       email: passwordRecoveryData.email,
     });
 

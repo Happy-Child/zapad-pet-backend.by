@@ -1,1 +1,1 @@
-export * from './stations-check-workers.service';
+export * from './stations-general-checking.service';

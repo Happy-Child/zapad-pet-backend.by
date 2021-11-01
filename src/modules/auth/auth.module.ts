@@ -4,7 +4,6 @@ import { AuthController } from './controllers/auth.controller';
 import {
   AuthEmailConfirmedRepository,
   AuthPasswordRecoveryRepository,
-  AuthStationsRepository,
 } from './repositories';
 import {
   AuthSignInService,
@@ -19,17 +18,13 @@ import { MailSenderModule } from '@app/mail-sender';
 import { PugModule } from '@app/pug';
 import { JwtModule } from '@nestjs/jwt';
 import { readFile } from '@app/helpers';
-import { UsersRepository } from '../users/repositories';
-import { DistrictsRepository } from '../districts/repositories';
+import { UsersModule } from '../users';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([
       AuthEmailConfirmedRepository,
       AuthPasswordRecoveryRepository,
-      DistrictsRepository,
-      AuthStationsRepository,
-      UsersRepository,
     ]),
     JwtModule.register({
       privateKey: readFile(config.RSA.PRIVATE_KEY_PATH).toString(),
@@ -39,6 +34,7 @@ import { DistrictsRepository } from '../districts/repositories';
         expiresIn: config.JWT.EXPIRATION,
       },
     }),
+    UsersModule,
     MailSenderModule,
     PugModule,
   ],
