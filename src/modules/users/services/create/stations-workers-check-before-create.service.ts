@@ -5,7 +5,7 @@ import { ClientsGeneralCheckingService } from '../../../clients/services';
 import { StationsGeneralCheckingService } from '../../../stations/services';
 import { getPreparedChildrenErrors } from '@app/helpers/prepared-errors.helpers';
 import { ExceptionsUnprocessableEntity } from '@app/exceptions/errors';
-import { StationDTO } from '../../../stations/dtos';
+import { StationExtendedDTO } from '../../../stations/dtos';
 import { USERS_ERRORS } from '../../constants';
 import { UsersCreateFullStationWorkerDTO } from '../../dtos';
 
@@ -31,7 +31,9 @@ export class StationsWorkersCheckBeforeCreateService {
     if (isNonEmptyArray(workersWithStations)) {
       // Check existing clients and stations
       await this.allStationsWithoutWorkersExistingOrFail(workersWithStations);
-    } else if (isNonEmptyArray(workersWithoutStations)) {
+    }
+
+    if (isNonEmptyArray(workersWithoutStations)) {
       // Check existing only clients
       await this.clientsGeneralCheckingService.allClientsExistsOrFail(
         workersWithoutStations,
@@ -64,7 +66,7 @@ export class StationsWorkersCheckBeforeCreateService {
   }
 
   private allStationsMatchOfClientsOrFail(
-    foundStations: StationDTO[],
+    foundStations: StationExtendedDTO[],
     stationsToCheck: ICreateStationWorkerToCheck[],
   ): void {
     const stationsWithInvalidClients = stationsToCheck.filter(
@@ -87,7 +89,7 @@ export class StationsWorkersCheckBeforeCreateService {
   }
 
   private allStationsWithoutWorkersOrFail(
-    foundWorkers: StationDTO[],
+    foundWorkers: StationExtendedDTO[],
     workersToCheck: ICreateStationWorkerToCheck[],
   ): void {
     const stationsWithWorkers = foundWorkers.filter(

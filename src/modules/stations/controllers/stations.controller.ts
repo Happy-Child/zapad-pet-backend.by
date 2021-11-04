@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Patch } from '@nestjs/common';
+import { Controller, Post, Body, Put } from '@nestjs/common';
 import {
   StationsCreateRequestBodyDTO,
   StationsUpdateRequestBodyDTO,
@@ -18,7 +18,7 @@ export class StationsController {
     return true;
   }
 
-  @Patch()
+  @Put()
   async update(@Body() body: StationsUpdateRequestBodyDTO): Promise<true> {
     await this.stationsUpdateService.update(body);
     return true;

@@ -8,7 +8,7 @@ import {
   ParseIntPipe,
   Query,
 } from '@nestjs/common';
-import { ClientDTO } from '../dtos';
+import { ClientExtendedDTO } from '../dtos';
 import {
   ClientsGettingService,
   ClientsCreateService,
@@ -45,7 +45,9 @@ export class ClientsController {
   }
 
   @Get('/:id')
-  async getById(@Param('id', ParseIntPipe) id: number): Promise<ClientDTO> {
+  async getById(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<ClientExtendedDTO> {
     return this.clientsGettingService.getByIdOrFail(id);
   }
 

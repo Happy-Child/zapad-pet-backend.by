@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import {
-  StationDTO,
+  StationExtendedDTO,
   StationsUpdateItemDTO,
   StationsUpdateRequestBodyDTO,
 } from '../../dtos';
@@ -140,7 +140,7 @@ export class StationsUpdateService {
 
   private getGroupedStationsByChangedFields(
     stationsToCheck: TIndexedStationsUpdateItemDTO[],
-    foundStations: StationDTO[],
+    foundStations: StationExtendedDTO[],
   ): IGetGroupedStationsByChangedFieldsReturn {
     const isWorkerToRemoving = (
       { stationWorkerId: workerIdToCheck }: StationsUpdateItemDTO,

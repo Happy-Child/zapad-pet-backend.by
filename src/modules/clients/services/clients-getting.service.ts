@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import {
-  ClientDTO,
+  ClientExtendedDTO,
   ClientsGettingRequestQueryDTO,
   ClientsGettingResponseBodyDTO,
 } from '../dtos';
@@ -20,7 +20,7 @@ export class ClientsGettingService {
     return new ClientsGettingResponseBodyDTO(result);
   }
 
-  public async getByIdOrFail(id: number): Promise<ClientDTO> {
+  public async getByIdOrFail(id: number): Promise<ClientExtendedDTO> {
     const client = await this.clientsRepository.getClientById(id);
 
     if (!client) {
@@ -29,6 +29,6 @@ export class ClientsGettingService {
       ]);
     }
 
-    return new ClientDTO(client);
+    return new ClientExtendedDTO(client);
   }
 }

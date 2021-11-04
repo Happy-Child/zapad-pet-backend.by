@@ -29,20 +29,17 @@ export class StationsCheckBeforeUpdateService {
   public async execute(
     groupedStationsToCheck: IGetGroupedStationsByChangedFieldsReturn,
   ): Promise<void> {
+    const { byNumbers, byDistrictsIds, byClientsIds, byWorkersIds } =
+      groupedStationsToCheck;
+
     const uniqueStationsByChangedFields = uniqBy(
-      [
-        ...groupedStationsToCheck.byNumbers,
-        ...groupedStationsToCheck.byDistrictsIds,
-        ...groupedStationsToCheck.byClientsIds,
-      ],
+      [...byNumbers, ...byDistrictsIds, ...byClientsIds],
       'id',
     );
 
     if (isNonEmptyArray(uniqueStationsByChangedFields)) {
       await this.allStationsCanBeUpdateOrFail(uniqueStationsByChangedFields);
 
-      const { byNumbers, byDistrictsIds, byClientsIds, byWorkersIds } =
-        groupedStationsToCheck;
       if (isNonEmptyArray(byNumbers))
         await this.stationsGeneralCheckingService.allStationsNumbersNotExistsOrFail(
           byNumbers,
@@ -53,29 +50,25 @@ export class StationsCheckBeforeUpdateService {
           'districtId',
         );
       if (isNonEmptyArray(byClientsIds))
+        // Check existing clients and workers
         await this.clientsGeneralCheckingService.allClientsExistsOrFail(
           byClientsIds,
         );
+    }
 
-      const stationsWithWorkersToAddingAndReplacing = [
-        ...byWorkersIds.toAdding,
-        ...byWorkersIds.toReplacing,
-      ];
+    const stationsWithWorkersToAddingAndReplacing = [
+      ...byWorkersIds.toAdding,
+      ...byWorkersIds.toReplacing,
+    ];
 
-      if (isNonEmptyArray(stationsWithWorkersToAddingAndReplacing)) {
-        // Check existing clients and workers
-        await this.stationsWorkersGeneralService.allWorkersWithoutStationsExistingOrFail(
-          stationsWithWorkersToAddingAndReplacing,
-        );
-        await this.allStationsCanBeChangeWorkersOrFail(
-          stationsWithWorkersToAddingAndReplacing,
-        );
-      } else if (isNonEmptyArray(byWorkersIds.toRemoving)) {
-        // Check existing only clients
-        await this.clientsGeneralCheckingService.allClientsExistsOrFail(
-          byWorkersIds.toRemoving,
-        );
-      }
+    if (isNonEmptyArray(stationsWithWorkersToAddingAndReplacing)) {
+      // Check existing clients and workers
+      await this.stationsWorkersGeneralService.allWorkersWithoutStationsExistingOrFail(
+        stationsWithWorkersToAddingAndReplacing,
+      );
+      await this.allStationsCanBeChangeWorkersOrFail(
+        stationsWithWorkersToAddingAndReplacing,
+      );
     }
   }
 

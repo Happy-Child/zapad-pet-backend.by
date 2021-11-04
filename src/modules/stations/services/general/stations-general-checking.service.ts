@@ -7,7 +7,7 @@ import {
 } from '@app/exceptions/errors';
 import { StationsRepository } from '../../repositories';
 import { StationWorkerEntity } from '@app/entities';
-import { StationDTO } from '../../dtos';
+import { StationExtendedDTO } from '../../dtos';
 import { STATIONS_ERRORS } from '../../constants';
 
 @Injectable()
@@ -17,7 +17,7 @@ export class StationsGeneralCheckingService {
   public async allStationsExistsOrFail(
     items: NonEmptyArray<{ id: number; index: number }>,
     exceptionByField = 'id',
-  ): Promise<NonEmptyArray<StationDTO>> {
+  ): Promise<NonEmptyArray<StationExtendedDTO>> {
     const ids = items.map(({ id }) => id) as NonEmptyArray<number>;
 
     const foundRecords = await this.stationsRepository
@@ -31,7 +31,7 @@ export class StationsGeneralCheckingService {
     const allIdsExisting = ids.length === foundRecords.length;
 
     if (allIdsExisting) {
-      return foundRecords as NonEmptyArray<StationDTO>;
+      return foundRecords as NonEmptyArray<StationExtendedDTO>;
     }
 
     const recordsIds = foundRecords.map(({ id }) => id);

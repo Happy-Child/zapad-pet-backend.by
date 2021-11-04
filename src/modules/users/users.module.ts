@@ -9,6 +9,7 @@ import {
 import {
   UsersCheckBeforeCreateService,
   UsersCreateService,
+  UsersUpdateService,
   UsersGeneralService,
   UsersSendingMailService,
   UsersGettingService,
@@ -41,6 +42,7 @@ import { StationsModule } from '../stations';
     StationsWorkersCheckBeforeCreateService,
     UsersCheckBeforeCreateService,
     UsersCreateService,
+    UsersUpdateService,
     UsersSendingMailService,
     UsersGettingService,
   ],

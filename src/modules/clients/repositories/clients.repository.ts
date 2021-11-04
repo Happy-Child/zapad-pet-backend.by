@@ -2,7 +2,7 @@ import { EntityRepository } from 'typeorm';
 import { ClientEntity, StationEntity } from '@app/entities';
 import { GeneralRepository } from '@app/repositories';
 import {
-  ClientDTO,
+  ClientExtendedDTO,
   ClientsGettingRequestQueryDTO,
   ClientsGettingResponseBodyDTO,
 } from '../dtos';
@@ -13,7 +13,9 @@ import { ENTITIES_FIELDS, SORT_DURATION_DEFAULT } from '@app/constants';
 export class ClientsRepository extends GeneralRepository<ClientEntity> {
   protected entitySerializer = ClientEntity;
 
-  public async getClientById(id: number): Promise<ClientDTO | undefined> {
+  public async getClientById(
+    id: number,
+  ): Promise<ClientExtendedDTO | undefined> {
     const client = await this.createQueryBuilder('cl')
       .where(`cl.id = ${id}`)
       .loadRelationCountAndMap(
@@ -22,7 +24,7 @@ export class ClientsRepository extends GeneralRepository<ClientEntity> {
       )
       .getOne();
 
-    return client as ClientDTO;
+    return client as ClientExtendedDTO;
   }
 
   // TODO replace join on relationAndCount? If use relationAndCount - orderBy "stationsCount" not working
@@ -49,7 +51,7 @@ export class ClientsRepository extends GeneralRepository<ClientEntity> {
       )
       .offset(totalSkip)
       .limit(data.take)
-      .getRawMany<ClientDTO>();
+      .getRawMany<ClientExtendedDTO>();
 
     const totalItemsCount = await this.count();
 

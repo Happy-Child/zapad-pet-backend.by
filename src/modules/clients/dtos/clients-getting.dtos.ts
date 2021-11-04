@@ -25,23 +25,23 @@ export class ClientsGettingRequestQueryDTO extends PaginationRequestDTO {
   searchByName?: string;
 }
 
-export class ClientDTO extends ClientEntity {
+export class ClientExtendedDTO extends ClientEntity {
   @Expose()
   stationsCount!: number;
 
-  constructor(data: ClientDTO) {
+  constructor(data: ClientExtendedDTO) {
     super();
     Object.assign(
       this,
-      plainToClass(ClientDTO, data, { excludeExtraneousValues: true }),
+      plainToClass(ClientExtendedDTO, data, { excludeExtraneousValues: true }),
     );
   }
 }
 
-export class ClientsGettingResponseBodyDTO extends PaginationResponseDTO<ClientDTO> {
+export class ClientsGettingResponseBodyDTO extends PaginationResponseDTO<ClientExtendedDTO> {
   constructor(data: ClientsGettingResponseBodyDTO) {
     super();
     Object.assign(this, data);
-    this.items = data.items.map((item) => new ClientDTO(item));
+    this.items = data.items.map((item) => new ClientExtendedDTO(item));
   }
 }

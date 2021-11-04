@@ -56,7 +56,9 @@ export class StationsCreateService {
       await this.stationsWorkersGeneralService.allWorkersWithoutStationsExistingOrFail(
         stationsWithWorkers,
       );
-    } else if (isNonEmptyArray(stationsWithoutWorkers)) {
+    }
+
+    if (isNonEmptyArray(stationsWithoutWorkers)) {
       // Check existing only clients
       await this.clientsGeneralCheckingService.allClientsExistsOrFail(
         stationsWithoutWorkers,
