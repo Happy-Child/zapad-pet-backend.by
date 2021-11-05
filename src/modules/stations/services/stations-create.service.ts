@@ -10,6 +10,7 @@ import { DistrictsGeneralCheckingService } from '../../districts/services';
 import { StationsWorkersGeneralService } from '../../stations-workers/services';
 import { StationsWorkersRepository } from '../../stations-workers/repositories';
 import { groupedByNull } from '@app/helpers/grouped.helpers';
+import { NonEmptyArray } from '@app/types';
 
 type TStationsCreateItemWithWorker = Omit<
   StationsCreateItemDTO,
@@ -39,7 +40,14 @@ export class StationsCreateService {
   ) {}
 
   public async execute(data: StationsCreateRequestBodyDTO): Promise<void> {
-    const indexedStations = getIndexedArray(data.stations);
+    await this.checkStationsBeforeCreate(data.stations);
+    await this.create(data.stations);
+  }
+
+  private async checkStationsBeforeCreate(
+    stations: NonEmptyArray<StationsCreateItemDTO>,
+  ): Promise<void> {
+    const indexedStations = getIndexedArray(stations);
 
     await this.stationsGeneralCheckingService.allStationsNumbersNotExistsOrFail(
       indexedStations,
@@ -49,8 +57,14 @@ export class StationsCreateService {
       'districtId',
     );
 
+    await this.checkStationsWorkersOfFail(indexedStations);
+  }
+
+  private async checkStationsWorkersOfFail(
+    stations: (StationsCreateItemDTO & { index: number })[],
+  ): Promise<void> {
     const [stationsWithWorkers, stationsWithoutWorkers] = groupedByNull(
-      indexedStations,
+      stations,
       'stationWorkerId',
     ) as [TStationsCreateItemWithWorker[], TStationsCreateItemWithoutWorker[]];
 
@@ -67,12 +81,19 @@ export class StationsCreateService {
         stationsWithoutWorkers,
       );
     }
+  }
+
+  private async create(stations: StationsCreateItemDTO[]): Promise<void> {
+    const [stationsWithWorkers] = groupedByNull(
+      stations,
+      'stationWorkerId',
+    ) as [TStationsCreateItemWithWorker[], TStationsCreateItemWithoutWorker[]];
 
     await this.connection.transaction(async (manager) => {
       const stationsRepository =
         manager.getCustomRepository(StationsRepository);
       const createdStations = await stationsRepository.saveEntities(
-        data.stations.map(({ number, clientId, districtId }) => ({
+        stations.map(({ number, clientId, districtId }) => ({
           number,
           clientId,
           districtId,
