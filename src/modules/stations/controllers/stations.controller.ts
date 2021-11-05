@@ -14,13 +14,13 @@ export class StationsController {
 
   @Post()
   async create(@Body() body: StationsCreateRequestBodyDTO): Promise<true> {
-    await this.stationsCreateService.create(body);
+    await this.stationsCreateService.execute(body);
     return true;
   }
 
   @Put()
   async update(@Body() body: StationsUpdateRequestBodyDTO): Promise<true> {
-    await this.stationsUpdateService.update(body);
+    await this.stationsUpdateService.execute(body);
     return true;
   }
 }

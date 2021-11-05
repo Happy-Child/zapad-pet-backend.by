@@ -53,7 +53,7 @@ export class UsersCreateService {
     private readonly connection: Connection,
   ) {}
 
-  public async create({ users }: UsersCreateRequestBodyDTO): Promise<void> {
+  public async execute({ users }: UsersCreateRequestBodyDTO): Promise<void> {
     const emails = users.map(({ email }) => email) as NonEmptyArray<string>;
     await this.usersGeneralService.allEmailsNotExistingOrFail(emails);
 
@@ -77,6 +77,7 @@ export class UsersCreateService {
     users: NonEmptyArray<UsersCreateItemDTO>,
   ): TGetRequestsToCheckingAndCreationReturn {
     const indexedUsers = getIndexedArray(users);
+
     const { stationWorkers, engineers, districtLeaders, simpleUsers } =
       getGroupedFullUsersByRoles<
         UsersCreateFullDistrictLeaderDTO,
@@ -103,7 +104,9 @@ export class UsersCreateService {
 
     if (isNonEmptyArray(stationWorkers)) {
       requestsToCheckingUsers.push(
-        this.stationsWorkersCheckBeforeCreateService.execute(stationWorkers),
+        this.stationsWorkersCheckBeforeCreateService.executeOfFail(
+          stationWorkers,
+        ),
       );
       requestsToCreationUsers.push((manager: EntityManager) =>
         this.saveStationWorkers(stationWorkers, manager),

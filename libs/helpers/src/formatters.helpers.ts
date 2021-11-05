@@ -1,1 +1,7 @@
-export const toBoolean = (val: string): boolean => JSON.parse(val);
+export const strToBoolean = (val: string): boolean | null => {
+  try {
+    return JSON.parse(val);
+  } catch {
+    return null;
+  }
+};

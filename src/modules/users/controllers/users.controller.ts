@@ -26,13 +26,13 @@ export class UsersController {
 
   @Post()
   async create(@Body() body: UsersCreateRequestBodyDTO): Promise<true> {
-    await this.usersCreateService.create(body);
+    await this.usersCreateService.execute(body);
     return true;
   }
 
   @Put()
   async update(@Body() body: UsersUpdateRequestBodyDTO): Promise<true> {
-    await this.usersUpdateService.update(body);
+    await this.usersUpdateService.execute(body);
     return true;
   }
 

@@ -7,62 +7,62 @@ import { StationEntity } from '@app/entities';
 // clientId=4 - 11,12
 const data: Partial<StationEntity>[] = [
   {
-    number: 'NMB000001',
+    number: 'NMB0000001',
     districtId: 1,
     clientId: 2,
   },
   {
-    number: 'NMB000002',
+    number: 'NMB0000002',
     districtId: 2,
     clientId: 1,
   },
   {
-    number: 'NMB000003',
+    number: 'NMB0000003',
     districtId: 2,
     clientId: 1,
   },
   {
-    number: 'NMB000004',
+    number: 'NMB0000004',
     districtId: 2,
     clientId: 1,
   },
   {
-    number: 'NMB000005',
+    number: 'NMB0000005',
     districtId: 2,
     clientId: 2,
   },
   {
-    number: 'NMB000006',
+    number: 'NMB0000006',
     districtId: 3,
     clientId: 2,
   },
   {
-    number: 'NMB000007',
+    number: 'NMB0000007',
     districtId: 3,
     clientId: 2,
   },
   {
-    number: 'NMB000008',
+    number: 'NMB0000008',
     districtId: 3,
     clientId: 3,
   },
   {
-    number: 'NMB000009',
+    number: 'NMB0000009',
     districtId: 3,
     clientId: 3,
   },
   {
-    number: 'NMB000010',
+    number: 'NMB0000010',
     districtId: 4,
     clientId: 3,
   },
   {
-    number: 'NMB000011',
+    number: 'NMB0000011',
     districtId: 5,
     clientId: 4,
   },
   {
-    number: 'NMB000012',
+    number: 'NMB0000012',
     districtId: 5,
     clientId: 4,
   },

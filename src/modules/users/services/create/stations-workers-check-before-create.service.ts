@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { NonEmptyArray } from '@app/types';
+import { NonEmptyArray, NonNullableObject } from '@app/types';
 import { isNonEmptyArray, isNull } from '@app/helpers';
 import { ClientsGeneralCheckingService } from '../../../clients/services';
 import { StationsGeneralCheckingService } from '../../../stations/services';
@@ -8,6 +8,7 @@ import { ExceptionsUnprocessableEntity } from '@app/exceptions/errors';
 import { StationExtendedDTO } from '../../../stations/dtos';
 import { USERS_ERRORS } from '../../constants';
 import { UsersCreateFullStationWorkerDTO } from '../../dtos';
+import { groupedByNull } from '@app/helpers/grouped.helpers';
 
 interface ICreateStationWorkerToCheck {
   stationId: number;
@@ -22,11 +23,16 @@ export class StationsWorkersCheckBeforeCreateService {
     private readonly stationsGeneralCheckingService: StationsGeneralCheckingService,
   ) {}
 
-  public async execute(
+  public async executeOfFail(
     workers: NonEmptyArray<UsersCreateFullStationWorkerDTO>,
   ): Promise<void> {
-    const [workersWithStations, workersWithoutStations] =
-      this.getGroupedWorkersByStations(workers);
+    const [workersWithStations, workersWithoutStations] = groupedByNull(
+      workers,
+      'stationId',
+    ) as [
+      NonNullableObject<UsersCreateFullStationWorkerDTO>[],
+      UsersCreateFullStationWorkerDTO[],
+    ];
 
     if (isNonEmptyArray(workersWithStations)) {
       // Check existing clients and stations
@@ -41,7 +47,6 @@ export class StationsWorkersCheckBeforeCreateService {
     }
   }
 
-  // to station module?
   private async allStationsWithoutWorkersExistingOrFail(
     stationsToCheck: NonEmptyArray<{
       stationId: number;
@@ -107,26 +112,5 @@ export class StationsWorkersCheckBeforeCreateService {
       messages: [USERS_ERRORS.STATION_ALREADY_EXISTS_AN_WORKER],
     });
     throw new ExceptionsUnprocessableEntity(preparedErrors);
-  }
-
-  private getGroupedWorkersByStations(
-    workers: UsersCreateFullStationWorkerDTO[],
-  ) {
-    return workers.reduce<
-      [
-        { stationId: number; clientId: number; index: number }[],
-        { clientId: number; index: number }[],
-      ]
-    >(
-      (list, { stationId, clientId, index }) => {
-        if (isNull(stationId)) {
-          list[1].push({ clientId, index });
-        } else {
-          list[0].push({ stationId, clientId, index });
-        }
-        return list;
-      },
-      [[], []],
-    );
   }
 }

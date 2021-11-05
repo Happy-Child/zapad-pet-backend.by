@@ -4,23 +4,20 @@ import {
   StationsUpdateItemDTO,
   StationsUpdateRequestBodyDTO,
 } from '../../dtos';
-import { getIndexedArray, isNonEmptyArray, isNull } from '@app/helpers';
+import { getIndexedArray, isNonEmptyArray } from '@app/helpers';
 import { StationsGeneralCheckingService } from '../general';
 import { StationsRepository } from '../../repositories';
 import { Connection } from 'typeorm';
 import { IRepositoryUpdateEntitiesItem } from '@app/repositories/interfaces';
 import { StationEntity, StationWorkerEntity } from '@app/entities';
 import { StationsCheckBeforeUpdateService } from './stations-check-before-update.service';
-import {
-  TIndexedStationsUpdateItemDTO,
-  TStationsUpdateItemWithoutWorker,
-  TStationsUpdateItemWithWorker,
-} from '../../types';
-import {
-  IGetGroupedStationsByChangedFieldsReturn,
-  IGetGroupedStationsByChangedWorkers,
-} from '../../interfaces';
 import { StationsWorkersRepository } from '../../../stations-workers/repositories';
+import { NonNullableObject } from '@app/types';
+import {
+  groupedByChangedFields,
+  groupedByNextStateValues,
+} from '@app/helpers/grouped.helpers';
+import { GROUPED_UPDATING_STATIONS_FIELDS } from '../../constants';
 
 @Injectable()
 export class StationsUpdateService {
@@ -30,7 +27,7 @@ export class StationsUpdateService {
     private readonly connection: Connection,
   ) {}
 
-  public async update(data: StationsUpdateRequestBodyDTO): Promise<void> {
+  public async execute(data: StationsUpdateRequestBodyDTO): Promise<void> {
     const stationsToCheck = getIndexedArray(data.stations);
 
     const foundStations =
@@ -38,29 +35,43 @@ export class StationsUpdateService {
         stationsToCheck,
       );
 
-    const groupedStationsToCheck = this.getGroupedStationsByChangedFields(
+    await this.stationsCheckBeforeUpdateService.executeOfFail(
       stationsToCheck,
       foundStations,
     );
 
-    if (!this.someStationHasBeenChanged(groupedStationsToCheck)) return;
+    await this.update(data.stations, foundStations);
+  }
 
-    await this.stationsCheckBeforeUpdateService.execute(groupedStationsToCheck);
-
+  private async update(
+    stations: StationsUpdateItemDTO[],
+    foundStations: StationExtendedDTO[],
+  ): Promise<void> {
     await this.connection.transaction(async (manager) => {
       const stationsRepository =
         manager.getCustomRepository(StationsRepository);
-      await this.updateStations(data.stations, stationsRepository);
+      await this.updateStations(stations, stationsRepository);
 
-      const hasUpdatesByWorkers = isNonEmptyArray(
-        Object.values(groupedStationsToCheck.byWorkersIds).flat(1),
-      );
-      if (hasUpdatesByWorkers) {
+      const { stationWorkerId: groupByStationWorkerId } =
+        groupedByChangedFields(
+          stations,
+          foundStations,
+          GROUPED_UPDATING_STATIONS_FIELDS,
+        );
+
+      if (isNonEmptyArray(groupByStationWorkerId)) {
         const stationsWorkersRepository = manager.getCustomRepository(
           StationsWorkersRepository,
         );
+        const { added, replaced, deleted } = groupedByNextStateValues(
+          groupByStationWorkerId,
+          foundStations,
+          'stationWorkerId',
+        );
         await this.updateStationsWorkers(
-          groupedStationsToCheck.byWorkersIds,
+          added,
+          replaced,
+          deleted,
           stationsWorkersRepository,
         );
       }
@@ -80,39 +91,39 @@ export class StationsUpdateService {
   }
 
   private async updateStationsWorkers(
-    groupedStationsByChangedWorkers: IGetGroupedStationsByChangedWorkers,
+    added: NonNullableObject<StationsUpdateItemDTO>[],
+    replaced: NonNullableObject<StationsUpdateItemDTO>[],
+    deleted: StationsUpdateItemDTO[],
     repository: StationsWorkersRepository,
   ): Promise<void> {
-    const { toAdding, toReplacing, toRemoving } =
-      groupedStationsByChangedWorkers;
     const recordsToUpdate: IRepositoryUpdateEntitiesItem<StationWorkerEntity>[] =
       [];
 
-    if (isNonEmptyArray(toReplacing)) {
+    if (isNonEmptyArray(replaced)) {
       await repository.updateEntities(
-        toReplacing.map(({ id, clientId }) => ({
+        replaced.map(({ id, clientId }) => ({
           criteria: { stationId: id, clientId },
           inputs: { stationId: null },
         })),
       );
       recordsToUpdate.push(
-        ...toReplacing.map(({ id, clientId, stationWorkerId }) => ({
+        ...replaced.map(({ id, clientId, stationWorkerId }) => ({
           criteria: { userId: stationWorkerId, clientId },
           inputs: { stationId: id },
         })),
       );
     }
-    if (isNonEmptyArray(toAdding)) {
+    if (isNonEmptyArray(added)) {
       recordsToUpdate.push(
-        ...toAdding.map(({ id, clientId, stationWorkerId }) => ({
+        ...added.map(({ id, clientId, stationWorkerId }) => ({
           criteria: { userId: stationWorkerId, clientId },
           inputs: { stationId: id },
         })),
       );
     }
-    if (isNonEmptyArray(toRemoving)) {
+    if (isNonEmptyArray(deleted)) {
       recordsToUpdate.push(
-        ...toRemoving.map(({ id, clientId }) => ({
+        ...deleted.map(({ id, clientId }) => ({
           criteria: { stationId: id, clientId },
           inputs: { stationId: null },
         })),
@@ -120,86 +131,5 @@ export class StationsUpdateService {
     }
 
     await repository.updateEntities(recordsToUpdate);
-  }
-
-  private someStationHasBeenChanged({
-    byNumbers,
-    byDistrictsIds,
-    byClientsIds,
-    byWorkersIds,
-  }: IGetGroupedStationsByChangedFieldsReturn): boolean {
-    return (
-      [
-        ...byNumbers,
-        ...byDistrictsIds,
-        ...byClientsIds,
-        ...Object.values(byWorkersIds),
-      ].flat(2).length > 0
-    );
-  }
-
-  private getGroupedStationsByChangedFields(
-    stationsToCheck: TIndexedStationsUpdateItemDTO[],
-    foundStations: StationExtendedDTO[],
-  ): IGetGroupedStationsByChangedFieldsReturn {
-    const isWorkerToRemoving = (
-      { stationWorkerId: workerIdToCheck }: StationsUpdateItemDTO,
-      { stationWorkerId: curWorkerId }: StationsUpdateItemDTO,
-    ): boolean => isNull(workerIdToCheck) && typeof curWorkerId === 'number';
-
-    const isWorkerToAdding = (
-      { stationWorkerId: workerIdToCheck }: StationsUpdateItemDTO,
-      { stationWorkerId: curWorkerId }: StationsUpdateItemDTO,
-    ): boolean => isNull(curWorkerId) && typeof workerIdToCheck === 'number';
-
-    const isWorkerToReplacing = (
-      { stationWorkerId: workerIdToCheck }: StationsUpdateItemDTO,
-      { stationWorkerId: curWorkerId }: StationsUpdateItemDTO,
-    ): boolean =>
-      typeof workerIdToCheck === 'number' && typeof curWorkerId === 'number';
-
-    const byNumbers: TIndexedStationsUpdateItemDTO[] = [];
-    const byDistrictsIds: TIndexedStationsUpdateItemDTO[] = [];
-    const byClientsIds: TIndexedStationsUpdateItemDTO[] = [];
-    const byWorkersIds: IGetGroupedStationsByChangedWorkers = {
-      toRemoving: [],
-      toAdding: [],
-      toReplacing: [],
-    };
-
-    stationsToCheck.forEach((stationToCheck) => {
-      const curStation = foundStations.find(
-        ({ id }) => stationToCheck.id === id,
-      )!;
-
-      if (stationToCheck.number !== curStation.number)
-        byNumbers.push(stationToCheck);
-      if (stationToCheck.districtId !== curStation.districtId)
-        byDistrictsIds.push(stationToCheck);
-      if (stationToCheck.clientId !== curStation.clientId)
-        byClientsIds.push(stationToCheck);
-
-      if (stationToCheck.stationWorkerId !== curStation.stationWorkerId) {
-        if (isWorkerToRemoving(stationToCheck, curStation))
-          byWorkersIds.toRemoving.push(
-            stationToCheck as TStationsUpdateItemWithoutWorker,
-          );
-        else if (isWorkerToAdding(stationToCheck, curStation))
-          byWorkersIds.toAdding.push(
-            stationToCheck as TStationsUpdateItemWithWorker,
-          );
-        else if (isWorkerToReplacing(stationToCheck, curStation))
-          byWorkersIds.toReplacing.push(
-            stationToCheck as TStationsUpdateItemWithWorker,
-          );
-      }
-    });
-
-    return {
-      byNumbers,
-      byDistrictsIds,
-      byClientsIds,
-      byWorkersIds,
-    };
   }
 }

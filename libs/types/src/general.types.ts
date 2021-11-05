@@ -5,3 +5,5 @@ export type RequiredOne<T, K extends keyof T> = {
 };
 
 export type NonEmptyArray<T> = [T, ...T[]];
+
+export type NonNullableObject<T> = { [P in keyof T]: NonNullable<T[P]> };

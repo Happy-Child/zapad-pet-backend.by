@@ -24,7 +24,11 @@ export class StationsGeneralCheckingService {
       .createQueryBuilder('st')
       .select('st.*, sw.userId as "stationWorkerId"')
       .where(`st.id IN (:...ids)`, { ids })
-      .leftJoin(StationWorkerEntity, 'sw', '"sw"."stationId" = st.id')
+      .leftJoin(
+        StationWorkerEntity,
+        'sw',
+        '"sw"."stationId" = st.id AND "sw"."clientId" = st.clientId',
+      )
       .orderBy(`st.id`)
       .getRawMany();
 

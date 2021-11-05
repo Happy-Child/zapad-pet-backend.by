@@ -19,9 +19,9 @@ export class StationsWorkersGeneralService {
     private readonly stationsWorkersRepository: StationsWorkersRepository,
   ) {}
 
-  public async allWorkersWithoutStationsExistingOrFail(
+  public async allWorkersExistingAndMatchOfClientsOrFail(
     workersToCheck: NonEmptyArray<IStationWorkerToCheck>,
-  ): Promise<void> {
+  ): Promise<StationWorkerEntity[]> {
     const usersIds = workersToCheck.map(
       ({ stationWorkerId }) => stationWorkerId,
     ) as NonEmptyArray<number>;
@@ -32,6 +32,16 @@ export class StationsWorkersGeneralService {
     );
 
     this.allWorkersMatchOfClientsOrFail(foundWorkers, workersToCheck);
+
+    return foundWorkers;
+  }
+
+  public async allWorkersWithoutStationsExistingOrFail(
+    workersToCheck: NonEmptyArray<IStationWorkerToCheck>,
+  ): Promise<void> {
+    const foundWorkers = await this.allWorkersExistingAndMatchOfClientsOrFail(
+      workersToCheck,
+    );
     this.allWorkersWithoutStationsOrFail(foundWorkers, workersToCheck);
   }
 
@@ -58,7 +68,7 @@ export class StationsWorkersGeneralService {
     throw new ExceptionsUnprocessableEntity(preparedErrors);
   }
 
-  private allWorkersWithoutStationsOrFail(
+  public allWorkersWithoutStationsOrFail(
     foundWorkers: StationWorkerEntity[],
     workersToCheck: IStationWorkerToCheck[],
   ): void {

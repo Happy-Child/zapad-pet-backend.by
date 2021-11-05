@@ -5,6 +5,7 @@ import {
   ManyToOne,
   JoinColumn,
   OneToOne,
+  Check,
 } from 'typeorm';
 import { BaseEntity } from './base.entity';
 import { STATION_NUMBER_LENGTH } from '../../../src/modules/stations/constants';
@@ -20,6 +21,7 @@ export class StationEntity extends BaseEntity {
     nullable: false,
     unique: true,
   })
+  @Check(`length(number) = ${STATION_NUMBER_LENGTH}`)
   number!: string;
 
   @Column({ nullable: false })

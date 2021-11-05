@@ -1,9 +1,5 @@
 import { StationsUpdateItemDTO } from '../dtos';
 
-export type TIndexedStationsUpdateItemDTO = StationsUpdateItemDTO & {
-  index: number;
-};
-
 export type TStationsUpdateItemWithWorker = Omit<
   StationsUpdateItemDTO,
   'stationWorkerId'
@@ -19,3 +15,8 @@ export type TStationsUpdateItemWithoutWorker = Omit<
   stationWorkerId: null;
   index: number;
 };
+
+export type TGroupedStationsUpdatedFields = Pick<
+  StationsUpdateItemDTO,
+  'id' | 'number' | 'districtId' | 'clientId' | 'stationWorkerId'
+> & { index: number };

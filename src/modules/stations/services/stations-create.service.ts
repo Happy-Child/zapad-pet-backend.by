@@ -2,13 +2,14 @@ import { Injectable } from '@nestjs/common';
 import { StationsCreateItemDTO, StationsCreateRequestBodyDTO } from '../dtos';
 import { Connection } from 'typeorm';
 import { StationsRepository } from '../repositories';
-import { getIndexedArray, isNonEmptyArray, isNull } from '@app/helpers';
+import { getIndexedArray, isNonEmptyArray } from '@app/helpers';
 import { StationEntity } from '@app/entities';
 import { StationsGeneralCheckingService } from './general';
 import { ClientsGeneralCheckingService } from '../../clients/services';
 import { DistrictsGeneralCheckingService } from '../../districts/services';
 import { StationsWorkersGeneralService } from '../../stations-workers/services';
 import { StationsWorkersRepository } from '../../stations-workers/repositories';
+import { groupedByNull } from '@app/helpers/grouped.helpers';
 
 type TStationsCreateItemWithWorker = Omit<
   StationsCreateItemDTO,
@@ -37,7 +38,7 @@ export class StationsCreateService {
     private readonly connection: Connection,
   ) {}
 
-  public async create(data: StationsCreateRequestBodyDTO): Promise<void> {
+  public async execute(data: StationsCreateRequestBodyDTO): Promise<void> {
     const indexedStations = getIndexedArray(data.stations);
 
     await this.stationsGeneralCheckingService.allStationsNumbersNotExistsOrFail(
@@ -48,8 +49,10 @@ export class StationsCreateService {
       'districtId',
     );
 
-    const [stationsWithWorkers, stationsWithoutWorkers] =
-      this.getGroupedStationsByWorkers(indexedStations);
+    const [stationsWithWorkers, stationsWithoutWorkers] = groupedByNull(
+      indexedStations,
+      'stationWorkerId',
+    ) as [TStationsCreateItemWithWorker[], TStationsCreateItemWithoutWorker[]];
 
     if (isNonEmptyArray(stationsWithWorkers)) {
       // Check existing clients and workers
@@ -103,23 +106,5 @@ export class StationsCreateService {
       }),
     );
     await repository.updateEntities(recordsToUpdates);
-  }
-
-  private getGroupedStationsByWorkers(
-    stations: (StationsCreateItemDTO & { index: number })[],
-  ): [TStationsCreateItemWithWorker[], TStationsCreateItemWithoutWorker[]] {
-    return stations.reduce<
-      [TStationsCreateItemWithWorker[], TStationsCreateItemWithoutWorker[]]
-    >(
-      (list, cur) => {
-        if (isNull(cur.stationWorkerId)) {
-          list[1].push(cur as TStationsCreateItemWithoutWorker);
-        } else {
-          list[0].push(cur as TStationsCreateItemWithWorker);
-        }
-        return list;
-      },
-      [[], []],
-    );
   }
 }
