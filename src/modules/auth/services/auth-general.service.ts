@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { TFullMemberDTO, TMemberDTO } from '../../users/types';
-import { SimpleUserDTO } from '../../users/dtos';
+import { AccountantDTO } from '../../users/dtos';
 import { UsersGettingService } from '../../users/services';
 import { isFullMember } from '../../users/helpers';
 import { ExceptionsUnprocessableEntity } from '@app/exceptions/errors';
@@ -11,7 +11,7 @@ import { AUTH_ERRORS } from '../constants';
 export class AuthGeneralService {
   constructor(private readonly usersGettingService: UsersGettingService) {}
 
-  public async me(id: number): Promise<TMemberDTO | SimpleUserDTO> {
+  public async me(id: number): Promise<TMemberDTO | AccountantDTO> {
     return this.usersGettingService.getFullUserOrFail({ id });
   }
 

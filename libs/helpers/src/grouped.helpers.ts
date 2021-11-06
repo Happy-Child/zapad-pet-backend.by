@@ -5,6 +5,8 @@ import {
   nextItemWillReplacedValue,
 } from '@app/helpers/checking.helpers';
 import { NonNullableObject } from '@app/types';
+import { AllowedRoles } from '../../../src/modules/users/types';
+import { USER_ROLES } from '../../../src/modules/users/constants';
 
 export const getGroupedByConditions = <T>(
   arr: T[],
@@ -21,6 +23,44 @@ export const groupedByNull = <T>(arr: T[], field: keyof T): T[][] => [
   ...getGroupedByConditions<T>(arr, [(item) => !isNull(item[field])]),
   ...getGroupedByConditions<T>(arr, [(item) => isNull(item[field])]),
 ];
+
+export const groupedByRoles = <
+  S extends { role: USER_ROLES.STATION_WORKER } = {
+    role: USER_ROLES.STATION_WORKER;
+  },
+  D extends { role: USER_ROLES.DISTRICT_LEADER } = {
+    role: USER_ROLES.DISTRICT_LEADER;
+  },
+  E extends { role: USER_ROLES.ENGINEER } = { role: USER_ROLES.ENGINEER },
+  A extends { role: USER_ROLES.ACCOUNTANT } = { role: USER_ROLES.ACCOUNTANT },
+>(
+  arr: { role: AllowedRoles }[],
+): {
+  stationsWorkers: S[];
+  districtsLeaders: D[];
+  engineers: E[];
+  accountants: A[];
+} => {
+  const stationsWorkers = getGroupedByConditions(arr, [
+    ({ role }) => role === USER_ROLES.STATION_WORKER,
+  ]) as unknown as S[];
+  const districtsLeaders = getGroupedByConditions(arr, [
+    ({ role }) => role === USER_ROLES.DISTRICT_LEADER,
+  ]) as unknown as D[];
+  const engineers = getGroupedByConditions(arr, [
+    ({ role }) => role === USER_ROLES.ENGINEER,
+  ]) as unknown as E[];
+  const accountants = getGroupedByConditions(arr, [
+    ({ role }) => role === USER_ROLES.ACCOUNTANT,
+  ]) as unknown as A[];
+
+  return {
+    stationsWorkers,
+    districtsLeaders,
+    engineers,
+    accountants,
+  };
+};
 
 export const groupedByChangedFields = <T extends { id: number }>(
   itemsA: T[],

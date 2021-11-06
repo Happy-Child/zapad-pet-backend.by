@@ -11,21 +11,23 @@ export class UsersGeneralService {
   constructor(private readonly usersRepository: UsersRepository) {}
 
   public async allEmailsNotExistingOrFail(
-    emails: NonEmptyArray<string>,
+    users: NonEmptyArray<{ email: string; index: number }>,
   ): Promise<void> {
+    const emails = users.map(({ email }) => email) as NonEmptyArray<string>;
+
     const existingUsers = await this.usersRepository.getManyByColumn(
       emails,
       'email',
     );
 
-    if (!existingUsers.length) return;
+    const existingUsersEmails = existingUsers.map(({ email }) => email);
+    if (!existingUsersEmails.length) return;
 
-    const preparedExistingUsers = existingUsers.map((user) => {
-      const index = emails.findIndex((email) => email === user.email);
-      return { ...user, index };
-    });
+    const usersForException = users.filter(({ email }) =>
+      existingUsersEmails.includes(email),
+    );
 
-    const preparedErrors = getPreparedChildrenErrors(preparedExistingUsers, {
+    const preparedErrors = getPreparedChildrenErrors(usersForException, {
       field: ENTITIES_FIELDS.EMAIL,
       messages: [AUTH_ERRORS.EMAIL_IS_EXIST],
     });

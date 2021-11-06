@@ -44,10 +44,6 @@ export class StationsCheckBeforeUpdateService {
       GROUPED_UPDATING_STATIONS_FIELDS,
     );
 
-    console.log('stationsToCheck', stationsToCheck);
-    console.log('foundStations', foundStations);
-    console.log('groupedStationsToCheck', groupedStationsToCheck);
-
     if (Object.values(groupedStationsToCheck).length === 0) return;
 
     await this.checkStationsGeneralFieldsOrFail(

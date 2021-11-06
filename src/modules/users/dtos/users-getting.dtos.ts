@@ -10,7 +10,7 @@ import {
 import { ENTITIES_FIELDS, SORT_DURATION } from '@app/constants';
 import { ALLOWED_ROLES } from '../constants';
 import { AllowedRoles, TMemberDTO } from '../types';
-import { SimpleUserDTO } from './users-members.dtos';
+import { AccountantDTO } from './users-members.dtos';
 import { getSerializedMemberUser } from '../helpers';
 import { Type } from 'class-transformer';
 
@@ -58,7 +58,7 @@ export class UsersGetListRequestQueryDTO extends PaginationRequestDTO {
 }
 
 export class UsersGetListResponseBodyDTO extends PaginationResponseDTO<
-  TMemberDTO | SimpleUserDTO
+  TMemberDTO | AccountantDTO
 > {
   constructor(data: UsersGetListResponseBodyDTO) {
     super();

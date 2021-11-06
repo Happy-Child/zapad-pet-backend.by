@@ -6,7 +6,7 @@ import {
   UserEntity,
 } from '@app/entities';
 import { GeneralRepository } from '@app/repositories';
-import { SimpleUserDTO } from '../dtos';
+import { AccountantDTO } from '../dtos';
 import { SORT_DURATION_DEFAULT } from '@app/constants';
 import { TMemberDTO } from '../types';
 import {
@@ -18,10 +18,30 @@ import {
   USERS_LIST_DEFAULT_SORT_BY,
   USERS_MEMBER_RAW_SELECT,
 } from '../constants';
+import { NonEmptyArray } from '@app/types';
+import { getSerializedMemberUser } from '../helpers';
 
 @EntityRepository(UserEntity)
 export class UsersRepository extends GeneralRepository<UserEntity> {
   protected entitySerializer = UserEntity;
+
+  public async getUsersIds(
+    ids: NonEmptyArray<number>,
+  ): Promise<(TMemberDTO | AccountantDTO)[]> {
+    const queryBuilder = this.createQueryBuilder('u')
+      .select(USERS_MEMBER_RAW_SELECT)
+      .where(`u.role NOT IN ('${USER_ROLES.MASTER}') AND u.id IN (:...ids)`, {
+        ids,
+      });
+
+    this.addJoinsForMembersData(queryBuilder);
+
+    const items = await queryBuilder
+      .orderBy('"createdAt"')
+      .getRawMany<TMemberDTO | AccountantDTO>();
+
+    return items.map((item) => getSerializedMemberUser(item));
+  }
 
   public async getUsersWithPagination(
     data: UsersGetListRequestQueryDTO,
@@ -51,11 +71,13 @@ export class UsersRepository extends GeneralRepository<UserEntity> {
       .orderBy(`"${totalSortBy}"`, totalSortDuration)
       .offset(totalSkip)
       .limit(data.take)
-      .getRawMany<TMemberDTO | SimpleUserDTO>();
+      .getRawMany<TMemberDTO | AccountantDTO>();
+
+    const serializedItems = items.map((item) => getSerializedMemberUser(item));
 
     return {
       totalItemsCount,
-      items,
+      items: serializedItems,
       skip: totalSkip,
       take: data.take,
     };

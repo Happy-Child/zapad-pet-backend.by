@@ -1,7 +1,6 @@
 import { UserEntity } from '@app/entities';
 import { USER_ROLES } from '../constants';
 import { Expose, plainToClass } from 'class-transformer';
-import { MembersRoles } from '../types';
 import { ClassTransformOptions } from 'class-transformer/types/interfaces';
 
 export class DistrictLeaderMemberDTO extends UserEntity {
@@ -73,15 +72,15 @@ export class StationWorkerMemberDTO extends UserEntity {
   }
 }
 
-export class SimpleUserDTO extends UserEntity {
+export class AccountantDTO extends UserEntity {
   @Expose()
-  role!: Exclude<USER_ROLES, MembersRoles>;
+  role!: USER_ROLES.ACCOUNTANT;
 
-  constructor(data: SimpleUserDTO, serializeOptions?: ClassTransformOptions) {
+  constructor(data: AccountantDTO, serializeOptions?: ClassTransformOptions) {
     super();
     Object.assign(
       this,
-      plainToClass(SimpleUserDTO, data, {
+      plainToClass(AccountantDTO, data, {
         ...serializeOptions,
         excludeExtraneousValues: true,
       }),

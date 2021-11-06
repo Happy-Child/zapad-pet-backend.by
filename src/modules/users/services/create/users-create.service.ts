@@ -54,11 +54,11 @@ export class UsersCreateService {
   ) {}
 
   public async execute({ users }: UsersCreateRequestBodyDTO): Promise<void> {
-    const emails = users.map(({ email }) => email) as NonEmptyArray<string>;
-    await this.usersGeneralService.allEmailsNotExistingOrFail(emails);
+    const indexedUsers = getIndexedArray(users);
+    await this.usersGeneralService.allEmailsNotExistingOrFail(indexedUsers);
 
     const [requestsToCheckingUsers, requestsToCreationUsers] =
-      this.getRequestsToCheckingAndCreation(users);
+      this.getRequestsToCheckingAndCreation(indexedUsers);
 
     await Promise.all(requestsToCheckingUsers);
 
@@ -74,17 +74,15 @@ export class UsersCreateService {
   }
 
   private getRequestsToCheckingAndCreation(
-    users: NonEmptyArray<UsersCreateItemDTO>,
+    users: NonEmptyArray<UsersCreateItemDTO & { index: number }>,
   ): TGetRequestsToCheckingAndCreationReturn {
-    const indexedUsers = getIndexedArray(users);
-
     const { stationWorkers, engineers, districtLeaders, simpleUsers } =
       getGroupedFullUsersByRoles<
         UsersCreateFullDistrictLeaderDTO,
         UsersCreateFullEngineerDTO,
         UsersCreateFullStationWorkerDTO,
         UsersCreateGeneralUserDTO
-      >(indexedUsers);
+      >(users);
 
     const requestsToCheckingUsers: TGetRequestsToCheckingAndCreationReturn[0] =
       [];

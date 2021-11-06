@@ -26,7 +26,7 @@ import {
 } from '../dtos';
 import { COOKIE } from '../constants';
 import { TMemberDTO } from '../../users/types';
-import { SimpleUserDTO } from '../../users/dtos';
+import { AccountantDTO } from '../../users/dtos';
 import { TMemberJWTPayloadDTO } from '../types';
 import { AuthRoles } from '../decorators/auth-roles.decorators';
 
@@ -45,7 +45,7 @@ export class AuthController {
   async me(
     @Request()
     { user }: { user: TMemberJWTPayloadDTO | SimpleUserJWTPayloadDTO },
-  ): Promise<TMemberDTO | SimpleUserDTO> {
+  ): Promise<TMemberDTO | AccountantDTO> {
     return this.authGeneralService.me(user.userId);
   }
 

@@ -14,6 +14,10 @@ import {
   UsersSendingMailService,
   UsersGettingService,
   StationsWorkersCheckBeforeCreateService,
+  UsersCheckBeforeUpdateService,
+  StationsWorkersCheckBeforeUpdateService,
+  DistrictsLeadersCheckBeforeUpdateService,
+  EngineersCheckBeforeUpdateService,
 } from './services';
 import { MailSenderModule } from '@app/mail-sender';
 import { PugModule } from '@app/pug';
@@ -42,9 +46,13 @@ import { StationsModule } from '../stations';
     StationsWorkersCheckBeforeCreateService,
     UsersCheckBeforeCreateService,
     UsersCreateService,
-    UsersUpdateService,
     UsersSendingMailService,
     UsersGettingService,
+    UsersUpdateService,
+    UsersCheckBeforeUpdateService,
+    StationsWorkersCheckBeforeUpdateService,
+    DistrictsLeadersCheckBeforeUpdateService,
+    EngineersCheckBeforeUpdateService,
   ],
   exports: [UsersGettingService],
 })
