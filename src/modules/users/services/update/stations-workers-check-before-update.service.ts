@@ -201,7 +201,7 @@ export class StationsWorkersCheckBeforeUpdateService {
     const ids = items.map(({ id }) => id) as NonEmptyArray<number>;
 
     const records = await this.stationsWorkersRepository
-      .createQueryBuilder('st')
+      .createQueryBuilder('sw')
       .select('sw.id as id, COUNT(b.id)::int AS count')
       .where('sw.id IN (:...ids)', { ids })
       .leftJoin(
@@ -210,7 +210,7 @@ export class StationsWorkersCheckBeforeUpdateService {
         `"b"."stationId" = "sw"."stationId" AND b.status IN (:...statuses)`,
         { statuses: BID_STATUTES_BLOCKING_CHANGE_WORKER_ON_STATION },
       )
-      .groupBy('st.id')
+      .groupBy('sw.id')
       .getRawMany();
 
     const workersForException = items.filter((item) =>

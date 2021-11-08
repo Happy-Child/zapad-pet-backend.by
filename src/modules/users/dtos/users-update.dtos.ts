@@ -25,6 +25,8 @@ import {
 } from '@app/decorators';
 import { GENERAL_ERRORS } from '@app/constants';
 import { NonEmptyArray } from '@app/types';
+import { AddValidateIf } from '@app/decorators/add-validate-if.decorators';
+import { isNull } from '@app/helpers';
 
 export class UsersUpdateGeneralUserDTO {
   id!: number;
@@ -80,6 +82,11 @@ export class UsersUpdateItemDTO {
   @ValidateIf((data) => data.role === USER_ROLES.STATION_WORKER, {
     message: AUTH_ERRORS.STATION_ID_IS_REQUIRED,
   })
+  @AddValidateIf(
+    (data) => isNull(data.clientId),
+    (val) => val === null,
+    USERS_ERRORS.CANNOT_EXIST_WITHOUT_CLIENT,
+  )
   @NullOrNumber()
   stationId?: number | null;
 

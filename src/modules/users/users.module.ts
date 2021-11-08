@@ -26,6 +26,7 @@ import { ClientsModule } from '../clients';
 import { DistrictsLeadersModule } from '../districts-leaders';
 import { StationsModule } from '../stations';
 import { StationsWorkersRepository } from '../stations-workers/repositories';
+import { StationsWorkersModule } from '../stations-workers';
 
 @Module({
   imports: [
@@ -39,6 +40,7 @@ import { StationsWorkersRepository } from '../stations-workers/repositories';
     DistrictsModule,
     StationsModule,
     DistrictsLeadersModule,
+    StationsWorkersModule,
     MailSenderModule,
     PugModule,
   ],
