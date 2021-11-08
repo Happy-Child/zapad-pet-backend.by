@@ -5,7 +5,7 @@ import {
   StationsUpdateRequestBodyDTO,
 } from '../../dtos';
 import { getIndexedArray, isNonEmptyArray } from '@app/helpers';
-import { StationsGeneralCheckingService } from '../general';
+import { StationsGeneralService } from '../general';
 import { StationsRepository } from '../../repositories';
 import { Connection } from 'typeorm';
 import { IRepositoryUpdateEntitiesItem } from '@app/repositories/interfaces';
@@ -22,7 +22,7 @@ import { GROUPED_UPDATING_STATIONS_FIELDS } from '../../constants';
 @Injectable()
 export class StationsUpdateService {
   constructor(
-    private readonly stationsGeneralCheckingService: StationsGeneralCheckingService,
+    private readonly stationsGeneralService: StationsGeneralService,
     private readonly stationsCheckBeforeUpdateService: StationsCheckBeforeUpdateService,
     private readonly connection: Connection,
   ) {}
@@ -31,11 +31,11 @@ export class StationsUpdateService {
     const stationsToCheck = getIndexedArray(data.stations);
 
     const foundStations =
-      await this.stationsGeneralCheckingService.allStationsExistsOrFail(
+      await this.stationsGeneralService.allStationsExistsOrFail(
         stationsToCheck,
       );
 
-    await this.stationsCheckBeforeUpdateService.executeOfFail(
+    await this.stationsCheckBeforeUpdateService.executeOrFail(
       stationsToCheck,
       foundStations,
     );
@@ -63,15 +63,14 @@ export class StationsUpdateService {
         const stationsWorkersRepository = manager.getCustomRepository(
           StationsWorkersRepository,
         );
-        const { added, replaced, deleted } = groupedByNextStateValues(
+        const { added, replaced } = groupedByNextStateValues(
           groupByStationWorkerId,
           foundStations,
           'stationWorkerId',
         );
-        await this.updateStationsWorkers(
+        await this.addedAndReplacedStationsWorkers(
           added,
           replaced,
-          deleted,
           stationsWorkersRepository,
         );
       }
@@ -90,22 +89,15 @@ export class StationsUpdateService {
     await repository.updateEntities(recordsToUpdate);
   }
 
-  private async updateStationsWorkers(
+  private async addedAndReplacedStationsWorkers(
     added: NonNullableObject<StationsUpdateItemDTO>[],
     replaced: NonNullableObject<StationsUpdateItemDTO>[],
-    deleted: StationsUpdateItemDTO[],
     repository: StationsWorkersRepository,
   ): Promise<void> {
     const recordsToUpdate: IRepositoryUpdateEntitiesItem<StationWorkerEntity>[] =
       [];
 
     if (isNonEmptyArray(replaced)) {
-      await repository.updateEntities(
-        replaced.map(({ id, clientId }) => ({
-          criteria: { stationId: id, clientId },
-          inputs: { stationId: null },
-        })),
-      );
       recordsToUpdate.push(
         ...replaced.map(({ id, clientId, stationWorkerId }) => ({
           criteria: { userId: stationWorkerId, clientId },
@@ -118,14 +110,6 @@ export class StationsUpdateService {
         ...added.map(({ id, clientId, stationWorkerId }) => ({
           criteria: { userId: stationWorkerId, clientId },
           inputs: { stationId: id },
-        })),
-      );
-    }
-    if (isNonEmptyArray(deleted)) {
-      recordsToUpdate.push(
-        ...deleted.map(({ id, clientId }) => ({
-          criteria: { stationId: id, clientId },
-          inputs: { stationId: null },
         })),
       );
     }

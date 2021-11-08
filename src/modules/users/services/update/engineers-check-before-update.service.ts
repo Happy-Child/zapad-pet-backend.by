@@ -10,6 +10,7 @@ export class EngineersCheckBeforeUpdateService {
     engineers: NonEmptyArray<UsersUpdateEngineerDTO & { index: number }>,
     foundUsers: (TMemberDTO | AccountantDTO)[],
   ): Promise<void> {
+    console.log('engineers', engineers);
     //
   }
 }

@@ -47,13 +47,13 @@ export class UsersUpdateStationWorkerDTO extends UsersUpdateGeneralUserDTO {
 export class UsersUpdateDistrictLeaderDTO extends UsersUpdateGeneralUserDTO {
   role!: USER_ROLES.DISTRICT_LEADER;
 
-  districtId!: number | null;
+  leaderDistrictId!: number | null;
 }
 
 export class UsersUpdateEngineerDTO extends UsersUpdateGeneralUserDTO {
   role!: USER_ROLES.ENGINEER;
 
-  districtId!: number | null;
+  engineerDistrictId!: number | null;
 }
 
 export class UsersUpdateItemDTO {

@@ -102,7 +102,7 @@ export class UsersCreateService {
 
     if (isNonEmptyArray(stationWorkers)) {
       requestsToCheckingUsers.push(
-        this.stationsWorkersCheckBeforeCreateService.executeOfFail(
+        this.stationsWorkersCheckBeforeCreateService.executeOrFail(
           stationWorkers,
         ),
       );

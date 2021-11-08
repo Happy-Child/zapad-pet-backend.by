@@ -43,16 +43,16 @@ export const groupedByRoles = <
 } => {
   const stationsWorkers = getGroupedByConditions(arr, [
     ({ role }) => role === USER_ROLES.STATION_WORKER,
-  ]) as unknown as S[];
+  ])[0] as unknown as S[];
   const districtsLeaders = getGroupedByConditions(arr, [
     ({ role }) => role === USER_ROLES.DISTRICT_LEADER,
-  ]) as unknown as D[];
+  ])[0] as unknown as D[];
   const engineers = getGroupedByConditions(arr, [
     ({ role }) => role === USER_ROLES.ENGINEER,
-  ]) as unknown as E[];
+  ])[0] as unknown as E[];
   const accountants = getGroupedByConditions(arr, [
     ({ role }) => role === USER_ROLES.ACCOUNTANT,
-  ]) as unknown as A[];
+  ])[0] as unknown as A[];
 
   return {
     stationsWorkers,

@@ -7,9 +7,10 @@ import { AccountantDTO } from '../../dtos';
 @Injectable()
 export class DistrictsLeadersCheckBeforeUpdateService {
   public async executeOrFail(
-    workers: NonEmptyArray<UsersUpdateDistrictLeaderDTO & { index: number }>,
+    leaders: NonEmptyArray<UsersUpdateDistrictLeaderDTO & { index: number }>,
     foundUsers: (TMemberDTO | AccountantDTO)[],
   ): Promise<void> {
+    console.log('leaders', leaders);
     //
   }
 }

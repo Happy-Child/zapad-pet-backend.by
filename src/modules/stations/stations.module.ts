@@ -7,18 +7,20 @@ import {
 } from './repositories';
 import {
   StationsUpdateService,
-  StationsGeneralCheckingService,
+  StationsGeneralService,
   StationsCreateService,
 } from './services';
 import { ClientsModule } from '../clients';
 import { DistrictsModule } from '../districts';
 import { StationsWorkersModule } from '../stations-workers';
 import { StationsCheckBeforeUpdateService } from './services/update';
+import { StationsWorkersRepository } from '../stations-workers/repositories';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([
       StationsRepository,
+      StationsWorkersRepository,
       AggrStationBidStatusCountRepository,
     ]),
     StationsWorkersModule,
@@ -27,11 +29,11 @@ import { StationsCheckBeforeUpdateService } from './services/update';
   ],
   controllers: [StationsController],
   providers: [
-    StationsGeneralCheckingService,
+    StationsGeneralService,
     StationsCreateService,
     StationsCheckBeforeUpdateService,
     StationsUpdateService,
   ],
-  exports: [StationsGeneralCheckingService],
+  exports: [StationsGeneralService],
 })
 export class StationsModule {}

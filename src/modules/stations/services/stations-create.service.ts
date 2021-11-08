@@ -4,7 +4,7 @@ import { Connection } from 'typeorm';
 import { StationsRepository } from '../repositories';
 import { getIndexedArray, isNonEmptyArray } from '@app/helpers';
 import { StationEntity } from '@app/entities';
-import { StationsGeneralCheckingService } from './general';
+import { StationsGeneralService } from './general';
 import { ClientsGeneralCheckingService } from '../../clients/services';
 import { DistrictsGeneralCheckingService } from '../../districts/services';
 import { StationsWorkersGeneralService } from '../../stations-workers/services';
@@ -32,7 +32,7 @@ type TStationsCreateItemWithoutWorker = Omit<
 export class StationsCreateService {
   constructor(
     private readonly stationsRepository: StationsRepository,
-    private readonly stationsGeneralCheckingService: StationsGeneralCheckingService,
+    private readonly stationsGeneralService: StationsGeneralService,
     private readonly clientsGeneralCheckingService: ClientsGeneralCheckingService,
     private readonly districtsGeneralCheckingService: DistrictsGeneralCheckingService,
     private readonly stationsWorkersGeneralService: StationsWorkersGeneralService,
@@ -49,7 +49,7 @@ export class StationsCreateService {
   ): Promise<void> {
     const indexedStations = getIndexedArray(stations);
 
-    await this.stationsGeneralCheckingService.allStationsNumbersNotExistsOrFail(
+    await this.stationsGeneralService.allStationsNumbersNotExistsOrFail(
       indexedStations,
     );
     await this.districtsGeneralCheckingService.allDistrictsExistsOrFail(
@@ -57,10 +57,10 @@ export class StationsCreateService {
       'districtId',
     );
 
-    await this.checkStationsWorkersOfFail(indexedStations);
+    await this.checkStationsWorkersOrFail(indexedStations);
   }
 
-  private async checkStationsWorkersOfFail(
+  private async checkStationsWorkersOrFail(
     stations: (StationsCreateItemDTO & { index: number })[],
   ): Promise<void> {
     const [stationsWithWorkers, stationsWithoutWorkers] = groupedByNull(
@@ -70,7 +70,12 @@ export class StationsCreateService {
 
     if (isNonEmptyArray(stationsWithWorkers)) {
       // Check existing clients and workers
-      await this.stationsWorkersGeneralService.allWorkersWithoutStationsExistingOrFail(
+      const foundWorkers =
+        await this.stationsWorkersGeneralService.allWorkersExistingAndMatchOfClientsOrFail(
+          stationsWithWorkers,
+        );
+      this.stationsWorkersGeneralService.allWorkersWithoutStationsOrFail(
+        foundWorkers,
         stationsWithWorkers,
       );
     }

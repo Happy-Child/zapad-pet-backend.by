@@ -12,7 +12,12 @@ import {
 } from '@app/helpers/grouped.helpers';
 import { isNonEmptyArray } from '@app/helpers';
 import { TMemberDTO } from '../../types';
-import { AccountantDTO } from '../../dtos';
+import {
+  AccountantDTO,
+  DistrictLeaderMemberDTO,
+  EngineerMemberDTO,
+  StationWorkerMemberDTO,
+} from '../../dtos';
 import { getPreparedChildrenErrors } from '@app/helpers/prepared-errors.helpers';
 import { USERS_ERRORS } from '../../constants';
 import { ExceptionsUnprocessableEntity } from '@app/exceptions/errors';
@@ -38,47 +43,7 @@ export class UsersCheckBeforeUpdateService {
     const foundUsers = await this.allUsersExistingOrFail(indexedUsers);
     this.allUsersMatchRolesOrFail(indexedUsers, foundUsers);
     await this.allUpdatedEmailsNotExistingOrFail(indexedUsers, foundUsers);
-    await this.checkMembersOfFail(indexedUsers, foundUsers);
-  }
-
-  private async checkMembersOfFail(
-    indexedUsers: NonEmptyArray<UsersUpdateItemDTO & { index: number }>,
-    foundUsers: (TMemberDTO | AccountantDTO)[],
-  ): Promise<void> {
-    const { stationsWorkers, districtsLeaders, engineers } = groupedByRoles<
-      UsersUpdateStationWorkerDTO & { index: number },
-      UsersUpdateDistrictLeaderDTO & { index: number },
-      UsersUpdateEngineerDTO & { index: number }
-    >(indexedUsers);
-
-    const requestsToCheck = [];
-
-    if (isNonEmptyArray(stationsWorkers)) {
-      requestsToCheck.push(
-        this.stationsWorkersCheckBeforeUpdateService.executeOrFail(
-          stationsWorkers,
-          foundUsers,
-        ),
-      );
-    }
-    if (isNonEmptyArray(districtsLeaders)) {
-      requestsToCheck.push(
-        this.districtsLeadersCheckBeforeUpdateService.executeOrFail(
-          districtsLeaders,
-          foundUsers,
-        ),
-      );
-    }
-    if (isNonEmptyArray(engineers)) {
-      requestsToCheck.push(
-        this.engineersCheckBeforeUpdateService.executeOrFail(
-          engineers,
-          foundUsers,
-        ),
-      );
-    }
-
-    await Promise.all(requestsToCheck);
+    await this.checkMembersOrFail(indexedUsers, foundUsers);
   }
 
   private async allUsersExistingOrFail(
@@ -132,5 +97,55 @@ export class UsersCheckBeforeUpdateService {
     if (isNonEmptyArray(groupByEmail)) {
       await this.usersGeneralService.allEmailsNotExistingOrFail(groupByEmail);
     }
+  }
+
+  private async checkMembersOrFail(
+    indexedUsers: NonEmptyArray<UsersUpdateItemDTO & { index: number }>,
+    foundUsers: (TMemberDTO | AccountantDTO)[],
+  ): Promise<void> {
+    const { stationsWorkers, districtsLeaders, engineers } = groupedByRoles<
+      UsersUpdateStationWorkerDTO & { index: number },
+      UsersUpdateDistrictLeaderDTO & { index: number },
+      UsersUpdateEngineerDTO & { index: number }
+    >(indexedUsers);
+
+    const {
+      stationsWorkers: foundStationsWorkers,
+      districtsLeaders: foundDistrictsLeaders,
+      engineers: foundEngineers,
+    } = groupedByRoles<
+      StationWorkerMemberDTO,
+      DistrictLeaderMemberDTO,
+      EngineerMemberDTO
+    >(foundUsers);
+
+    const requestsToCheck = [];
+
+    if (isNonEmptyArray(stationsWorkers)) {
+      requestsToCheck.push(
+        this.stationsWorkersCheckBeforeUpdateService.executeOrFail(
+          stationsWorkers,
+          foundStationsWorkers,
+        ),
+      );
+    }
+    if (isNonEmptyArray(districtsLeaders)) {
+      requestsToCheck.push(
+        this.districtsLeadersCheckBeforeUpdateService.executeOrFail(
+          districtsLeaders,
+          foundDistrictsLeaders,
+        ),
+      );
+    }
+    if (isNonEmptyArray(engineers)) {
+      requestsToCheck.push(
+        this.engineersCheckBeforeUpdateService.executeOrFail(
+          engineers,
+          foundEngineers,
+        ),
+      );
+    }
+
+    await Promise.all(requestsToCheck);
   }
 }

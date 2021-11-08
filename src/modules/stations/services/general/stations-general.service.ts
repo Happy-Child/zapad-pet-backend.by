@@ -8,10 +8,13 @@ import {
 import { StationsRepository } from '../../repositories';
 import { StationWorkerEntity } from '@app/entities';
 import { StationExtendedDTO } from '../../dtos';
-import { STATIONS_ERRORS } from '../../constants';
+import {
+  BID_STATUTES_BLOCKING_UPDATE_STATION,
+  STATIONS_ERRORS,
+} from '../../constants';
 
 @Injectable()
-export class StationsGeneralCheckingService {
+export class StationsGeneralService {
   constructor(private readonly stationsRepository: StationsRepository) {}
 
   public async allStationsExistsOrFail(
@@ -73,5 +76,29 @@ export class StationsGeneralCheckingService {
       messages: [STATIONS_ERRORS.STATION_NUMBER_IS_EXIST],
     });
     throw new ExceptionsUnprocessableEntity(preparedErrors);
+  }
+
+  public async allStationsCanBeUpdateOrFail(
+    items: NonEmptyArray<{ id: number; index: number }>,
+  ): Promise<void> {
+    const ids = items.map(({ id }) => id) as NonEmptyArray<number>;
+
+    const records =
+      await this.stationsRepository.getStationsWithAggrBidsByStatuses(
+        ids,
+        BID_STATUTES_BLOCKING_UPDATE_STATION,
+      );
+
+    const stationsForException = items.filter((item) =>
+      records.find(({ id, count }) => id === item.id && count > 0),
+    );
+
+    if (stationsForException.length) {
+      const preparedErrors = getPreparedChildrenErrors(stationsForException, {
+        field: 'id',
+        messages: [STATIONS_ERRORS.STATION_CANNOT_BE_UPDATED],
+      });
+      throw new ExceptionsUnprocessableEntity(preparedErrors);
+    }
   }
 }
