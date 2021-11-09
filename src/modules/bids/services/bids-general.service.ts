@@ -3,7 +3,7 @@ import { BidsRepository } from '../repositories';
 import { Connection } from 'typeorm';
 import {
   BID_STATUS,
-  BID_STATUS_ALLOWING_UPDATES,
+  BID_STATUSES_ALLOWING_CHANGE_EDIT_STATUS,
   BIDS_ERRORS,
 } from '../constants';
 import {
@@ -42,9 +42,7 @@ export class BidsGeneralService {
     curStatus: BID_STATUS,
     nextStatus: BID_STATUS,
   ): void {
-    if (
-      ![BID_STATUS.EDITING, BID_STATUS_ALLOWING_UPDATES].includes(curStatus)
-    ) {
+    if (!BID_STATUSES_ALLOWING_CHANGE_EDIT_STATUS.includes(curStatus)) {
       throw new ExceptionsForbidden([
         {
           field: '',

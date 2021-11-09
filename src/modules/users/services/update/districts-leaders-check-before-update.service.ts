@@ -9,6 +9,13 @@ import {
 import { isNonEmptyArray } from '@app/helpers';
 import { DistrictsGeneralService } from '../../../districts/services';
 import { DistrictsLeadersRepository } from '../../../districts-leaders/repositories';
+import { BidEntity, StationEntity } from '@app/entities';
+import { getPreparedChildrenErrors } from '@app/helpers/prepared-errors.helpers';
+import { ExceptionsUnprocessableEntity } from '@app/exceptions/errors';
+import {
+  BID_STATUTES_BLOCKING_CHANGE_LEADER_ON_DISTRICT,
+  DISTRICTS_ERRORS,
+} from '../../../districts/constants';
 
 @Injectable()
 export class DistrictsLeadersCheckBeforeUpdateService {
@@ -27,13 +34,49 @@ export class DistrictsLeadersCheckBeforeUpdateService {
       ['leaderDistrictId'],
     );
 
-    await this.deleteReplacedDistrictsOrFail(
+    await this.checkExistingDistrictsOrFail(
+      groupedLeadersToCheck.leaderDistrictId,
+      foundLeaders,
+    );
+
+    await this.canBeDeleteReplacedDistrictsAndDoItOrFail(
+      groupedLeadersToCheck.leaderDistrictId,
+      foundLeaders,
+    );
+
+    await this.checkAddedAndReplacedDistrictsOrFail(
       groupedLeadersToCheck.leaderDistrictId,
       foundLeaders,
     );
   }
 
-  private async deleteReplacedDistrictsOrFail(
+  private async checkExistingDistrictsOrFail(
+    groupByDistrictId: (UsersUpdateDistrictLeaderDTO & { index: number })[],
+    foundLeaders: DistrictLeaderMemberDTO[],
+  ): Promise<void> {
+    const { added, replaced } = groupedByNextStateValues(
+      groupByDistrictId,
+      foundLeaders,
+      'leaderDistrictId',
+    );
+
+    const addedAndReplacedStations = [...added, ...replaced];
+
+    if (isNonEmptyArray(addedAndReplacedStations)) {
+      const preparedRecords = addedAndReplacedStations.map(
+        ({ leaderDistrictId, index }) => ({
+          districtId: leaderDistrictId,
+          index,
+        }),
+      ) as NonEmptyArray<{ districtId: number; index: number }>;
+
+      await this.districtsGeneralService.allDistrictsExistsOrFail(
+        preparedRecords,
+      );
+    }
+  }
+
+  private async canBeDeleteReplacedDistrictsAndDoItOrFail(
     groupByDistrictId: (UsersUpdateDistrictLeaderDTO & { index: number })[],
     foundLeaders: DistrictLeaderMemberDTO[],
   ): Promise<void> {
@@ -46,14 +89,62 @@ export class DistrictsLeadersCheckBeforeUpdateService {
     const records = [...deleted, ...replaced];
 
     if (isNonEmptyArray(records)) {
-      const preparedDistricts = records.map(({ leaderDistrictId, index }) => ({
-        districtId: leaderDistrictId,
-        index,
-      })) as NonEmptyArray<{ districtId: number; index: number }>;
+      await this.allLeadersCanBeChangeDistrictsOrFail(records);
 
-      await this.districtsGeneralService.allDistrictsCanBeChangeLeadersOrFail(
-        preparedDistricts,
+      const ids = records.map(({ id }) => id);
+      await this.districtsLeadersRepository.deleteEntitiesByWhere(
+        'userId IN (:...ids)',
+        { ids },
       );
+    }
+  }
+
+  private async allLeadersCanBeChangeDistrictsOrFail(
+    items: NonEmptyArray<{ id: number; index: number }>,
+  ): Promise<void> {
+    const ids = items.map(({ id }) => id) as NonEmptyArray<number>;
+
+    const records = await this.districtsLeadersRepository
+      .createQueryBuilder('dl')
+      .select('dl.userId as id, COUNT(b.id)::int AS count')
+      .where('dl.userId IN (:...ids)', { ids })
+      .leftJoin(StationEntity, 'st', `"st"."districtId" = "dl"."districtId"`)
+      .leftJoin(
+        BidEntity,
+        'b',
+        `"b"."stationId" = st.id AND b.status IN (:...statuses)`,
+        { statuses: BID_STATUTES_BLOCKING_CHANGE_LEADER_ON_DISTRICT },
+      )
+      .groupBy('dl.id')
+      .getRawMany();
+
+    const districtsForException = items.filter((item) =>
+      records.find(({ id, count }) => id === item.id && count > 0),
+    );
+
+    if (districtsForException.length) {
+      const preparedErrors = getPreparedChildrenErrors(districtsForException, {
+        field: 'leaderDistrictId',
+        messages: [DISTRICTS_ERRORS.IMPOSSIBLE_REMOVE_LEADER_FROM_DISTRICT],
+      });
+      throw new ExceptionsUnprocessableEntity(preparedErrors);
+    }
+  }
+
+  private async checkAddedAndReplacedDistrictsOrFail(
+    groupByDistrictId: (UsersUpdateDistrictLeaderDTO & { index: number })[],
+    foundLeaders: DistrictLeaderMemberDTO[],
+  ): Promise<void> {
+    const { added, replaced } = groupedByNextStateValues(
+      groupByDistrictId,
+      foundLeaders,
+      'leaderDistrictId',
+    );
+
+    const records = [...added, ...replaced];
+
+    if (isNonEmptyArray(records)) {
+      // some
     }
   }
 }

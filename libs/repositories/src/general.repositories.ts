@@ -19,6 +19,7 @@ import { DEFAULT_REPOSITORY_SERIALISE_OPTIONS } from '@app/repositories/constant
 import { ExceptionsBadRequest } from '@app/exceptions/errors';
 import { BaseEntity } from '@app/entities/base.entity';
 import { NonEmptyArray } from '@app/types';
+import { ObjectLiteral } from 'typeorm/common/ObjectLiteral';
 
 export class GeneralRepository<E extends BaseEntity> extends Repository<E> {
   protected readonly defaultSerializeOptions: RepositorySerializeOptions =
@@ -131,6 +132,16 @@ export class GeneralRepository<E extends BaseEntity> extends Repository<E> {
     conditions: RepositoryDeleteOneConditions<E>,
   ): Promise<void> {
     await this.delete(conditions);
+  }
+
+  public async deleteEntitiesByWhere(
+    where: string,
+    parameters?: ObjectLiteral,
+  ): Promise<void> {
+    await this.createQueryBuilder('t')
+      .where(where, parameters)
+      .delete()
+      .execute();
   }
 
   public async deleteEntitiesByIds(
