@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { NonEmptyArray, NonNullableObject } from '@app/types';
 import { isNonEmptyArray } from '@app/helpers';
-import { ClientsGeneralCheckingService } from '../../../clients/services';
+import { ClientsGeneralService } from '../../../clients/services';
 import { StationsGeneralService } from '../../../stations/services';
 import { UsersCreateFullStationWorkerDTO } from '../../dtos';
 import { groupedByNull } from '@app/helpers/grouped.helpers';
@@ -10,7 +10,7 @@ import { StationsWorkersGeneralService } from '../../../stations-workers/service
 @Injectable()
 export class StationsWorkersCheckBeforeCreateService {
   constructor(
-    private readonly clientsGeneralCheckingService: ClientsGeneralCheckingService,
+    private readonly clientsGeneralService: ClientsGeneralService,
     private readonly stationsGeneralService: StationsGeneralService,
     private readonly stationsWorkersGeneralService: StationsWorkersGeneralService,
   ) {}
@@ -33,7 +33,7 @@ export class StationsWorkersCheckBeforeCreateService {
 
     if (isNonEmptyArray(workersWithoutStations)) {
       // Check existing only clients
-      await this.clientsGeneralCheckingService.allClientsExistsOrFail(
+      await this.clientsGeneralService.allClientsExistsOrFail(
         workersWithoutStations,
       );
     }
@@ -71,7 +71,7 @@ export class StationsWorkersCheckBeforeCreateService {
       workersWithStations,
     );
 
-    this.stationsWorkersGeneralService.allStationsWithoutWorkersOrFail(
+    this.stationsWorkersGeneralService.allStationsWithoutWorkersExistingOrFail(
       preparedFoundStations,
       workersWithStations,
     );

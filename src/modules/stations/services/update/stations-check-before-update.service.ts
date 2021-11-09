@@ -2,8 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { uniqBy } from 'lodash';
 import { isNonEmptyArray } from '@app/helpers';
 import { StationsGeneralService } from '../general';
-import { DistrictsGeneralCheckingService } from '../../../districts/services';
-import { ClientsGeneralCheckingService } from '../../../clients/services';
+import { DistrictsGeneralService } from '../../../districts/services';
+import { ClientsGeneralService } from '../../../clients/services';
 import { NonEmptyArray, NonNullableObject } from '@app/types';
 import {
   BID_STATUTES_BLOCKING_CHANGE_WORKER_ON_STATION,
@@ -30,8 +30,8 @@ export class StationsCheckBeforeUpdateService {
     private readonly stationsRepository: StationsRepository,
     private readonly stationsWorkersRepository: StationsWorkersRepository,
     private readonly stationsGeneralService: StationsGeneralService,
-    private readonly districtsGeneralCheckingService: DistrictsGeneralCheckingService,
-    private readonly clientsGeneralCheckingService: ClientsGeneralCheckingService,
+    private readonly districtsGeneralService: DistrictsGeneralService,
+    private readonly clientsGeneralService: ClientsGeneralService,
     private readonly stationsWorkersGeneralService: StationsWorkersGeneralService,
   ) {}
 
@@ -47,15 +47,22 @@ export class StationsCheckBeforeUpdateService {
 
     if (Object.values(groupedStationsToCheck).length === 0) return;
 
-    await this.checkStationsGeneralFieldsOrFail(
+    await this.checkExistingWorkersOrFail(
+      groupedStationsToCheck.stationWorkerId,
+      foundStations,
+    );
+
+    await this.canBeDeleteReplacedWorkersAndDoItOrFail(
+      groupedStationsToCheck.stationWorkerId,
+      foundStations,
+    );
+
+    await this.checkExistingClientsOrFail(groupedStationsToCheck.clientId);
+
+    await this.canChangeStationsGeneralFieldsOrFail(
       groupedStationsToCheck.number,
       groupedStationsToCheck.districtId,
       groupedStationsToCheck.clientId,
-    );
-
-    await this.deleteReplacedWorkersOrFail(
-      groupedStationsToCheck.stationWorkerId,
-      foundStations,
     );
 
     await this.checkAddedAndReplacedWorkersOrFail(
@@ -63,38 +70,28 @@ export class StationsCheckBeforeUpdateService {
       groupedStationsToCheck.stationWorkerId,
       foundStations,
     );
-
-    await this.checkClientsOrFail(groupedStationsToCheck.clientId);
   }
 
-  private async checkStationsGeneralFieldsOrFail(
-    groupByNumber: (StationsUpdateItemDTO & { index: number })[],
-    groupByDistrictId: (StationsUpdateItemDTO & { index: number })[],
-    groupByClientId: (StationsUpdateItemDTO & { index: number })[],
+  private async checkExistingWorkersOrFail(
+    groupByStationWorkerId: (StationsUpdateItemDTO & { index: number })[],
+    foundStations: StationExtendedDTO[],
   ): Promise<void> {
-    const uniqueStationsByChangedFields = uniqBy(
-      [...groupByNumber, ...groupByDistrictId, ...groupByClientId],
-      'id',
+    const { added, replaced } = groupedByNextStateValues(
+      groupByStationWorkerId,
+      foundStations,
+      'stationWorkerId',
     );
 
-    if (isNonEmptyArray(uniqueStationsByChangedFields)) {
-      await this.stationsGeneralService.allStationsCanBeUpdateOrFail(
-        uniqueStationsByChangedFields,
-      );
+    const stationsToCheckMatchClientsWithWorkers = [...added, ...replaced];
 
-      if (isNonEmptyArray(groupByNumber))
-        await this.stationsGeneralService.allStationsNumbersNotExistsOrFail(
-          groupByNumber,
-        );
-      if (isNonEmptyArray(groupByDistrictId))
-        await this.districtsGeneralCheckingService.allDistrictsExistsOrFail(
-          groupByDistrictId,
-          'districtId',
-        );
+    if (isNonEmptyArray(stationsToCheckMatchClientsWithWorkers)) {
+      await this.stationsWorkersGeneralService.allWorkersExistingOrFail(
+        stationsToCheckMatchClientsWithWorkers,
+      );
     }
   }
 
-  private async deleteReplacedWorkersOrFail(
+  private async canBeDeleteReplacedWorkersAndDoItOrFail(
     groupByStationWorkerId: (StationsUpdateItemDTO & { index: number })[],
     foundStations: StationExtendedDTO[],
   ): Promise<void> {
@@ -114,6 +111,73 @@ export class StationsCheckBeforeUpdateService {
           inputs: { stationId: null },
         })),
       );
+    }
+  }
+
+  private async allStationsCanBeChangeWorkersOrFail(
+    items: NonEmptyArray<{ id: number; index: number }>,
+  ): Promise<void> {
+    const ids = items.map(({ id }) => id) as NonEmptyArray<number>;
+
+    const records =
+      await this.stationsRepository.getStationsWithAggrBidsByStatuses(
+        ids,
+        BID_STATUTES_BLOCKING_CHANGE_WORKER_ON_STATION,
+      );
+
+    const stationsForException = items.filter((item) =>
+      records.find(({ id, count }) => id === item.id && count > 0),
+    );
+
+    if (stationsForException.length) {
+      const preparedErrors = getPreparedChildrenErrors(stationsForException, {
+        field: 'id',
+        messages: [STATIONS_ERRORS.IMPOSSIBLE_REMOVE_WORKER_FROM_STATION],
+      });
+      throw new ExceptionsUnprocessableEntity(preparedErrors);
+    }
+  }
+
+  private async checkExistingClientsOrFail(
+    groupByClientsId: (StationsUpdateItemDTO & { index: number })[],
+  ): Promise<void> {
+    // Group by clients with workers check in checkAddedAndReplacedWorkersOrFail method
+    const [, groupByClientsIdWithoutWorkers] = groupedByNull(
+      groupByClientsId,
+      'stationWorkerId',
+    ) as [unknown[], TIndexedStationsUpdateItemDTO[]];
+
+    if (isNonEmptyArray(groupByClientsIdWithoutWorkers)) {
+      await this.clientsGeneralService.allClientsExistsOrFail(
+        groupByClientsIdWithoutWorkers,
+      );
+    }
+  }
+
+  private async canChangeStationsGeneralFieldsOrFail(
+    groupByNumber: (StationsUpdateItemDTO & { index: number })[],
+    groupByDistrictId: (StationsUpdateItemDTO & { index: number })[],
+    groupByClientId: (StationsUpdateItemDTO & { index: number })[],
+  ): Promise<void> {
+    const uniqueStationsByChangedFields = uniqBy(
+      [...groupByNumber, ...groupByDistrictId, ...groupByClientId],
+      'id',
+    );
+
+    if (isNonEmptyArray(uniqueStationsByChangedFields)) {
+      await this.stationsGeneralService.allStationsCanBeUpdateOrFail(
+        uniqueStationsByChangedFields,
+      );
+
+      if (isNonEmptyArray(groupByNumber))
+        await this.stationsGeneralService.allStationsNumbersNotExistsOrFail(
+          groupByNumber,
+        );
+      if (isNonEmptyArray(groupByDistrictId))
+        await this.districtsGeneralService.allDistrictsExistsOrFail(
+          groupByDistrictId,
+          'districtId',
+        );
     }
   }
 
@@ -146,50 +210,11 @@ export class StationsCheckBeforeUpdateService {
         );
 
       if (isNonEmptyArray(addedAndReplacedWorkers)) {
-        await this.stationsWorkersGeneralService.allWorkersWithoutStationsOrFail(
+        this.stationsWorkersGeneralService.allWorkersWithoutStationsExistingOrFail(
           foundStationsWorkers,
           addedAndReplacedWorkers,
         );
       }
-    }
-  }
-
-  private async checkClientsOrFail(
-    groupByClientsId: (StationsUpdateItemDTO & { index: number })[],
-  ): Promise<void> {
-    const [, groupByClientsIdWithoutWorkers] = groupedByNull(
-      groupByClientsId,
-      'stationWorkerId',
-    ) as [unknown[], TIndexedStationsUpdateItemDTO[]];
-
-    if (isNonEmptyArray(groupByClientsIdWithoutWorkers)) {
-      await this.clientsGeneralCheckingService.allClientsExistsOrFail(
-        groupByClientsIdWithoutWorkers,
-      );
-    }
-  }
-
-  private async allStationsCanBeChangeWorkersOrFail(
-    items: NonEmptyArray<{ id: number; index: number }>,
-  ): Promise<void> {
-    const ids = items.map(({ id }) => id) as NonEmptyArray<number>;
-
-    const records =
-      await this.stationsRepository.getStationsWithAggrBidsByStatuses(
-        ids,
-        BID_STATUTES_BLOCKING_CHANGE_WORKER_ON_STATION,
-      );
-
-    const stationsForException = items.filter((item) =>
-      records.find(({ id, count }) => id === item.id && count > 0),
-    );
-
-    if (stationsForException.length) {
-      const preparedErrors = getPreparedChildrenErrors(stationsForException, {
-        field: 'id',
-        messages: [STATIONS_ERRORS.IMPOSSIBLE_REMOVE_WORKER_FROM_STATION],
-      });
-      throw new ExceptionsUnprocessableEntity(preparedErrors);
     }
   }
 }

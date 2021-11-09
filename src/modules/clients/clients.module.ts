@@ -6,7 +6,7 @@ import {
   ClientsCreateService,
   ClientsUpdateService,
   ClientsGettingService,
-  ClientsGeneralCheckingService,
+  ClientsGeneralService,
 } from './services';
 
 @Module({
@@ -16,8 +16,8 @@ import {
     ClientsCreateService,
     ClientsUpdateService,
     ClientsGettingService,
-    ClientsGeneralCheckingService,
+    ClientsGeneralService,
   ],
-  exports: [ClientsGeneralCheckingService],
+  exports: [ClientsGeneralService],
 })
 export class ClientsModule {}

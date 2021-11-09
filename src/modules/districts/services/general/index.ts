@@ -1,1 +1,1 @@
-export * from './districts-general-checking.service';
+export * from './districts-general.service';

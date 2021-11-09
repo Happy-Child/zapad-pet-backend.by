@@ -1,11 +1,11 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { DistrictsRepository } from './repositories';
-import { DistrictsGeneralCheckingService } from './services';
+import { DistrictsGeneralService } from './services';
 
 @Module({
   imports: [TypeOrmModule.forFeature([DistrictsRepository])],
-  providers: [DistrictsGeneralCheckingService],
-  exports: [DistrictsGeneralCheckingService],
+  providers: [DistrictsGeneralService],
+  exports: [DistrictsGeneralService],
 })
 export class DistrictsModule {}

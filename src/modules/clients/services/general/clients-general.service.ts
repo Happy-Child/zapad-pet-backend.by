@@ -9,7 +9,7 @@ import { ClientsRepository } from '../../repositories';
 import { CLIENTS_ERRORS } from '../../constants';
 
 @Injectable()
-export class ClientsGeneralCheckingService {
+export class ClientsGeneralService {
   constructor(private readonly clientsRepository: ClientsRepository) {}
 
   public async allClientsExistsOrFail(

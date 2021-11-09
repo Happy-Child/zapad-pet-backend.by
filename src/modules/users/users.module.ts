@@ -27,12 +27,14 @@ import { DistrictsLeadersModule } from '../districts-leaders';
 import { StationsModule } from '../stations';
 import { StationsWorkersRepository } from '../stations-workers/repositories';
 import { StationsWorkersModule } from '../stations-workers';
+import { DistrictsLeadersRepository } from '../districts-leaders/repositories';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([
       EngineersRepository,
       StationsWorkersRepository,
+      DistrictsLeadersRepository,
       UsersRepository,
       UsersEmailConfirmedRepository,
     ]),

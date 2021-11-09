@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { NonEmptyArray } from '@app/types';
-import { DistrictsGeneralCheckingService } from '../../../districts/services';
+import { DistrictsGeneralService } from '../../../districts/services';
 import { DistrictsLeadersGeneralService } from '../../../districts-leaders/services';
 import {
   UsersCreateFullDistrictLeaderDTO,
@@ -10,7 +10,7 @@ import {
 @Injectable()
 export class UsersCheckBeforeCreateService {
   constructor(
-    private readonly districtsGeneralCheckingService: DistrictsGeneralCheckingService,
+    private readonly districtsGeneralService: DistrictsGeneralService,
     private readonly districtsLeadersGeneralService: DistrictsLeadersGeneralService,
   ) {}
 
@@ -23,7 +23,7 @@ export class UsersCheckBeforeCreateService {
         districtId: leaderDistrictId,
       }),
     ) as NonEmptyArray<{ districtId: number; index: number }>;
-    await this.districtsGeneralCheckingService.allDistrictsExistsOrFail(
+    await this.districtsGeneralService.allDistrictsExistsOrFail(
       preparedDistrictsRecords,
     );
     await this.districtsLeadersGeneralService.allDistrictsWithoutLeadersOrFail(
@@ -40,7 +40,7 @@ export class UsersCheckBeforeCreateService {
         districtId: engineerDistrictId,
       }),
     ) as NonEmptyArray<{ districtId: number; index: number }>;
-    await this.districtsGeneralCheckingService.allDistrictsExistsOrFail(
+    await this.districtsGeneralService.allDistrictsExistsOrFail(
       preparedDistrictsRecords,
       'engineerDistrictId',
     );

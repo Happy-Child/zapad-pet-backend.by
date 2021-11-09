@@ -1,19 +1,17 @@
 import { Injectable } from '@nestjs/common';
 import { ClientsRepository } from '../repositories';
 import { ClientEntity } from '@app/entities';
-import { ClientsGeneralCheckingService } from './general';
+import { ClientsGeneralService } from './general';
 
 @Injectable()
 export class ClientsCreateService {
   constructor(
     private readonly clientsRepository: ClientsRepository,
-    private readonly clientsGeneralCheckingService: ClientsGeneralCheckingService,
+    private readonly clientsGeneralService: ClientsGeneralService,
   ) {}
 
   async create(body: ClientEntity): Promise<void> {
-    await this.clientsGeneralCheckingService.clientNameNotExistsOrFail(
-      body.name,
-    );
+    await this.clientsGeneralService.clientNameNotExistsOrFail(body.name);
     await this.clientsRepository.saveEntity(body);
   }
 }

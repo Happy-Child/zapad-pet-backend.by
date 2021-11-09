@@ -5,8 +5,8 @@ import { StationsRepository } from '../repositories';
 import { getIndexedArray, isNonEmptyArray } from '@app/helpers';
 import { StationEntity } from '@app/entities';
 import { StationsGeneralService } from './general';
-import { ClientsGeneralCheckingService } from '../../clients/services';
-import { DistrictsGeneralCheckingService } from '../../districts/services';
+import { ClientsGeneralService } from '../../clients/services';
+import { DistrictsGeneralService } from '../../districts/services';
 import { StationsWorkersGeneralService } from '../../stations-workers/services';
 import { StationsWorkersRepository } from '../../stations-workers/repositories';
 import { groupedByNull } from '@app/helpers/grouped.helpers';
@@ -33,8 +33,8 @@ export class StationsCreateService {
   constructor(
     private readonly stationsRepository: StationsRepository,
     private readonly stationsGeneralService: StationsGeneralService,
-    private readonly clientsGeneralCheckingService: ClientsGeneralCheckingService,
-    private readonly districtsGeneralCheckingService: DistrictsGeneralCheckingService,
+    private readonly clientsGeneralService: ClientsGeneralService,
+    private readonly districtsGeneralService: DistrictsGeneralService,
     private readonly stationsWorkersGeneralService: StationsWorkersGeneralService,
     private readonly connection: Connection,
   ) {}
@@ -52,7 +52,7 @@ export class StationsCreateService {
     await this.stationsGeneralService.allStationsNumbersNotExistsOrFail(
       indexedStations,
     );
-    await this.districtsGeneralCheckingService.allDistrictsExistsOrFail(
+    await this.districtsGeneralService.allDistrictsExistsOrFail(
       indexedStations,
       'districtId',
     );
@@ -74,7 +74,7 @@ export class StationsCreateService {
         await this.stationsWorkersGeneralService.allWorkersExistingAndMatchOfClientsOrFail(
           stationsWithWorkers,
         );
-      this.stationsWorkersGeneralService.allWorkersWithoutStationsOrFail(
+      this.stationsWorkersGeneralService.allWorkersWithoutStationsExistingOrFail(
         foundWorkers,
         stationsWithWorkers,
       );
@@ -82,7 +82,7 @@ export class StationsCreateService {
 
     if (isNonEmptyArray(stationsWithoutWorkers)) {
       // Check existing only clients
-      await this.clientsGeneralCheckingService.allClientsExistsOrFail(
+      await this.clientsGeneralService.allClientsExistsOrFail(
         stationsWithoutWorkers,
       );
     }

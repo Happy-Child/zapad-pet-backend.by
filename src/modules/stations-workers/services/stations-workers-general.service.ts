@@ -16,14 +16,11 @@ export class StationsWorkersGeneralService {
     private readonly stationsWorkersRepository: StationsWorkersRepository,
   ) {}
 
-  public async allWorkersExistingAndMatchOfClientsOrFail(
-    recordsToCheck: NonEmptyArray<{
-      stationWorkerId: number;
-      clientId: number;
-      index: number;
-    }>,
-  ): Promise<StationWorkerEntity[]> {
-    const workersIds = recordsToCheck.map(
+  public async allWorkersExistingOrFail(
+    workers: NonEmptyArray<{ stationWorkerId: number; index: number }>,
+    exceptionField = 'stationWorkerId',
+  ): Promise<NonEmptyArray<StationWorkerEntity>> {
+    const workersIds = workers.map(
       ({ stationWorkerId }) => stationWorkerId,
     ) as NonEmptyArray<number>;
 
@@ -36,20 +33,30 @@ export class StationsWorkersGeneralService {
 
     if (!allIdsExisting) {
       const recordsIds = foundRecords.map(({ userId }) => userId);
-      const result = recordsToCheck.filter(
+      const result = workers.filter(
         (item) => !recordsIds.includes(item.stationWorkerId),
       );
 
       const preparedErrors = getPreparedChildrenErrors(result, {
-        field: 'stationWorkerId',
+        field: exceptionField,
         messages: [STATIONS_ERRORS.STATION_WORKER_NOT_EXIST],
       });
       throw new ExceptionsNotFound(preparedErrors);
     }
 
-    this.allWorkersMatchOfClientsOrFail(foundRecords, recordsToCheck);
+    return foundRecords as NonEmptyArray<StationWorkerEntity>;
+  }
 
-    return foundRecords;
+  public async allWorkersExistingAndMatchOfClientsOrFail(
+    recordsToCheck: NonEmptyArray<{
+      stationWorkerId: number;
+      clientId: number;
+      index: number;
+    }>,
+  ): Promise<StationWorkerEntity[]> {
+    const workers = await this.allWorkersExistingOrFail(recordsToCheck);
+    this.allWorkersMatchOfClientsOrFail(workers, recordsToCheck);
+    return workers;
   }
 
   public allWorkersMatchOfClientsOrFail(
@@ -80,7 +87,7 @@ export class StationsWorkersGeneralService {
     throw new ExceptionsUnprocessableEntity(preparedErrors);
   }
 
-  public allWorkersWithoutStationsOrFail(
+  public allWorkersWithoutStationsExistingOrFail(
     foundWorkers: { userId: number; stationId: number | null }[],
     workersToCheck: { stationWorkerId: number; index: number }[],
   ): void {
@@ -124,7 +131,7 @@ export class StationsWorkersGeneralService {
     throw new ExceptionsUnprocessableEntity(preparedErrors);
   }
 
-  public allStationsWithoutWorkersOrFail(
+  public allStationsWithoutWorkersExistingOrFail(
     foundStations: { stationId: number; stationWorkerId: number | null }[],
     stationsToCheck: { stationId: number; index: number }[],
   ): void {

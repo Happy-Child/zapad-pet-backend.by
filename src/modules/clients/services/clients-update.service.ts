@@ -4,13 +4,13 @@ import { ExceptionsUnprocessableEntity } from '@app/exceptions/errors';
 import { ClientsUpdateBodyDTO } from '../dtos';
 import { AUTH_ERRORS } from '../../auth/constants';
 import { ENTITIES_FIELDS } from '@app/constants';
-import { ClientsGeneralCheckingService } from './general';
+import { ClientsGeneralService } from './general';
 
 @Injectable()
 export class ClientsUpdateService {
   constructor(
     private readonly clientsRepository: ClientsRepository,
-    private readonly clientsGeneralCheckingService: ClientsGeneralCheckingService,
+    private readonly clientsGeneralService: ClientsGeneralService,
   ) {}
 
   async update(id: number, body: ClientsUpdateBodyDTO): Promise<void> {
@@ -29,9 +29,7 @@ export class ClientsUpdateService {
       },
     );
 
-    await this.clientsGeneralCheckingService.clientNameNotExistsOrFail(
-      body.name,
-    );
+    await this.clientsGeneralService.clientNameNotExistsOrFail(body.name);
     await this.clientsRepository.updateEntity({ id }, body);
   }
 }

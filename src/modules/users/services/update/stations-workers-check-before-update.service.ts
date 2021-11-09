@@ -13,7 +13,7 @@ import {
 } from '../../constants';
 import { uniqBy } from 'lodash';
 import { isNonEmptyArray } from '@app/helpers';
-import { ClientsGeneralCheckingService } from '../../../clients/services';
+import { ClientsGeneralService } from '../../../clients/services';
 import { StationsWorkersRepository } from '../../../stations-workers/repositories';
 import { BID_STATUTES_BLOCKING_CHANGE_WORKER_ON_STATION } from '../../../stations/constants';
 import { BidEntity } from '@app/entities';
@@ -25,7 +25,7 @@ import { StationsGeneralService } from '../../../stations/services';
 @Injectable()
 export class StationsWorkersCheckBeforeUpdateService {
   constructor(
-    private readonly clientsGeneralCheckingService: ClientsGeneralCheckingService,
+    private readonly clientsGeneralService: ClientsGeneralService,
     private readonly stationsWorkersRepository: StationsWorkersRepository,
     private readonly stationsWorkersGeneralService: StationsWorkersGeneralService,
     private readonly stationsGeneralService: StationsGeneralService,
@@ -41,17 +41,12 @@ export class StationsWorkersCheckBeforeUpdateService {
       GROUPED_UPDATING_STATIONS_WORKERS_FIELDS,
     );
 
-    if (isNonEmptyArray(groupedWorkersToCheck.clientId)) {
-      await this.canBeUpdateClientsOrFail(groupedWorkersToCheck.clientId);
-    }
-
-    await this.deleteReplacedStationsOrFail(
+    await this.checkExistingStationsOrFail(
       groupedWorkersToCheck.stationId,
       foundWorkers,
     );
 
-    await this.checkAddedAndReplacedStationsOrFail(
-      groupedWorkersToCheck.clientId,
+    await this.canBeDeleteReplacedStationsAndDoItOrFail(
       groupedWorkersToCheck.stationId,
       foundWorkers,
     );
@@ -60,24 +55,41 @@ export class StationsWorkersCheckBeforeUpdateService {
       groupedWorkersToCheck.clientId,
       foundWorkers,
     );
+
+    if (isNonEmptyArray(groupedWorkersToCheck.clientId)) {
+      await this.canBeUpdateClientsOrFail(groupedWorkersToCheck.clientId);
+    }
+
+    await this.checkAddedAndReplacedStationsOrFail(
+      groupedWorkersToCheck.clientId,
+      groupedWorkersToCheck.stationId,
+      foundWorkers,
+    );
   }
 
-  private async canBeUpdateClientsOrFail(
-    groupByClientId: (UsersUpdateStationWorkerDTO & { index: number })[],
+  private async checkExistingStationsOrFail(
+    groupByStationId: (UsersUpdateStationWorkerDTO & { index: number })[],
+    foundWorkers: StationWorkerMemberDTO[],
   ): Promise<void> {
-    const [groupByClientIdWithStations] = groupedByNull(
-      groupByClientId,
+    const groupByStationIdNextStates = groupedByNextStateValues(
+      groupByStationId,
+      foundWorkers,
       'stationId',
     );
 
-    if (isNonEmptyArray(groupByClientIdWithStations)) {
-      await this.stationsGeneralService.allStationsCanBeUpdateOrFail(
-        groupByClientIdWithStations,
+    const addedAndReplacedStations = [
+      ...groupByStationIdNextStates.added,
+      ...groupByStationIdNextStates.replaced,
+    ];
+
+    if (isNonEmptyArray(addedAndReplacedStations)) {
+      await this.stationsGeneralService.allStationsExistsOrFail(
+        addedAndReplacedStations,
       );
     }
   }
 
-  private async deleteReplacedStationsOrFail(
+  private async canBeDeleteReplacedStationsAndDoItOrFail(
     groupByStationId: (UsersUpdateStationWorkerDTO & { index: number })[],
     foundWorkers: StationWorkerMemberDTO[],
   ): Promise<void> {
@@ -96,6 +108,83 @@ export class StationsWorkersCheckBeforeUpdateService {
           criteria: { userId: id },
           inputs: { stationId: null },
         })),
+      );
+    }
+  }
+
+  private async allWorkersCanBeChangeStationsOrFail(
+    items: NonEmptyArray<{ id: number; index: number }>,
+  ): Promise<void> {
+    const ids = items.map(({ id }) => id) as NonEmptyArray<number>;
+
+    const records = await this.stationsWorkersRepository
+      .createQueryBuilder('sw')
+      .select('sw.id as id, COUNT(b.id)::int AS count')
+      .where('sw.id IN (:...ids)', { ids })
+      .leftJoin(
+        BidEntity,
+        'b',
+        `"b"."stationId" = "sw"."stationId" AND b.status IN (:...statuses)`,
+        { statuses: BID_STATUTES_BLOCKING_CHANGE_WORKER_ON_STATION },
+      )
+      .groupBy('sw.id')
+      .getRawMany();
+
+    const workersForException = items.filter((item) =>
+      records.find(({ id, count }) => id === item.id && count > 0),
+    );
+
+    if (workersForException.length) {
+      const preparedErrors = getPreparedChildrenErrors(workersForException, {
+        field: 'id',
+        messages: [USERS_ERRORS.IMPOSSIBLE_REMOVE_STATION_FROM_WORKER],
+      });
+      throw new ExceptionsUnprocessableEntity(preparedErrors);
+    }
+  }
+
+  private async checkExistingClientsOrFail(
+    groupByClientId: (UsersUpdateStationWorkerDTO & { index: number })[],
+    foundWorkers: StationWorkerMemberDTO[],
+  ): Promise<void> {
+    const groupByClientIdNextStates = groupedByNextStateValues(
+      groupByClientId,
+      foundWorkers,
+      'clientId',
+    );
+    // Group by clients with stations check in checkAddedAndReplacedStationsOrFail method
+    const [, addedClientsWithoutStations] = groupedByNull(
+      groupByClientIdNextStates.added,
+      'stationId',
+    );
+    const [, replacedClientsWithoutStations] = groupedByNull(
+      groupByClientIdNextStates.replaced,
+      'stationId',
+    );
+
+    const workersToCheckExistingClients = [
+      ...addedClientsWithoutStations,
+      ...replacedClientsWithoutStations,
+    ];
+
+    if (isNonEmptyArray(workersToCheckExistingClients)) {
+      await this.clientsGeneralService.allClientsExistsOrFail(
+        workersToCheckExistingClients,
+      );
+    }
+  }
+
+  private async canBeUpdateClientsOrFail(
+    groupByClientId: (UsersUpdateStationWorkerDTO & { index: number })[],
+  ): Promise<void> {
+    const [groupByClientIdWithStations] = groupedByNull(
+      groupByClientId,
+      'stationId',
+    );
+
+    if (isNonEmptyArray(groupByClientIdWithStations)) {
+      await this.stationsGeneralService.allStationsCanBeUpdateOrFail(
+        groupByClientIdWithStations,
       );
     }
   }
@@ -157,72 +246,11 @@ export class StationsWorkersCheckBeforeUpdateService {
         );
 
       if (isNonEmptyArray(addedAndReplacedStations)) {
-        this.stationsWorkersGeneralService.allWorkersWithoutStationsOrFail(
+        this.stationsWorkersGeneralService.allWorkersWithoutStationsExistingOrFail(
           foundStationsWorkers,
           preparedWorkersToCheck,
         );
       }
-    }
-  }
-
-  private async checkExistingClientsOrFail(
-    groupByClientId: (UsersUpdateStationWorkerDTO & { index: number })[],
-    foundWorkers: StationWorkerMemberDTO[],
-  ): Promise<void> {
-    const groupByClientIdNextStates = groupedByNextStateValues(
-      groupByClientId,
-      foundWorkers,
-      'clientId',
-    );
-    const [, addedClientsWithoutStations] = groupedByNull(
-      groupByClientIdNextStates.added,
-      'stationId',
-    );
-    const [, replacedClientsWithoutStations] = groupedByNull(
-      groupByClientIdNextStates.replaced,
-      'stationId',
-    );
-
-    const workersToCheckExistingClients = [
-      ...addedClientsWithoutStations,
-      ...replacedClientsWithoutStations,
-    ];
-
-    if (isNonEmptyArray(workersToCheckExistingClients)) {
-      await this.clientsGeneralCheckingService.allClientsExistsOrFail(
-        workersToCheckExistingClients,
-      );
-    }
-  }
-
-  private async allWorkersCanBeChangeStationsOrFail(
-    items: NonEmptyArray<{ id: number; index: number }>,
-  ): Promise<void> {
-    const ids = items.map(({ id }) => id) as NonEmptyArray<number>;
-
-    const records = await this.stationsWorkersRepository
-      .createQueryBuilder('sw')
-      .select('sw.id as id, COUNT(b.id)::int AS count')
-      .where('sw.id IN (:...ids)', { ids })
-      .leftJoin(
-        BidEntity,
-        'b',
-        `"b"."stationId" = "sw"."stationId" AND b.status IN (:...statuses)`,
-        { statuses: BID_STATUTES_BLOCKING_CHANGE_WORKER_ON_STATION },
-      )
-      .groupBy('sw.id')
-      .getRawMany();
-
-    const workersForException = items.filter((item) =>
-      records.find(({ id, count }) => id === item.id && count > 0),
-    );
-
-    if (workersForException.length) {
-      const preparedErrors = getPreparedChildrenErrors(workersForException, {
-        field: 'id',
-        messages: [USERS_ERRORS.IMPOSSIBLE_REMOVE_STATION_FROM_WORKER],
-      });
-      throw new ExceptionsUnprocessableEntity(preparedErrors);
     }
   }
 }
