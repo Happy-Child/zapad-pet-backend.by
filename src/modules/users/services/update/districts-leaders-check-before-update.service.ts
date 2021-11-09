@@ -16,12 +16,14 @@ import {
   BID_STATUTES_BLOCKING_CHANGE_LEADER_ON_DISTRICT,
   DISTRICTS_ERRORS,
 } from '../../../districts/constants';
+import { DistrictsLeadersGeneralService } from '../../../districts-leaders/services';
 
 @Injectable()
 export class DistrictsLeadersCheckBeforeUpdateService {
   constructor(
     private readonly districtsGeneralService: DistrictsGeneralService,
     private readonly districtsLeadersRepository: DistrictsLeadersRepository,
+    private readonly districtsLeadersGeneralService: DistrictsLeadersGeneralService,
   ) {}
 
   public async executeOrFail(
@@ -144,7 +146,9 @@ export class DistrictsLeadersCheckBeforeUpdateService {
     const records = [...added, ...replaced];
 
     if (isNonEmptyArray(records)) {
-      // some
+      await this.districtsLeadersGeneralService.allDistrictsWithoutLeadersOrFail(
+        records,
+      );
     }
   }
 }
