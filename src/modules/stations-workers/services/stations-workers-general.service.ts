@@ -60,10 +60,10 @@ export class StationsWorkersGeneralService {
   }
 
   public allWorkersMatchOfClientsOrFail(
-    foundWorkers: { userId: number; clientId: number }[],
+    foundWorkers: Pick<StationWorkerEntity, 'userId' | 'clientId'>[],
     workersToCheck: {
       stationWorkerId: number;
-      clientId: number;
+      clientId: number | null;
       index: number;
     }[],
   ): void {
@@ -88,7 +88,7 @@ export class StationsWorkersGeneralService {
   }
 
   public allWorkersWithoutStationsExistingOrFail(
-    foundWorkers: { userId: number; stationId: number | null }[],
+    foundWorkers: Pick<StationWorkerEntity, 'userId' | 'stationId'>[],
     workersToCheck: { stationWorkerId: number; index: number }[],
   ): void {
     const workersWithStations = foundWorkers.filter(

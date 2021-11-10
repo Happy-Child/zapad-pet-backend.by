@@ -19,9 +19,9 @@ export class StationWorkerEntity extends BaseEntity {
   @Expose()
   user!: UserEntity;
 
-  @Column({ nullable: false })
+  @Column({ nullable: true })
   @Expose()
-  clientId!: number;
+  clientId!: number | null;
 
   @ManyToOne(() => ClientEntity, (client) => client.stationsWorkers)
   @JoinColumn({

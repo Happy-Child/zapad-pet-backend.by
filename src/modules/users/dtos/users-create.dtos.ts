@@ -41,6 +41,26 @@ export class UsersCreateGeneralUserDTO {
   index!: number;
 }
 
+export class UsersCreateStationWorkerDTO extends UsersCreateGeneralUserDTO {
+  role!: USER_ROLES.STATION_WORKER;
+
+  clientId!: number | null;
+
+  stationId!: number | null;
+}
+
+export class UsersCreateDistrictLeaderDTO extends UsersCreateGeneralUserDTO {
+  role!: USER_ROLES.DISTRICT_LEADER;
+
+  leaderDistrictId!: number | null;
+}
+
+export class UsersCreateEngineerDTO extends UsersCreateGeneralUserDTO {
+  role!: USER_ROLES.ENGINEER;
+
+  engineerDistrictId!: number | null;
+}
+
 export class UsersCreateFullStationWorkerDTO extends UsersCreateGeneralUserDTO {
   role!: USER_ROLES.STATION_WORKER;
 

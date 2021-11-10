@@ -5,6 +5,10 @@ import { AUTH_ERRORS } from '../../auth/constants';
 import { ENTITIES_FIELDS } from '@app/constants';
 import { getPreparedChildrenErrors } from '@app/helpers/prepared-errors.helpers';
 import { NonEmptyArray } from '@app/types';
+import { UsersUpdateItemDTO } from '../dtos/users-update.dtos';
+import { TMemberDTO } from '../types';
+import { AccountantDTO } from '../dtos';
+import { USERS_ERRORS } from '../constants';
 
 @Injectable()
 export class UsersGeneralService {
@@ -30,6 +34,28 @@ export class UsersGeneralService {
     const preparedErrors = getPreparedChildrenErrors(usersForException, {
       field: ENTITIES_FIELDS.EMAIL,
       messages: [AUTH_ERRORS.EMAIL_IS_EXIST],
+    });
+    throw new ExceptionsUnprocessableEntity(preparedErrors);
+  }
+
+  public async allUsersExistingOrFail(
+    users: NonEmptyArray<UsersUpdateItemDTO & { index: number }>,
+  ): Promise<(TMemberDTO | AccountantDTO)[]> {
+    const ids = users.map(({ id }) => id) as NonEmptyArray<number>;
+    const foundUsers = await this.usersRepository.getUsersIds(ids);
+
+    const foundUsersIds = foundUsers.map(({ id }) => id);
+    if (foundUsersIds.length === ids.length) {
+      return foundUsers;
+    }
+
+    const usersForException = users.filter(
+      ({ id }) => !foundUsersIds.includes(id),
+    );
+
+    const preparedErrors = getPreparedChildrenErrors(usersForException, {
+      field: 'id',
+      messages: [USERS_ERRORS.USER_NOT_EXISTS],
     });
     throw new ExceptionsUnprocessableEntity(preparedErrors);
   }

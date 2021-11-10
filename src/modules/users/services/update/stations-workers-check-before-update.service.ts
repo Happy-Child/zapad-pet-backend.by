@@ -41,6 +41,11 @@ export class StationsWorkersCheckBeforeUpdateService {
       GROUPED_UPDATING_STATIONS_WORKERS_FIELDS,
     );
 
+    await this.checkExistingClientsOrFail(
+      groupedWorkersToCheck.clientId,
+      foundWorkers,
+    );
+
     await this.checkExistingStationsOrFail(
       groupedWorkersToCheck.stationId,
       foundWorkers,
@@ -48,11 +53,6 @@ export class StationsWorkersCheckBeforeUpdateService {
 
     await this.canBeDeleteReplacedStationsAndDoItOrFail(
       groupedWorkersToCheck.stationId,
-      foundWorkers,
-    );
-
-    await this.checkExistingClientsOrFail(
-      groupedWorkersToCheck.clientId,
       foundWorkers,
     );
 
@@ -147,30 +147,16 @@ export class StationsWorkersCheckBeforeUpdateService {
     groupByClientId: (UsersUpdateStationWorkerDTO & { index: number })[],
     foundWorkers: StationWorkerMemberDTO[],
   ): Promise<void> {
-    const groupByClientIdNextStates = groupedByNextStateValues(
+    const { added, replaced } = groupedByNextStateValues(
       groupByClientId,
       foundWorkers,
       'clientId',
     );
-    // Group by clients with stations check in checkAddedAndReplacedStationsOrFail method
-    const [, addedClientsWithoutStations] = groupedByNull(
-      groupByClientIdNextStates.added,
-      'stationId',
-    );
-    const [, replacedClientsWithoutStations] = groupedByNull(
-      groupByClientIdNextStates.replaced,
-      'stationId',
-    );
 
-    const workersToCheckExistingClients = [
-      ...addedClientsWithoutStations,
-      ...replacedClientsWithoutStations,
-    ];
+    const records = [...added, ...replaced];
 
-    if (isNonEmptyArray(workersToCheckExistingClients)) {
-      await this.clientsGeneralService.allClientsExistsOrFail(
-        workersToCheckExistingClients,
-      );
+    if (isNonEmptyArray(records)) {
+      await this.clientsGeneralService.allClientsExistsOrFail(records);
     }
   }
 

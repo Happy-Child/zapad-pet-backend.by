@@ -39,33 +39,11 @@ export class UsersCheckBeforeUpdateService {
 
   public async executeOrFail(
     indexedUsers: NonEmptyArray<UsersUpdateItemDTO & { index: number }>,
+    foundUsers: (TMemberDTO | AccountantDTO)[],
   ): Promise<void> {
-    const foundUsers = await this.allUsersExistingOrFail(indexedUsers);
     this.allUsersMatchRolesOrFail(indexedUsers, foundUsers);
     await this.allUpdatedEmailsNotExistingOrFail(indexedUsers, foundUsers);
     await this.checkMembersOrFail(indexedUsers, foundUsers);
-  }
-
-  private async allUsersExistingOrFail(
-    users: NonEmptyArray<UsersUpdateItemDTO & { index: number }>,
-  ): Promise<(TMemberDTO | AccountantDTO)[]> {
-    const ids = users.map(({ id }) => id) as NonEmptyArray<number>;
-    const foundUsers = await this.usersRepository.getUsersIds(ids);
-
-    const foundUsersIds = foundUsers.map(({ id }) => id);
-    if (foundUsersIds.length === ids.length) {
-      return foundUsers;
-    }
-
-    const usersForException = users.filter(
-      ({ id }) => !foundUsersIds.includes(id),
-    );
-
-    const preparedErrors = getPreparedChildrenErrors(usersForException, {
-      field: 'id',
-      messages: [USERS_ERRORS.USER_NOT_EXISTS],
-    });
-    throw new ExceptionsUnprocessableEntity(preparedErrors);
   }
 
   private allUsersMatchRolesOrFail(

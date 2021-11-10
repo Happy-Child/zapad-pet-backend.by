@@ -12,7 +12,6 @@ import { IRepositoryUpdateEntitiesItem } from '@app/repositories/interfaces';
 import { StationEntity, StationWorkerEntity } from '@app/entities';
 import { StationsCheckBeforeUpdateService } from './stations-check-before-update.service';
 import { StationsWorkersRepository } from '../../../stations-workers/repositories';
-import { NonNullableObject } from '@app/types';
 import {
   groupedByChangedFields,
   groupedByNextStateValues,
@@ -63,14 +62,10 @@ export class StationsUpdateService {
         const stationsWorkersRepository = manager.getCustomRepository(
           StationsWorkersRepository,
         );
-        const { added, replaced } = groupedByNextStateValues(
+
+        await this.addedAndReplacedStationsWorkers(
           groupByStationWorkerId,
           foundStations,
-          'stationWorkerId',
-        );
-        await this.addedAndReplacedStationsWorkers(
-          added,
-          replaced,
           stationsWorkersRepository,
         );
       }
@@ -90,28 +85,31 @@ export class StationsUpdateService {
   }
 
   private async addedAndReplacedStationsWorkers(
-    added: NonNullableObject<StationsUpdateItemDTO>[],
-    replaced: NonNullableObject<StationsUpdateItemDTO>[],
+    groupByStationWorkerId: StationsUpdateItemDTO[],
+    foundStations: StationExtendedDTO[],
     repository: StationsWorkersRepository,
   ): Promise<void> {
+    const { added, replaced } = groupedByNextStateValues(
+      groupByStationWorkerId,
+      foundStations,
+      'stationWorkerId',
+    );
+
+    const addedAndReplaced = [...added, ...replaced];
+
     const recordsToUpdate: IRepositoryUpdateEntitiesItem<StationWorkerEntity>[] =
       [];
 
-    if (isNonEmptyArray(replaced)) {
-      recordsToUpdate.push(
-        ...replaced.map(({ id, clientId, stationWorkerId }) => ({
-          criteria: { userId: stationWorkerId, clientId },
+    // TODO delete "stationId" implement on stage of data checking before saving (stationsCheckBeforeUpdateService.executeOrFail)
+
+    if (isNonEmptyArray(addedAndReplaced)) {
+      const records = addedAndReplaced.map(
+        ({ id, clientId, stationWorkerId: userId }) => ({
+          criteria: { userId, clientId },
           inputs: { stationId: id },
-        })),
+        }),
       );
-    }
-    if (isNonEmptyArray(added)) {
-      recordsToUpdate.push(
-        ...added.map(({ id, clientId, stationWorkerId }) => ({
-          criteria: { userId: stationWorkerId, clientId },
-          inputs: { stationId: id },
-        })),
-      );
+      recordsToUpdate.push(...records);
     }
 
     await repository.updateEntities(recordsToUpdate);

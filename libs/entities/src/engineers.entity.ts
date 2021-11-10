@@ -18,9 +18,9 @@ export class EngineerEntity extends BaseEntity {
   @Expose()
   user!: UserEntity;
 
-  @Column({ nullable: false })
+  @Column({ nullable: true })
   @Expose()
-  districtId!: number;
+  districtId!: number | null;
 
   @ManyToOne(() => DistrictEntity, (district) => district.engineers)
   @JoinColumn({

@@ -2,12 +2,15 @@ import { Injectable } from '@nestjs/common';
 import { NonEmptyArray } from '@app/types';
 import { Connection, EntityManager } from 'typeorm';
 import {
+  UsersCreateDistrictLeaderDTO,
+  UsersCreateEngineerDTO,
   UsersCreateFullDistrictLeaderDTO,
   UsersCreateFullEngineerDTO,
   UsersCreateFullStationWorkerDTO,
   UsersCreateGeneralUserDTO,
   UsersCreateItemDTO,
   UsersCreateRequestBodyDTO,
+  UsersCreateStationWorkerDTO,
 } from '../../dtos';
 import {
   UsersEmailConfirmedRepository,
@@ -36,11 +39,8 @@ import { UsersCheckBeforeCreateService } from './users-check-before-create.servi
 import { StationsWorkersCheckBeforeCreateService } from './stations-workers-check-before-create.service';
 import { UsersSendingMailService } from '../users-sending-mail.service';
 import { UsersGeneralService } from '../users-general.service';
-
-type TGetRequestsToCheckingAndCreationReturn = [
-  Promise<void>[],
-  ((manager: EntityManager) => Promise<UserEntity[]>)[],
-];
+import { groupedByRoles } from '@app/helpers/grouped.helpers';
+import { USER_ROLES } from '../../constants';
 
 @Injectable()
 export class UsersCreateService {
@@ -57,12 +57,13 @@ export class UsersCreateService {
     const indexedUsers = getIndexedArray(users);
     await this.usersGeneralService.allEmailsNotExistingOrFail(indexedUsers);
 
-    const [requestsToCheckingUsers, requestsToCreationUsers] =
-      this.getRequestsToCheckingAndCreation(indexedUsers);
-
-    await Promise.all(requestsToCheckingUsers);
+    const requestsToCheckingMembers =
+      this.getRequestsToCheckingMembers(indexedUsers);
+    await Promise.all(requestsToCheckingMembers);
 
     await this.connection.transaction(async (manager) => {
+      const requestsToCreationUsers =
+        this.getRequestsToCreationUsers(indexedUsers);
       await Promise.all(requestsToCreationUsers.map((cb) => cb(manager)));
 
       const records = await this.createRecordsOfConfirmationEmails(
@@ -73,84 +74,91 @@ export class UsersCreateService {
     });
   }
 
-  private getRequestsToCheckingAndCreation(
+  private getRequestsToCheckingMembers(
     users: NonEmptyArray<UsersCreateItemDTO & { index: number }>,
-  ): TGetRequestsToCheckingAndCreationReturn {
-    const { stationWorkers, engineers, districtLeaders, simpleUsers } =
-      getGroupedFullUsersByRoles<
-        UsersCreateFullDistrictLeaderDTO,
-        UsersCreateFullEngineerDTO,
-        UsersCreateFullStationWorkerDTO,
-        UsersCreateGeneralUserDTO
-      >(users);
+  ): Promise<void>[] {
+    const fullMembers = getGroupedFullUsersByRoles<
+      UsersCreateFullDistrictLeaderDTO,
+      UsersCreateFullEngineerDTO,
+      UsersCreateFullStationWorkerDTO,
+      UsersCreateGeneralUserDTO
+    >(users);
 
-    const requestsToCheckingUsers: TGetRequestsToCheckingAndCreationReturn[0] =
-      [];
-    const requestsToCreationUsers: TGetRequestsToCheckingAndCreationReturn[1] =
-      [];
+    const requestsToCheckingMembers: Promise<void>[] = [];
 
-    if (isNonEmptyArray(districtLeaders)) {
-      requestsToCheckingUsers.push(
+    if (isNonEmptyArray(fullMembers.districtLeaders)) {
+      requestsToCheckingMembers.push(
         this.usersCheckBeforeCreateService.checkDistrictLeadersOrFail(
-          districtLeaders,
+          fullMembers.districtLeaders,
         ),
-      );
-      requestsToCreationUsers.push((manager: EntityManager) =>
-        this.saveDistrictsLeaders(districtLeaders, manager),
       );
     }
 
-    if (isNonEmptyArray(stationWorkers)) {
-      requestsToCheckingUsers.push(
+    if (isNonEmptyArray(fullMembers.stationWorkers)) {
+      requestsToCheckingMembers.push(
         this.stationsWorkersCheckBeforeCreateService.executeOrFail(
-          stationWorkers,
+          fullMembers.stationWorkers,
         ),
       );
-      requestsToCreationUsers.push((manager: EntityManager) =>
-        this.saveStationWorkers(stationWorkers, manager),
+    }
+
+    if (isNonEmptyArray(fullMembers.engineers)) {
+      requestsToCheckingMembers.push(
+        this.usersCheckBeforeCreateService.checkEngineersOrFail(
+          fullMembers.engineers,
+        ),
       );
     }
 
-    if (isNonEmptyArray(engineers)) {
-      requestsToCheckingUsers.push(
-        this.usersCheckBeforeCreateService.checkEngineersOrFail(engineers),
-      );
-      requestsToCreationUsers.push((manager: EntityManager) =>
-        this.saveEngineers(engineers, manager),
-      );
-    }
-
-    if (isNonEmptyArray(simpleUsers)) {
-      requestsToCreationUsers.push((manager: EntityManager) =>
-        this.saveSimpleUsers(simpleUsers, manager),
-      );
-    }
-
-    return [requestsToCheckingUsers, requestsToCreationUsers];
+    return requestsToCheckingMembers;
   }
 
-  private async saveDistrictsLeaders(
-    districtsLeaders: UsersCreateFullDistrictLeaderDTO[],
-    manager: EntityManager,
-  ): Promise<UserEntity[]> {
-    const createdUsers = await this.saveUsers(districtsLeaders, manager);
+  private getRequestsToCreationUsers(
+    users: NonEmptyArray<UsersCreateItemDTO & { index: number }>,
+  ): ((manager: EntityManager) => Promise<UserEntity[]>)[] {
+    const groupedUsersByRoles = groupedByRoles<
+      UsersCreateStationWorkerDTO,
+      UsersCreateDistrictLeaderDTO,
+      UsersCreateEngineerDTO,
+      Omit<UsersCreateGeneralUserDTO, 'role'> & { role: USER_ROLES.ACCOUNTANT }
+    >(users);
 
-    const districtsLeadersRepository = manager.getCustomRepository(
-      DistrictsLeadersRepository,
-    );
-    const records: Partial<DistrictLeaderEntity>[] = districtsLeaders.map(
-      ({ leaderDistrictId, email }) => ({
-        userId: createdUsers[email].id,
-        districtId: leaderDistrictId,
-      }),
-    );
-    await districtsLeadersRepository.saveEntities(records);
+    const requestsToCreationUsers: ((
+      manager: EntityManager,
+    ) => Promise<UserEntity[]>)[] = [];
 
-    return Object.values(createdUsers);
+    if (isNonEmptyArray(groupedUsersByRoles.stationsWorkers)) {
+      const request = (manager: EntityManager) =>
+        this.saveStationWorkers(groupedUsersByRoles.stationsWorkers, manager);
+      requestsToCreationUsers.push(request);
+    }
+
+    if (isNonEmptyArray(groupedUsersByRoles.districtsLeaders)) {
+      const request = (manager: EntityManager) =>
+        this.saveDistrictsLeaders(
+          groupedUsersByRoles.districtsLeaders,
+          manager,
+        );
+      requestsToCreationUsers.push(request);
+    }
+
+    if (isNonEmptyArray(groupedUsersByRoles.engineers)) {
+      const request = (manager: EntityManager) =>
+        this.saveEngineers(groupedUsersByRoles.engineers, manager);
+      requestsToCreationUsers.push(request);
+    }
+
+    if (isNonEmptyArray(groupedUsersByRoles.accountants)) {
+      const request = (manager: EntityManager) =>
+        this.saveSimpleUsers(groupedUsersByRoles.accountants, manager);
+      requestsToCreationUsers.push(request);
+    }
+
+    return requestsToCreationUsers;
   }
 
   private async saveStationWorkers(
-    stationWorkers: UsersCreateFullStationWorkerDTO[],
+    stationWorkers: UsersCreateStationWorkerDTO[],
     manager: EntityManager,
   ): Promise<UserEntity[]> {
     const createdUsers = await this.saveUsers(stationWorkers, manager);
@@ -170,8 +178,28 @@ export class UsersCreateService {
     return Object.values(createdUsers);
   }
 
+  private async saveDistrictsLeaders(
+    districtsLeaders: UsersCreateDistrictLeaderDTO[],
+    manager: EntityManager,
+  ): Promise<UserEntity[]> {
+    const createdUsers = await this.saveUsers(districtsLeaders, manager);
+
+    const districtsLeadersRepository = manager.getCustomRepository(
+      DistrictsLeadersRepository,
+    );
+    const records: Partial<DistrictLeaderEntity>[] = districtsLeaders.map(
+      ({ leaderDistrictId, email }) => ({
+        userId: createdUsers[email].id,
+        districtId: leaderDistrictId,
+      }),
+    );
+    await districtsLeadersRepository.saveEntities(records);
+
+    return Object.values(createdUsers);
+  }
+
   private async saveEngineers(
-    engineers: UsersCreateFullEngineerDTO[],
+    engineers: UsersCreateEngineerDTO[],
     manager: EntityManager,
   ): Promise<UserEntity[]> {
     const createdUsers = await this.saveUsers(engineers, manager);

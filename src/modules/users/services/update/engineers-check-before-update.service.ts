@@ -39,7 +39,7 @@ export class EngineersCheckBeforeUpdateService {
       foundEngineers,
     );
 
-    await this.checkEngineersOrFail(
+    await this.canBeDeleteDistrictsOrFail(
       groupedEngineersToCheck.engineerDistrictId,
       foundEngineers,
     );
@@ -49,21 +49,17 @@ export class EngineersCheckBeforeUpdateService {
     groupByDistrictId: (UsersUpdateEngineerDTO & { index: number })[],
     foundEngineers: EngineerMemberDTO[],
   ): Promise<void> {
-    const { added, replaced } = groupedByNextStateValues(
+    const { added } = groupedByNextStateValues(
       groupByDistrictId,
       foundEngineers,
       'engineerDistrictId',
     );
 
-    const addedAndReplacedStations = [...added, ...replaced];
-
-    if (isNonEmptyArray(addedAndReplacedStations)) {
-      const preparedRecords = addedAndReplacedStations.map(
-        ({ engineerDistrictId, index }) => ({
-          districtId: engineerDistrictId,
-          index,
-        }),
-      ) as NonEmptyArray<{ districtId: number; index: number }>;
+    if (isNonEmptyArray(added)) {
+      const preparedRecords = added.map(({ engineerDistrictId, index }) => ({
+        districtId: engineerDistrictId,
+        index,
+      })) as NonEmptyArray<{ districtId: number; index: number }>;
 
       await this.districtsGeneralService.allDistrictsExistsOrFail(
         preparedRecords,
@@ -71,20 +67,18 @@ export class EngineersCheckBeforeUpdateService {
     }
   }
 
-  private async checkEngineersOrFail(
+  private async canBeDeleteDistrictsOrFail(
     groupByDistrictId: (UsersUpdateEngineerDTO & { index: number })[],
     foundEngineers: EngineerMemberDTO[],
   ): Promise<void> {
-    const { deleted, replaced } = groupedByNextStateValues(
+    const { deleted } = groupedByNextStateValues(
       groupByDistrictId,
       foundEngineers,
       'engineerDistrictId',
     );
 
-    const records = [...deleted, ...replaced];
-
-    if (isNonEmptyArray(records)) {
-      await this.allEngineersCanBeChangeDistrictsOrFail(records);
+    if (isNonEmptyArray(deleted)) {
+      await this.allEngineersCanBeChangeDistrictsOrFail(deleted);
     }
   }
 

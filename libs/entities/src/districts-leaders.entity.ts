@@ -18,9 +18,9 @@ export class DistrictLeaderEntity extends BaseEntity {
   @Expose()
   user!: UserEntity;
 
-  @Column({ nullable: false, unique: true })
+  @Column({ nullable: true, unique: true })
   @Expose()
-  districtId!: number;
+  districtId!: number | null;
 
   @OneToOne(() => DistrictEntity)
   @JoinColumn({

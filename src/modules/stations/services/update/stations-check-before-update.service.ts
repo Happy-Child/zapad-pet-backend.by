@@ -47,6 +47,12 @@ export class StationsCheckBeforeUpdateService {
 
     if (Object.values(groupedStationsToCheck).length === 0) return;
 
+    if (isNonEmptyArray(groupedStationsToCheck.clientId)) {
+      await this.clientsGeneralService.allClientsExistsOrFail(
+        groupedStationsToCheck.clientId,
+      );
+    }
+
     await this.checkExistingWorkersOrFail(
       groupedStationsToCheck.stationWorkerId,
       foundStations,
@@ -56,8 +62,6 @@ export class StationsCheckBeforeUpdateService {
       groupedStationsToCheck.stationWorkerId,
       foundStations,
     );
-
-    await this.checkExistingClientsOrFail(groupedStationsToCheck.clientId);
 
     await this.canChangeStationsGeneralFieldsOrFail(
       groupedStationsToCheck.number,
@@ -135,22 +139,6 @@ export class StationsCheckBeforeUpdateService {
         messages: [STATIONS_ERRORS.IMPOSSIBLE_REMOVE_WORKER_FROM_STATION],
       });
       throw new ExceptionsUnprocessableEntity(preparedErrors);
-    }
-  }
-
-  private async checkExistingClientsOrFail(
-    groupByClientsId: (StationsUpdateItemDTO & { index: number })[],
-  ): Promise<void> {
-    // Group by clients with workers check in checkAddedAndReplacedWorkersOrFail method
-    const [, groupByClientsIdWithoutWorkers] = groupedByNull(
-      groupByClientsId,
-      'stationWorkerId',
-    ) as [unknown[], TIndexedStationsUpdateItemDTO[]];
-
-    if (isNonEmptyArray(groupByClientsIdWithoutWorkers)) {
-      await this.clientsGeneralService.allClientsExistsOrFail(
-        groupByClientsIdWithoutWorkers,
-      );
     }
   }
 

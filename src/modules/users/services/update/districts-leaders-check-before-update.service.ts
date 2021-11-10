@@ -92,11 +92,11 @@ export class DistrictsLeadersCheckBeforeUpdateService {
 
     if (isNonEmptyArray(records)) {
       await this.allLeadersCanBeChangeDistrictsOrFail(records);
-
-      const ids = records.map(({ id }) => id);
-      await this.districtsLeadersRepository.deleteEntitiesByWhere(
-        'userId IN (:...ids)',
-        { ids },
+      await this.districtsLeadersRepository.updateEntities(
+        records.map(({ id }) => ({
+          criteria: { userId: id },
+          inputs: { districtId: null },
+        })),
       );
     }
   }

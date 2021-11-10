@@ -1,16 +1,17 @@
-import { UserEntity } from '@app/entities';
+import { StationWorkerEntity, UserEntity } from '@app/entities';
 import { USER_ROLES } from 'src/modules/users/constants';
 import { FAKE_USER_DEFAULT_PASSWORD } from '../constants';
 
-// 8 entities
-// ids 1 - 8
-const stationWorkers: Partial<UserEntity>[] = [
+// 9 entities
+const stationWorkers: Partial<UserEntity & StationWorkerEntity>[] = [
   {
     name: 'station_worker_1',
     email: 'station_worker_1@mail.ru',
     role: USER_ROLES.STATION_WORKER,
     emailConfirmed: true,
     password: FAKE_USER_DEFAULT_PASSWORD,
+    clientId: 1,
+    stationId: 2,
   },
   {
     name: 'station_worker_2',
@@ -18,6 +19,8 @@ const stationWorkers: Partial<UserEntity>[] = [
     role: USER_ROLES.STATION_WORKER,
     emailConfirmed: true,
     password: FAKE_USER_DEFAULT_PASSWORD,
+    clientId: 1,
+    stationId: 3,
   },
   {
     name: 'station_worker_3',
@@ -25,6 +28,8 @@ const stationWorkers: Partial<UserEntity>[] = [
     role: USER_ROLES.STATION_WORKER,
     emailConfirmed: true,
     password: FAKE_USER_DEFAULT_PASSWORD,
+    clientId: 1,
+    stationId: null,
   },
   {
     name: 'station_worker_4',
@@ -32,6 +37,8 @@ const stationWorkers: Partial<UserEntity>[] = [
     role: USER_ROLES.STATION_WORKER,
     emailConfirmed: true,
     password: FAKE_USER_DEFAULT_PASSWORD,
+    clientId: 2,
+    stationId: 6,
   },
   {
     name: 'station_worker_5',
@@ -39,6 +46,8 @@ const stationWorkers: Partial<UserEntity>[] = [
     role: USER_ROLES.STATION_WORKER,
     emailConfirmed: true,
     password: FAKE_USER_DEFAULT_PASSWORD,
+    clientId: 2,
+    stationId: 7,
   },
   {
     name: 'station_worker_6',
@@ -46,6 +55,8 @@ const stationWorkers: Partial<UserEntity>[] = [
     role: USER_ROLES.STATION_WORKER,
     emailConfirmed: true,
     password: FAKE_USER_DEFAULT_PASSWORD,
+    clientId: 3,
+    stationId: 8,
   },
   {
     name: 'station_worker_7',
@@ -53,6 +64,8 @@ const stationWorkers: Partial<UserEntity>[] = [
     role: USER_ROLES.STATION_WORKER,
     emailConfirmed: true,
     password: FAKE_USER_DEFAULT_PASSWORD,
+    clientId: 4,
+    stationId: 12,
   },
   {
     name: 'station_worker_8',
@@ -60,6 +73,17 @@ const stationWorkers: Partial<UserEntity>[] = [
     role: USER_ROLES.STATION_WORKER,
     emailConfirmed: true,
     password: FAKE_USER_DEFAULT_PASSWORD,
+    clientId: null,
+    stationId: null,
+  },
+  {
+    name: 'station_worker_9',
+    email: 'station_worker_9@mail.ru',
+    role: USER_ROLES.STATION_WORKER,
+    emailConfirmed: true,
+    password: FAKE_USER_DEFAULT_PASSWORD,
+    clientId: null,
+    stationId: null,
   },
 ];
 

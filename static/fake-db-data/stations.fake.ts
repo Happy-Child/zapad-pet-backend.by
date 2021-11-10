@@ -1,10 +1,10 @@
 import { StationEntity } from '@app/entities';
 
 // 12 entities
-// clientId=1 - 2,3,4
-// clientId=2 - 1,5,6,7
-// clientId=3 - 8,9,10
-// clientId=4 - 11,12
+// clientId=1 - stationId=2,3,4
+// clientId=2 - stationId=1,5,6,7
+// clientId=3 - stationId=8,9,10
+// clientId=4 - stationId=11,12
 const data: Partial<StationEntity>[] = [
   {
     number: 'NMB0000001',

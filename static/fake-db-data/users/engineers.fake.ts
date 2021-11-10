@@ -1,16 +1,16 @@
 import { USER_ROLES } from '../../../src/modules/users/constants';
 import { FAKE_USER_DEFAULT_PASSWORD } from '../constants';
-import { UserEntity } from '@app/entities';
+import { EngineerEntity, UserEntity } from '@app/entities';
 
 // 16 entities
-// ids 14 - 29
-const engineers: Partial<UserEntity>[] = [
+const engineers: Partial<UserEntity & EngineerEntity>[] = [
   {
     name: 'engineer_1',
     email: 'engineer_1@mail.ru',
     role: USER_ROLES.ENGINEER,
     emailConfirmed: true,
     password: FAKE_USER_DEFAULT_PASSWORD,
+    districtId: 1,
   },
   {
     name: 'engineer_2',
@@ -18,6 +18,7 @@ const engineers: Partial<UserEntity>[] = [
     role: USER_ROLES.ENGINEER,
     emailConfirmed: true,
     password: FAKE_USER_DEFAULT_PASSWORD,
+    districtId: 1,
   },
   {
     name: 'engineer_3',
@@ -25,6 +26,7 @@ const engineers: Partial<UserEntity>[] = [
     role: USER_ROLES.ENGINEER,
     emailConfirmed: true,
     password: FAKE_USER_DEFAULT_PASSWORD,
+    districtId: 110,
   },
   {
     name: 'engineer_4',
@@ -32,6 +34,7 @@ const engineers: Partial<UserEntity>[] = [
     role: USER_ROLES.ENGINEER,
     emailConfirmed: true,
     password: FAKE_USER_DEFAULT_PASSWORD,
+    districtId: 5,
   },
   {
     name: 'engineer_5',
@@ -39,6 +42,7 @@ const engineers: Partial<UserEntity>[] = [
     role: USER_ROLES.ENGINEER,
     emailConfirmed: true,
     password: FAKE_USER_DEFAULT_PASSWORD,
+    districtId: 7,
   },
   {
     name: 'engineer_6',
@@ -46,6 +50,7 @@ const engineers: Partial<UserEntity>[] = [
     role: USER_ROLES.ENGINEER,
     emailConfirmed: true,
     password: FAKE_USER_DEFAULT_PASSWORD,
+    districtId: 25,
   },
   {
     name: 'engineer_7',
@@ -53,6 +58,7 @@ const engineers: Partial<UserEntity>[] = [
     role: USER_ROLES.ENGINEER,
     emailConfirmed: true,
     password: FAKE_USER_DEFAULT_PASSWORD,
+    districtId: 45,
   },
   {
     name: 'engineer_8',
@@ -60,6 +66,7 @@ const engineers: Partial<UserEntity>[] = [
     role: USER_ROLES.ENGINEER,
     emailConfirmed: true,
     password: FAKE_USER_DEFAULT_PASSWORD,
+    districtId: 90,
   },
   {
     name: 'engineer_9',
@@ -67,6 +74,7 @@ const engineers: Partial<UserEntity>[] = [
     role: USER_ROLES.ENGINEER,
     emailConfirmed: true,
     password: FAKE_USER_DEFAULT_PASSWORD,
+    districtId: 90,
   },
   {
     name: 'engineer_10',
@@ -74,6 +82,7 @@ const engineers: Partial<UserEntity>[] = [
     role: USER_ROLES.ENGINEER,
     emailConfirmed: true,
     password: FAKE_USER_DEFAULT_PASSWORD,
+    districtId: 50,
   },
   {
     name: 'engineer_11',
@@ -81,6 +90,7 @@ const engineers: Partial<UserEntity>[] = [
     role: USER_ROLES.ENGINEER,
     emailConfirmed: true,
     password: FAKE_USER_DEFAULT_PASSWORD,
+    districtId: null,
   },
   {
     name: 'engineer_12',
@@ -88,6 +98,7 @@ const engineers: Partial<UserEntity>[] = [
     role: USER_ROLES.ENGINEER,
     emailConfirmed: true,
     password: FAKE_USER_DEFAULT_PASSWORD,
+    districtId: null,
   },
   {
     name: 'engineer_13',
@@ -95,6 +106,7 @@ const engineers: Partial<UserEntity>[] = [
     role: USER_ROLES.ENGINEER,
     emailConfirmed: true,
     password: FAKE_USER_DEFAULT_PASSWORD,
+    districtId: null,
   },
   {
     name: 'engineer_14',
@@ -102,6 +114,7 @@ const engineers: Partial<UserEntity>[] = [
     role: USER_ROLES.ENGINEER,
     emailConfirmed: true,
     password: FAKE_USER_DEFAULT_PASSWORD,
+    districtId: null,
   },
   {
     name: 'engineer_15',
@@ -109,6 +122,7 @@ const engineers: Partial<UserEntity>[] = [
     role: USER_ROLES.ENGINEER,
     emailConfirmed: true,
     password: FAKE_USER_DEFAULT_PASSWORD,
+    districtId: null,
   },
   {
     name: 'engineer_16',
@@ -116,6 +130,7 @@ const engineers: Partial<UserEntity>[] = [
     role: USER_ROLES.ENGINEER,
     emailConfirmed: true,
     password: FAKE_USER_DEFAULT_PASSWORD,
+    districtId: null,
   },
 ];
 
