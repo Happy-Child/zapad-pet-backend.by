@@ -12,7 +12,7 @@ import { UsersGeneralService } from '../users-general.service';
 import { UsersCheckBeforeUpdateService } from './users-check-before-update.service';
 import { groupedByRoles } from '@app/helpers/grouped.helpers';
 import { StationsWorkersRepository } from '../../../stations-workers/repositories';
-import { Connection } from 'typeorm';
+import { Connection, EntityManager } from 'typeorm';
 import { IRepositoryUpdateEntitiesItem } from '@app/repositories/interfaces';
 import {
   DistrictLeaderEntity,
@@ -34,32 +34,37 @@ export class UsersUpdateService {
   public async execute({ users }: UsersUpdateRequestBodyDTO): Promise<void> {
     const indexedUsers = getIndexedArray(users);
 
-    await this.usersCheckBeforeUpdateService.executeOrFail(indexedUsers);
-
-    await this.update(indexedUsers);
+    await this.connection.transaction(async (manager) => {
+      await this.usersCheckBeforeUpdateService.executeOrFail(
+        indexedUsers,
+        manager,
+      );
+      await this.update(indexedUsers, manager);
+    });
   }
 
-  private async update(users: UsersUpdateItemDTO[]): Promise<void> {
-    await this.connection.transaction(async (manager) => {
-      const usersRepository = manager.getCustomRepository(UsersRepository);
-      await this.updateUsers(users, usersRepository);
+  private async update(
+    users: UsersUpdateItemDTO[],
+    manager: EntityManager,
+  ): Promise<void> {
+    const usersRepository = manager.getCustomRepository(UsersRepository);
+    await this.updateUsers(users, usersRepository);
 
-      const stationsWorkersRepository = manager.getCustomRepository(
-        StationsWorkersRepository,
-      );
-      const districtsLeadersRepository = manager.getCustomRepository(
-        DistrictsLeadersRepository,
-      );
-      const engineersRepository =
-        manager.getCustomRepository(EngineersRepository);
+    const stationsWorkersRepository = manager.getCustomRepository(
+      StationsWorkersRepository,
+    );
+    const districtsLeadersRepository = manager.getCustomRepository(
+      DistrictsLeadersRepository,
+    );
+    const engineersRepository =
+      manager.getCustomRepository(EngineersRepository);
 
-      await this.updateMembers(
-        users,
-        stationsWorkersRepository,
-        districtsLeadersRepository,
-        engineersRepository,
-      );
-    });
+    await this.updateMembers(
+      users,
+      stationsWorkersRepository,
+      districtsLeadersRepository,
+      engineersRepository,
+    );
   }
 
   private async updateUsers(

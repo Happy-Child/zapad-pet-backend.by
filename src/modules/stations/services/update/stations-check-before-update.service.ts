@@ -21,6 +21,7 @@ import {
 } from '@app/helpers/grouped.helpers';
 import { StationExtendedDTO, StationsUpdateItemDTO } from '../../dtos';
 import { StationsWorkersRepository } from '../../../stations-workers/repositories';
+import { EntityManager } from 'typeorm';
 
 type TIndexedStationsUpdateItemDTO = StationsUpdateItemDTO & { index: number };
 
@@ -28,7 +29,6 @@ type TIndexedStationsUpdateItemDTO = StationsUpdateItemDTO & { index: number };
 export class StationsCheckBeforeUpdateService {
   constructor(
     private readonly stationsRepository: StationsRepository,
-    private readonly stationsWorkersRepository: StationsWorkersRepository,
     private readonly stationsGeneralService: StationsGeneralService,
     private readonly districtsGeneralService: DistrictsGeneralService,
     private readonly clientsGeneralService: ClientsGeneralService,
@@ -38,6 +38,7 @@ export class StationsCheckBeforeUpdateService {
   public async executeOrFail(
     stationsToCheck: (StationsUpdateItemDTO & { index: number })[],
     foundStations: StationExtendedDTO[],
+    entityManager: EntityManager,
   ): Promise<void> {
     const {
       number: groupedByNumber,
@@ -62,9 +63,13 @@ export class StationsCheckBeforeUpdateService {
       foundStations,
     );
 
+    const stationsWorkersRepository = entityManager.getCustomRepository(
+      StationsWorkersRepository,
+    );
     await this.canBeDeleteReplacedWorkersAndDoItOrFail(
       groupedByStationWorkerId,
       foundStations,
+      stationsWorkersRepository,
     );
 
     await this.checkMatchingWorkersAndClientsOrFail(
@@ -186,6 +191,7 @@ export class StationsCheckBeforeUpdateService {
   private async canBeDeleteReplacedWorkersAndDoItOrFail(
     groupByStationWorkerId: (StationsUpdateItemDTO & { index: number })[],
     foundStations: StationExtendedDTO[],
+    stationsWorkersRepository: StationsWorkersRepository,
   ): Promise<void> {
     const { deleted, replaced } = groupedByNextStateValues(
       groupByStationWorkerId,
@@ -197,8 +203,7 @@ export class StationsCheckBeforeUpdateService {
 
     if (isNonEmptyArray(records)) {
       await this.allStationsCanBeChangeWorkersOrFail(records);
-      // TODO HOW IT ROLLBACK IF NEXT LINE ERROR
-      await this.stationsWorkersRepository.updateEntities(
+      await stationsWorkersRepository.updateEntities(
         records.map(({ id, clientId }) => ({
           criteria: { stationId: id, clientId },
           inputs: { stationId: null },

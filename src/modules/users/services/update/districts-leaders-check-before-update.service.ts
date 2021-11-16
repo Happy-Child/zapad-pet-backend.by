@@ -17,6 +17,7 @@ import {
   DISTRICTS_ERRORS,
 } from '../../../districts/constants';
 import { DistrictsLeadersGeneralService } from '../../../districts-leaders/services';
+import { EntityManager } from 'typeorm';
 
 @Injectable()
 export class DistrictsLeadersCheckBeforeUpdateService {
@@ -29,6 +30,7 @@ export class DistrictsLeadersCheckBeforeUpdateService {
   public async executeOrFail(
     leaders: NonEmptyArray<UsersUpdateDistrictLeaderDTO & { index: number }>,
     foundLeaders: DistrictLeaderMemberDTO[],
+    entityManager: EntityManager,
   ): Promise<void> {
     const groupedLeadersToCheck = groupedByChangedFields(
       leaders,
@@ -41,9 +43,13 @@ export class DistrictsLeadersCheckBeforeUpdateService {
       foundLeaders,
     );
 
+    const districtsLeadersRepository = entityManager.getCustomRepository(
+      DistrictsLeadersRepository,
+    );
     await this.canBeDeleteReplacedDistrictsAndDoItOrFail(
       groupedLeadersToCheck.leaderDistrictId,
       foundLeaders,
+      districtsLeadersRepository,
     );
 
     await this.checkAddedAndReplacedDistrictsOrFail(
@@ -81,6 +87,7 @@ export class DistrictsLeadersCheckBeforeUpdateService {
   private async canBeDeleteReplacedDistrictsAndDoItOrFail(
     groupByDistrictId: (UsersUpdateDistrictLeaderDTO & { index: number })[],
     foundLeaders: DistrictLeaderMemberDTO[],
+    districtsLeadersRepository: DistrictsLeadersRepository,
   ): Promise<void> {
     const { deleted, replaced } = groupedByNextStateValues(
       groupByDistrictId,
@@ -92,7 +99,7 @@ export class DistrictsLeadersCheckBeforeUpdateService {
 
     if (isNonEmptyArray(records)) {
       await this.allLeadersCanBeChangeDistrictsOrFail(records);
-      await this.districtsLeadersRepository.updateEntities(
+      await districtsLeadersRepository.updateEntities(
         records.map(({ id }) => ({
           criteria: { userId: id },
           inputs: { districtId: null },

@@ -7,7 +7,7 @@ import {
 import { getIndexedArray, isNonEmptyArray } from '@app/helpers';
 import { StationsGeneralService } from '../general';
 import { StationsRepository } from '../../repositories';
-import { Connection } from 'typeorm';
+import { Connection, EntityManager } from 'typeorm';
 import { IRepositoryUpdateEntitiesItem } from '@app/repositories/interfaces';
 import { StationEntity, StationWorkerEntity } from '@app/entities';
 import { StationsCheckBeforeUpdateService } from './stations-check-before-update.service';
@@ -34,42 +34,42 @@ export class StationsUpdateService {
         stationsToCheck,
       );
 
-    await this.stationsCheckBeforeUpdateService.executeOrFail(
-      stationsToCheck,
-      foundStations,
-    );
-
-    await this.update(data.stations, foundStations);
+    await this.connection.transaction(async (manager) => {
+      await this.stationsCheckBeforeUpdateService.executeOrFail(
+        stationsToCheck,
+        foundStations,
+        manager,
+      );
+      await this.update(data.stations, foundStations, manager);
+    });
   }
 
   private async update(
     stations: StationsUpdateItemDTO[],
     foundStations: StationExtendedDTO[],
+    entityManager: EntityManager,
   ): Promise<void> {
-    await this.connection.transaction(async (manager) => {
-      const stationsRepository =
-        manager.getCustomRepository(StationsRepository);
-      await this.updateStations(stations, stationsRepository);
+    const stationsRepository =
+      entityManager.getCustomRepository(StationsRepository);
+    const stationsWorkersRepository = entityManager.getCustomRepository(
+      StationsWorkersRepository,
+    );
 
-      const { stationWorkerId: groupByStationWorkerId } =
-        groupedByChangedFields(
-          stations,
-          foundStations,
-          GROUPED_UPDATING_STATIONS_FIELDS,
-        );
+    await this.updateStations(stations, stationsRepository);
 
-      if (isNonEmptyArray(groupByStationWorkerId)) {
-        const stationsWorkersRepository = manager.getCustomRepository(
-          StationsWorkersRepository,
-        );
+    const { stationWorkerId: groupByStationWorkerId } = groupedByChangedFields(
+      stations,
+      foundStations,
+      GROUPED_UPDATING_STATIONS_FIELDS,
+    );
 
-        await this.addedAndReplacedStationsWorkers(
-          groupByStationWorkerId,
-          foundStations,
-          stationsWorkersRepository,
-        );
-      }
-    });
+    if (isNonEmptyArray(groupByStationWorkerId)) {
+      await this.addedAndReplacedStationsWorkers(
+        groupByStationWorkerId,
+        foundStations,
+        stationsWorkersRepository,
+      );
+    }
   }
 
   private async updateStations(

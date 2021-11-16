@@ -28,6 +28,7 @@ import { ExceptionsUnprocessableEntity } from '@app/exceptions/errors';
 import { StationsWorkersGeneralService } from '../../../stations-workers/services';
 import { StationsGeneralService } from '../../../stations/services';
 import { BID_STATUS } from '../../../bids/constants';
+import { EntityManager } from 'typeorm';
 
 type TIndexedUsersUpdateStationWorkerDTO = UsersUpdateStationWorkerDTO & {
   index: number;
@@ -53,6 +54,7 @@ export class StationsWorkersCheckBeforeUpdateService {
   public async executeOrFail(
     workers: NonEmptyArray<UsersUpdateStationWorkerDTO & { index: number }>,
     foundWorkers: StationWorkerMemberDTO[],
+    entityManager: EntityManager,
   ): Promise<void> {
     const { clientId: groupedByClientId, stationId: groupedByStationId } =
       groupedByChangedFields(
@@ -69,9 +71,13 @@ export class StationsWorkersCheckBeforeUpdateService {
       foundWorkers,
     );
 
+    const stationsWorkersRepository = entityManager.getCustomRepository(
+      StationsWorkersRepository,
+    );
     await this.canBeDeleteReplacedStationsAndDoItOrFail(
       groupedByStationId,
       foundWorkers,
+      stationsWorkersRepository,
     );
 
     await this.checkMatchingStationsAndClientsOrFail(
@@ -222,6 +228,7 @@ export class StationsWorkersCheckBeforeUpdateService {
   private async canBeDeleteReplacedStationsAndDoItOrFail(
     groupByStationId: TIndexedUsersUpdateStationWorkerDTO[],
     foundWorkers: StationWorkerMemberDTO[],
+    stationsWorkersRepository: StationsWorkersRepository,
   ): Promise<void> {
     const { deleted, replaced } = groupedByNextStateValues(
       groupByStationId,
@@ -233,8 +240,7 @@ export class StationsWorkersCheckBeforeUpdateService {
 
     if (isNonEmptyArray(records)) {
       await this.allWorkersCanBeChangeStationsOrFail(records);
-      // TODO HOW IT ROLLBACK IF NEXT LINE ERROR
-      await this.stationsWorkersRepository.updateEntities(
+      await stationsWorkersRepository.updateEntities(
         records.map(({ id }) => ({
           criteria: { userId: id },
           inputs: { stationId: null },
