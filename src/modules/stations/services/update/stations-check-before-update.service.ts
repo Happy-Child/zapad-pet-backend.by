@@ -4,7 +4,7 @@ import { isNonEmptyArray } from '@app/helpers';
 import { StationsGeneralService } from '../general';
 import { DistrictsGeneralService } from '../../../districts/services';
 import { ClientsGeneralService } from '../../../clients/services';
-import { NonEmptyArray, NonNullableObject } from '@app/types';
+import { NonEmptyArray } from '@app/types';
 import {
   BID_STATUTES_BLOCKING_CHANGE_WORKER_ON_STATION,
   GROUPED_UPDATING_STATIONS_FIELDS,
@@ -39,60 +39,148 @@ export class StationsCheckBeforeUpdateService {
     stationsToCheck: (StationsUpdateItemDTO & { index: number })[],
     foundStations: StationExtendedDTO[],
   ): Promise<void> {
-    const groupedStationsToCheck = groupedByChangedFields(
+    const {
+      number: groupedByNumber,
+      districtId: groupedByDistrictId,
+      clientId: groupedByClientId,
+      stationWorkerId: groupedByStationWorkerId,
+    } = groupedByChangedFields(
       stationsToCheck,
       foundStations,
       GROUPED_UPDATING_STATIONS_FIELDS,
     );
 
-    if (Object.values(groupedStationsToCheck).length === 0) return;
+    await this.canBeChangeGeneralFieldsOrFail(
+      groupedByNumber,
+      groupedByDistrictId,
+      groupedByClientId,
+    );
 
-    if (isNonEmptyArray(groupedStationsToCheck.clientId)) {
-      await this.clientsGeneralService.allClientsExistsOrFail(
-        groupedStationsToCheck.clientId,
-      );
-    }
-
-    await this.checkExistingWorkersOrFail(
-      groupedStationsToCheck.stationWorkerId,
+    await this.checkExistingWorkersAndClientsOrFail(
+      groupedByClientId,
+      groupedByStationWorkerId,
       foundStations,
     );
 
     await this.canBeDeleteReplacedWorkersAndDoItOrFail(
-      groupedStationsToCheck.stationWorkerId,
+      groupedByStationWorkerId,
       foundStations,
     );
 
-    await this.canChangeStationsGeneralFieldsOrFail(
-      groupedStationsToCheck.number,
-      groupedStationsToCheck.districtId,
-      groupedStationsToCheck.clientId,
-    );
-
-    await this.checkAddedAndReplacedWorkersOrFail(
-      groupedStationsToCheck.clientId,
-      groupedStationsToCheck.stationWorkerId,
+    await this.checkMatchingWorkersAndClientsOrFail(
+      groupedByClientId,
+      groupedByStationWorkerId,
       foundStations,
     );
   }
 
-  private async checkExistingWorkersOrFail(
+  private async checkExistingWorkersAndClientsOrFail(
+    groupByClientsId: (StationsUpdateItemDTO & { index: number })[],
     groupByStationWorkerId: (StationsUpdateItemDTO & { index: number })[],
     foundStations: StationExtendedDTO[],
   ): Promise<void> {
-    const { added, replaced } = groupedByNextStateValues(
+    const requestsToCheck: Promise<any>[] = [];
+
+    const [
+      stationsToCheckExistingAndMatchingWorkersWithClients,
+      stationsToCheckExistingClients,
+    ] = this.getGroupedStationsToCheckWorkersAndClients(
+      groupByClientsId,
+      groupByStationWorkerId,
+      foundStations,
+    );
+
+    if (isNonEmptyArray(stationsToCheckExistingAndMatchingWorkersWithClients)) {
+      requestsToCheck.push(
+        this.stationsWorkersGeneralService.allWorkersExistingOrFail(
+          stationsToCheckExistingAndMatchingWorkersWithClients,
+        ),
+      );
+    }
+
+    if (isNonEmptyArray(stationsToCheckExistingClients)) {
+      requestsToCheck.push(
+        this.clientsGeneralService.allClientsExistsOrFail(
+          stationsToCheckExistingClients,
+        ),
+      );
+    }
+
+    await Promise.all(requestsToCheck);
+  }
+
+  private async checkMatchingWorkersAndClientsOrFail(
+    groupByClientsId: (StationsUpdateItemDTO & { index: number })[],
+    groupByStationWorkerId: (StationsUpdateItemDTO & { index: number })[],
+    foundStations: StationExtendedDTO[],
+  ): Promise<void> {
+    const [stationsToCheckExistingAndMatchingWorkersWithClients] =
+      this.getGroupedStationsToCheckWorkersAndClients(
+        groupByClientsId,
+        groupByStationWorkerId,
+        foundStations,
+      );
+
+    if (isNonEmptyArray(stationsToCheckExistingAndMatchingWorkersWithClients)) {
+      const foundStationsWorkers =
+        await this.stationsWorkersGeneralService.allWorkersExistingOrFail(
+          stationsToCheckExistingAndMatchingWorkersWithClients,
+        );
+
+      this.stationsWorkersGeneralService.allWorkersMatchOfClientsOrFail(
+        foundStationsWorkers,
+        stationsToCheckExistingAndMatchingWorkersWithClients,
+      );
+
+      this.stationsWorkersGeneralService.allWorkersWithoutStationsExistingOrFail(
+        foundStationsWorkers,
+        stationsToCheckExistingAndMatchingWorkersWithClients,
+      );
+    }
+  }
+
+  private getGroupedStationsToCheckWorkersAndClients(
+    groupByClientId: (StationsUpdateItemDTO & { index: number })[],
+    groupByStationWorkerId: (StationsUpdateItemDTO & { index: number })[],
+    foundStations: StationExtendedDTO[],
+  ): [
+    (Omit<TIndexedStationsUpdateItemDTO, 'stationWorkerId'> & {
+      stationWorkerId: number;
+    })[],
+    TIndexedStationsUpdateItemDTO[],
+  ] {
+    const { replaced: stationsReplacedClients } = groupedByNextStateValues(
+      groupByClientId,
+      foundStations,
+      'clientId',
+    );
+
+    const [
+      stationsReplacedClientsWithStations,
+      stationsReplacedClientsWithoutStations,
+    ] = groupedByNull(stationsReplacedClients, 'stationWorkerId');
+
+    const groupByWorkerIdNextStates = groupedByNextStateValues(
       groupByStationWorkerId,
       foundStations,
       'stationWorkerId',
     );
 
-    const stationsToCheckMatchClientsWithWorkers = [...added, ...replaced];
+    const stationsToCheckExistingAndMatchingWorkersWithClients = uniqBy(
+      [
+        ...stationsReplacedClientsWithStations,
+        ...groupByWorkerIdNextStates.added,
+        ...groupByWorkerIdNextStates.replaced,
+      ],
+      'id',
+    ) as (Omit<TIndexedStationsUpdateItemDTO, 'stationWorkerId'> & {
+      stationWorkerId: number;
+    })[];
 
-    if (isNonEmptyArray(stationsToCheckMatchClientsWithWorkers)) {
-      await this.stationsWorkersGeneralService.allWorkersExistingOrFail(
-        stationsToCheckMatchClientsWithWorkers,
-      );
-    }
+    return [
+      stationsToCheckExistingAndMatchingWorkersWithClients,
+      stationsReplacedClientsWithoutStations,
+    ];
   }
 
   private async canBeDeleteReplacedWorkersAndDoItOrFail(
@@ -109,6 +197,7 @@ export class StationsCheckBeforeUpdateService {
 
     if (isNonEmptyArray(records)) {
       await this.allStationsCanBeChangeWorkersOrFail(records);
+      // TODO HOW IT ROLLBACK IF NEXT LINE ERROR
       await this.stationsWorkersRepository.updateEntities(
         records.map(({ id, clientId }) => ({
           criteria: { stationId: id, clientId },
@@ -142,7 +231,7 @@ export class StationsCheckBeforeUpdateService {
     }
   }
 
-  private async canChangeStationsGeneralFieldsOrFail(
+  private async canBeChangeGeneralFieldsOrFail(
     groupByNumber: (StationsUpdateItemDTO & { index: number })[],
     groupByDistrictId: (StationsUpdateItemDTO & { index: number })[],
     groupByClientId: (StationsUpdateItemDTO & { index: number })[],
@@ -166,43 +255,6 @@ export class StationsCheckBeforeUpdateService {
           groupByDistrictId,
           'districtId',
         );
-    }
-  }
-
-  private async checkAddedAndReplacedWorkersOrFail(
-    groupByClientsId: (StationsUpdateItemDTO & { index: number })[],
-    groupByStationWorkerId: (StationsUpdateItemDTO & { index: number })[],
-    foundStations: StationExtendedDTO[],
-  ): Promise<void> {
-    const [groupByClientsIdWithWorkers] = groupedByNull(
-      groupByClientsId,
-      'stationWorkerId',
-    ) as [NonNullableObject<TIndexedStationsUpdateItemDTO>[], unknown[]];
-
-    const { added, replaced } = groupedByNextStateValues(
-      groupByStationWorkerId,
-      foundStations,
-      'stationWorkerId',
-    );
-
-    const addedAndReplacedWorkers = [...added, ...replaced];
-    const stationsToCheckMatchClientsWithWorkers = uniqBy(
-      [...addedAndReplacedWorkers, ...groupByClientsIdWithWorkers],
-      'id',
-    );
-
-    if (isNonEmptyArray(stationsToCheckMatchClientsWithWorkers)) {
-      const foundStationsWorkers =
-        await this.stationsWorkersGeneralService.allWorkersExistingAndMatchOfClientsOrFail(
-          stationsToCheckMatchClientsWithWorkers,
-        );
-
-      if (isNonEmptyArray(addedAndReplacedWorkers)) {
-        this.stationsWorkersGeneralService.allWorkersWithoutStationsExistingOrFail(
-          foundStationsWorkers,
-          addedAndReplacedWorkers,
-        );
-      }
     }
   }
 }

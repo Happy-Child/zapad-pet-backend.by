@@ -1,6 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { NonEmptyArray } from '@app/types';
-import { getPreparedChildrenErrors } from '@app/helpers/prepared-errors.helpers';
+import {
+  getPreparedChildrenErrors,
+  IGetPreparedChildrenErrorsParams,
+} from '@app/helpers/prepared-errors.helpers';
 import {
   ExceptionsNotFound,
   ExceptionsUnprocessableEntity,
@@ -80,6 +83,10 @@ export class StationsGeneralService {
 
   public async allStationsCanBeUpdateOrFail(
     items: NonEmptyArray<{ id: number; index: number }>,
+    errorConfig: IGetPreparedChildrenErrorsParams = {
+      field: 'id',
+      messages: [STATIONS_ERRORS.STATION_CANNOT_BE_UPDATED],
+    },
   ): Promise<void> {
     const ids = items.map(({ id }) => id) as NonEmptyArray<number>;
 
@@ -94,10 +101,10 @@ export class StationsGeneralService {
     );
 
     if (stationsForException.length) {
-      const preparedErrors = getPreparedChildrenErrors(stationsForException, {
-        field: 'id',
-        messages: [STATIONS_ERRORS.STATION_CANNOT_BE_UPDATED],
-      });
+      const preparedErrors = getPreparedChildrenErrors(
+        stationsForException,
+        errorConfig,
+      );
       throw new ExceptionsUnprocessableEntity(preparedErrors);
     }
   }

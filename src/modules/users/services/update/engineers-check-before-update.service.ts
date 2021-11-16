@@ -49,14 +49,16 @@ export class EngineersCheckBeforeUpdateService {
     groupByDistrictId: (UsersUpdateEngineerDTO & { index: number })[],
     foundEngineers: EngineerMemberDTO[],
   ): Promise<void> {
-    const { added } = groupedByNextStateValues(
+    const { added, replaced } = groupedByNextStateValues(
       groupByDistrictId,
       foundEngineers,
       'engineerDistrictId',
     );
 
-    if (isNonEmptyArray(added)) {
-      const preparedRecords = added.map(({ engineerDistrictId, index }) => ({
+    const records = [...added, ...replaced];
+
+    if (isNonEmptyArray(records)) {
+      const preparedRecords = records.map(({ engineerDistrictId, index }) => ({
         districtId: engineerDistrictId,
         index,
       })) as NonEmptyArray<{ districtId: number; index: number }>;

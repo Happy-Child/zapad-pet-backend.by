@@ -39,8 +39,10 @@ export class UsersCheckBeforeUpdateService {
 
   public async executeOrFail(
     indexedUsers: NonEmptyArray<UsersUpdateItemDTO & { index: number }>,
-    foundUsers: (TMemberDTO | AccountantDTO)[],
   ): Promise<void> {
+    const foundUsers = await this.usersGeneralService.allUsersExistingOrFail(
+      indexedUsers,
+    );
     this.allUsersMatchRolesOrFail(indexedUsers, foundUsers);
     await this.allUpdatedEmailsNotExistingOrFail(indexedUsers, foundUsers);
     await this.checkMembersOrFail(indexedUsers, foundUsers);
@@ -78,14 +80,14 @@ export class UsersCheckBeforeUpdateService {
   }
 
   private async checkMembersOrFail(
-    indexedUsers: NonEmptyArray<UsersUpdateItemDTO & { index: number }>,
+    indexedUsersToCheck: NonEmptyArray<UsersUpdateItemDTO & { index: number }>,
     foundUsers: (TMemberDTO | AccountantDTO)[],
   ): Promise<void> {
     const { stationsWorkers, districtsLeaders, engineers } = groupedByRoles<
       UsersUpdateStationWorkerDTO & { index: number },
       UsersUpdateDistrictLeaderDTO & { index: number },
       UsersUpdateEngineerDTO & { index: number }
-    >(indexedUsers);
+    >(indexedUsersToCheck);
 
     const {
       stationsWorkers: foundStationsWorkers,
