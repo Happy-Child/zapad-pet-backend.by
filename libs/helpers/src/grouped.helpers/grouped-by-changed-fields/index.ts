@@ -1,6 +1,6 @@
 export const groupedByChangedFields = <T extends { id: number }>(
-  itemsA: T[],
-  itemsB: Partial<T>[],
+  newItems: T[],
+  existingItems: Partial<T>[],
   fields: (keyof T)[],
 ): Record<keyof T, T[]> => {
   const result = fields.reduce(
@@ -8,21 +8,22 @@ export const groupedByChangedFields = <T extends { id: number }>(
     {},
   ) as Record<keyof T, T[]>;
 
-  itemsA.forEach((itemA) => {
-    const itemB = itemsB.find(({ id }) => itemA.id === id);
+  newItems.forEach((newItem) => {
+    const existingItem = existingItems.find(({ id }) => newItem.id === id);
 
-    if (!itemB) {
+    if (!existingItem) {
       return;
     }
 
     fields.forEach((field) => {
-      const valueItemA = itemA[field];
-      const valueItemB = itemB[field];
-      if (valueItemA !== valueItemB) {
+      const valueNewItem = newItem[field];
+      const valueExistingItem = existingItem[field];
+
+      if (valueNewItem !== valueExistingItem) {
         if (field in result) {
-          result[field].push(itemA);
+          result[field].push(newItem);
         } else {
-          result[field] = [itemA];
+          result[field] = [newItem];
         }
       }
     });

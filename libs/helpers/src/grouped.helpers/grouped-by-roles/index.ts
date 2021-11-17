@@ -1,5 +1,4 @@
 import { USER_ROLES } from '../../../../../src/modules/users/constants';
-import { AllowedRoles } from '../../../../../src/modules/users/types';
 import { groupedByConditions } from '@app/helpers/grouped.helpers/grouped-by-conditions';
 
 export const groupedByRoles = <
@@ -12,7 +11,7 @@ export const groupedByRoles = <
   E extends { role: USER_ROLES.ENGINEER } = { role: USER_ROLES.ENGINEER },
   A extends { role: USER_ROLES.ACCOUNTANT } = { role: USER_ROLES.ACCOUNTANT },
 >(
-  arr: { role: AllowedRoles }[],
+  arr: { role: USER_ROLES }[],
 ): {
   stationsWorkers: S[];
   districtsLeaders: D[];
