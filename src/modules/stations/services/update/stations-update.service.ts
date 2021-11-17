@@ -4,7 +4,12 @@ import {
   StationsUpdateItemDTO,
   StationsUpdateRequestBodyDTO,
 } from '../../dtos';
-import { getIndexedArray, isNonEmptyArray } from '@app/helpers';
+import {
+  getIndexedArray,
+  groupedByValueOfObjectKeyWillBe,
+  groupedByChangedFields,
+  isNonEmptyArray,
+} from '@app/helpers';
 import { StationsGeneralService } from '../general';
 import { StationsRepository } from '../../repositories';
 import { Connection, EntityManager } from 'typeorm';
@@ -12,10 +17,6 @@ import { IRepositoryUpdateEntitiesItem } from '@app/repositories/interfaces';
 import { StationEntity, StationWorkerEntity } from '@app/entities';
 import { StationsCheckBeforeUpdateService } from './stations-check-before-update.service';
 import { StationsWorkersRepository } from '../../../stations-workers/repositories';
-import {
-  groupedByChangedFields,
-  groupedByNextStateValues,
-} from '@app/helpers/grouped.helpers';
 import { GROUPED_UPDATING_STATIONS_FIELDS } from '../../constants';
 
 @Injectable()
@@ -89,7 +90,7 @@ export class StationsUpdateService {
     foundStations: StationExtendedDTO[],
     repository: StationsWorkersRepository,
   ): Promise<void> {
-    const { added, replaced } = groupedByNextStateValues(
+    const { added, replaced } = groupedByValueOfObjectKeyWillBe(
       groupByStationWorkerId,
       foundStations,
       'stationWorkerId',

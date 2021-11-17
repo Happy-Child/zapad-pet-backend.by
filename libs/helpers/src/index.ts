@@ -1,5 +1,6 @@
 export * from './crypto.helpers';
 export * from './file.helpers';
 export * from './array.helpers';
+export * from './value-of-object-key-will-be.helpers';
 export * from './types-checking.helpers';
-export * from './formatters.helpers';
+export * from './grouped.helpers';

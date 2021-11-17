@@ -4,8 +4,8 @@ import { UsersUpdateStationWorkerDTO } from '../../dtos/users-update.dtos';
 import { StationWorkerMemberDTO } from '../../dtos';
 import {
   groupedByChangedFields,
-  groupedByNextStateValues,
   groupedByNull,
+  groupedByValueOfObjectKeyWillBe,
 } from '@app/helpers/grouped.helpers';
 import {
   GROUPED_UPDATING_STATIONS_WORKERS_FIELDS,
@@ -178,13 +178,13 @@ export class StationsWorkersCheckBeforeUpdateService {
       clientId: number;
     })[],
   ] {
-    const groupByClientIdNextStates = groupedByNextStateValues(
+    const groupByClientIdNextStates = groupedByValueOfObjectKeyWillBe(
       groupByClientId,
       foundWorkers,
       'clientId',
     );
 
-    const groupByStationIdNextStates = groupedByNextStateValues(
+    const groupByStationIdNextStates = groupedByValueOfObjectKeyWillBe(
       groupByStationId,
       foundWorkers,
       'stationId',
@@ -230,7 +230,7 @@ export class StationsWorkersCheckBeforeUpdateService {
     foundWorkers: StationWorkerMemberDTO[],
     stationsWorkersRepository: StationsWorkersRepository,
   ): Promise<void> {
-    const { deleted, replaced } = groupedByNextStateValues(
+    const { deleted, replaced } = groupedByValueOfObjectKeyWillBe(
       groupByStationId,
       foundWorkers,
       'stationId',

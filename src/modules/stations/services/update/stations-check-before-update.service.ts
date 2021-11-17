@@ -16,7 +16,7 @@ import { StationsRepository } from '../../repositories';
 import { StationsWorkersGeneralService } from '../../../stations-workers/services';
 import {
   groupedByChangedFields,
-  groupedByNextStateValues,
+  groupedByValueOfObjectKeyWillBe,
   groupedByNull,
 } from '@app/helpers/grouped.helpers';
 import { StationExtendedDTO, StationsUpdateItemDTO } from '../../dtos';
@@ -154,18 +154,19 @@ export class StationsCheckBeforeUpdateService {
     })[],
     TIndexedStationsUpdateItemDTO[],
   ] {
-    const { replaced: stationsReplacedClients } = groupedByNextStateValues(
-      groupByClientId,
-      foundStations,
-      'clientId',
-    );
+    const { replaced: stationsReplacedClients } =
+      groupedByValueOfObjectKeyWillBe(
+        groupByClientId,
+        foundStations,
+        'clientId',
+      );
 
     const [
       stationsReplacedClientsWithStations,
       stationsReplacedClientsWithoutStations,
     ] = groupedByNull(stationsReplacedClients, 'stationWorkerId');
 
-    const groupByWorkerIdNextStates = groupedByNextStateValues(
+    const groupByWorkerIdNextStates = groupedByValueOfObjectKeyWillBe(
       groupByStationWorkerId,
       foundStations,
       'stationWorkerId',
@@ -193,7 +194,7 @@ export class StationsCheckBeforeUpdateService {
     foundStations: StationExtendedDTO[],
     stationsWorkersRepository: StationsWorkersRepository,
   ): Promise<void> {
-    const { deleted, replaced } = groupedByNextStateValues(
+    const { deleted, replaced } = groupedByValueOfObjectKeyWillBe(
       groupByStationWorkerId,
       foundStations,
       'stationWorkerId',

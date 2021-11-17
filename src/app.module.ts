@@ -8,8 +8,8 @@ import { StationsModule } from './modules/stations';
 import { ClientsModule } from './modules/clients';
 import { RegionsModule } from './modules/regions';
 import { AuthModule } from './modules/auth';
-import { StationsWorkersModule } from './modules/stations-workers/stations-workers.module';
-import { DistrictsLeadersModule } from './modules/districts-leaders/districts-leaders.module';
+import { StationsWorkersModule } from './modules/stations-workers';
+import { DistrictsLeadersModule } from './modules/districts-leaders';
 import ormconfig from '../ormconfig';
 
 @Module({

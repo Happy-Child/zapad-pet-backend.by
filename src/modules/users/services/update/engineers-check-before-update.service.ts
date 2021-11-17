@@ -4,7 +4,7 @@ import { UsersUpdateEngineerDTO } from '../../dtos/users-update.dtos';
 import { EngineerMemberDTO } from '../../dtos';
 import {
   groupedByChangedFields,
-  groupedByNextStateValues,
+  groupedByValueOfObjectKeyWillBe,
 } from '@app/helpers/grouped.helpers';
 import { isNonEmptyArray } from '@app/helpers';
 import { DistrictsGeneralService } from '../../../districts/services';
@@ -49,7 +49,7 @@ export class EngineersCheckBeforeUpdateService {
     groupByDistrictId: (UsersUpdateEngineerDTO & { index: number })[],
     foundEngineers: EngineerMemberDTO[],
   ): Promise<void> {
-    const { added, replaced } = groupedByNextStateValues(
+    const { added, replaced } = groupedByValueOfObjectKeyWillBe(
       groupByDistrictId,
       foundEngineers,
       'engineerDistrictId',
@@ -73,7 +73,7 @@ export class EngineersCheckBeforeUpdateService {
     groupByDistrictId: (UsersUpdateEngineerDTO & { index: number })[],
     foundEngineers: EngineerMemberDTO[],
   ): Promise<void> {
-    const { deleted } = groupedByNextStateValues(
+    const { deleted } = groupedByValueOfObjectKeyWillBe(
       groupByDistrictId,
       foundEngineers,
       'engineerDistrictId',

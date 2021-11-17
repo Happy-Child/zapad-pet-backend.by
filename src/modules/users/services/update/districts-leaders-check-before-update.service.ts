@@ -4,7 +4,7 @@ import { UsersUpdateDistrictLeaderDTO } from '../../dtos/users-update.dtos';
 import { DistrictLeaderMemberDTO } from '../../dtos';
 import {
   groupedByChangedFields,
-  groupedByNextStateValues,
+  groupedByValueOfObjectKeyWillBe,
 } from '@app/helpers/grouped.helpers';
 import { isNonEmptyArray } from '@app/helpers';
 import { DistrictsGeneralService } from '../../../districts/services';
@@ -62,7 +62,7 @@ export class DistrictsLeadersCheckBeforeUpdateService {
     groupByDistrictId: (UsersUpdateDistrictLeaderDTO & { index: number })[],
     foundLeaders: DistrictLeaderMemberDTO[],
   ): Promise<void> {
-    const { added, replaced } = groupedByNextStateValues(
+    const { added, replaced } = groupedByValueOfObjectKeyWillBe(
       groupByDistrictId,
       foundLeaders,
       'leaderDistrictId',
@@ -89,7 +89,7 @@ export class DistrictsLeadersCheckBeforeUpdateService {
     foundLeaders: DistrictLeaderMemberDTO[],
     districtsLeadersRepository: DistrictsLeadersRepository,
   ): Promise<void> {
-    const { deleted, replaced } = groupedByNextStateValues(
+    const { deleted, replaced } = groupedByValueOfObjectKeyWillBe(
       groupByDistrictId,
       foundLeaders,
       'leaderDistrictId',
@@ -144,7 +144,7 @@ export class DistrictsLeadersCheckBeforeUpdateService {
     groupByDistrictId: (UsersUpdateDistrictLeaderDTO & { index: number })[],
     foundLeaders: DistrictLeaderMemberDTO[],
   ): Promise<void> {
-    const { added, replaced } = groupedByNextStateValues(
+    const { added, replaced } = groupedByValueOfObjectKeyWillBe(
       groupByDistrictId,
       foundLeaders,
       'leaderDistrictId',
