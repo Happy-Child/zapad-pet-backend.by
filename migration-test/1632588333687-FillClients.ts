@@ -1,5 +1,5 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
-import clients from '../static/fake-db-data/clients.fake';
+import clients from '../static/fill-db-test/clients.fake';
 import { ClientEntity } from '@app/entities';
 
 export class FillClients1632588333687 implements MigrationInterface {

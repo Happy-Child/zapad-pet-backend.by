@@ -5,8 +5,8 @@ import {
   StationWorkerEntity,
   UserEntity,
 } from '@app/entities';
-import users from '../static/fake-db-data/users.fake';
-import { USER_ROLES } from '../src/modules/users/constants';
+import users from '../static/fill-db-test/users.fake';
+import { USER_ROLES } from '@app/constants';
 
 export class FillUsers1636551084619 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {

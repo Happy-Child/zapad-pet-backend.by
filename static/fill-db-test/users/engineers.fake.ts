@@ -1,6 +1,6 @@
-import { USER_ROLES } from '../../../src/modules/users/constants';
 import { FAKE_USER_DEFAULT_PASSWORD } from '../constants';
 import { EngineerEntity, UserEntity } from '@app/entities';
+import { USER_ROLES } from '@app/constants';
 
 // 16 entities
 const engineers: Partial<UserEntity & EngineerEntity>[] = [

@@ -1,5 +1,5 @@
 import { groupedByRoles } from '@app/helpers';
-import { USER_ROLES } from '../../../../../src/modules/users/constants';
+import { USER_ROLES } from '@app/constants';
 
 const mockData = [
   {

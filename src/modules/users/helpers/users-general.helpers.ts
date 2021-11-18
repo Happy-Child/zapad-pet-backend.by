@@ -1,5 +1,5 @@
-import { USER_ROLES } from '../constants';
 import { AllowedRoles } from '../types';
+import { USER_ROLES } from '@app/constants';
 
 interface IFullDistrictLeader {
   role: USER_ROLES.DISTRICT_LEADER;

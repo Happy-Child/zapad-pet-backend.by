@@ -1,6 +1,6 @@
 import { DistrictLeaderEntity, UserEntity } from '@app/entities';
-import { USER_ROLES } from '../../../src/modules/users/constants';
 import { FAKE_USER_DEFAULT_PASSWORD } from '../constants';
+import { USER_ROLES } from '@app/constants';
 
 // 7 entities
 const districtsLeaders: Partial<UserEntity & DistrictLeaderEntity>[] = [

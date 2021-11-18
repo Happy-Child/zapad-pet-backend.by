@@ -10,11 +10,7 @@ import {
   ValidateNested,
 } from 'class-validator';
 import { Type } from 'class-transformer';
-import {
-  USER_ROLES,
-  USERS_CREATE_ALLOWED_ROLES,
-  USERS_ERRORS,
-} from '../constants';
+import { USERS_CREATE_ALLOWED_ROLES, USERS_ERRORS } from '../constants';
 import { AUTH_ERRORS } from '../../auth/constants';
 import { AllowedRoles } from '../types';
 import {
@@ -28,6 +24,7 @@ import {
   UniqueArrayByExistField,
 } from '@app/decorators';
 import { NonEmptyArray } from '@app/types';
+import { USER_ROLES } from '@app/constants';
 
 export class UsersCreateGeneralUserDTO {
   name!: string;

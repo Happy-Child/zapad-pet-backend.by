@@ -1,5 +1,5 @@
-import { USER_ROLES } from '../../users/constants';
 import { MembersRoles } from '../../users/types';
+import { USER_ROLES } from '@app/constants';
 
 export class SimpleUserJWTPayloadDTO {
   userId!: number;

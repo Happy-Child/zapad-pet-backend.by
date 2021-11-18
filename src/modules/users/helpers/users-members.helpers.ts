@@ -1,5 +1,5 @@
 import { TFullMemberDTO, TMemberDTO } from '../types';
-import { MEMBERS_ROLES, USER_ROLES } from '../constants';
+import { MEMBERS_ROLES } from '../constants';
 import { isNull } from '@app/helpers';
 import {
   AccountantDTO,
@@ -8,6 +8,7 @@ import {
   StationWorkerMemberDTO,
 } from '../dtos';
 import { ClassTransformOptions } from 'class-transformer/types/interfaces';
+import { USER_ROLES } from '@app/constants';
 
 export const isMember = (
   member: TMemberDTO | AccountantDTO,

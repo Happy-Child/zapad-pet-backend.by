@@ -1,6 +1,6 @@
 import { TFullMemberDTO } from '../../users/types';
-import { USER_ROLES } from '../../users/constants';
 import { TMemberJWTPayloadDTO } from '../types';
+import { USER_ROLES } from '@app/constants';
 
 export const getJWTPayloadByMember = (
   member: TFullMemberDTO,

@@ -1,11 +1,9 @@
 import { Entity, Column } from 'typeorm';
 import { BaseEntity } from './base.entity';
 import { VARCHAR_DEFAULT_LENGTH } from '@app/constants';
-import {
-  USER_EXPOSE_GROUPS,
-  USER_ROLES,
-} from '../../../src/modules/users/constants';
+import { USER_EXPOSE_GROUPS } from '../../../src/modules/users/constants';
 import { Expose } from 'class-transformer';
+import { USER_ROLES } from '@app/constants';
 
 @Entity({ name: 'user' })
 export class UserEntity extends BaseEntity {

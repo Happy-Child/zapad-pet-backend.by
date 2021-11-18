@@ -1,10 +1,4 @@
-export enum USER_ROLES {
-  MASTER = '1',
-  STATION_WORKER = '2',
-  DISTRICT_LEADER = '3',
-  ENGINEER = '4',
-  ACCOUNTANT = '5',
-}
+import { USER_ROLES } from '@app/constants';
 
 export const DISTRICT_MEMBERS_ROLES = [
   USER_ROLES.DISTRICT_LEADER,

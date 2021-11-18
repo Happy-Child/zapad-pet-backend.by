@@ -1,5 +1,5 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
-import regions from '../static/fake-db-data/regions.fake';
+import regions from '../static/fill-db/regions.fake';
 import { RegionEntity } from '@app/entities';
 
 export class FillRegions1631872565366 implements MigrationInterface {

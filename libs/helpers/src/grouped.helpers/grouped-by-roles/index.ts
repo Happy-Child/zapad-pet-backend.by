@@ -1,4 +1,4 @@
-import { USER_ROLES } from '../../../../../src/modules/users/constants';
+import { USER_ROLES } from '@app/constants';
 import { groupedByConditions } from '@app/helpers/grouped.helpers/grouped-by-conditions';
 
 export const groupedByRoles = <

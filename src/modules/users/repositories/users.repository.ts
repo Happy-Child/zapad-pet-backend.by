@@ -7,14 +7,13 @@ import {
 } from '@app/entities';
 import { GeneralRepository } from '@app/repositories';
 import { AccountantDTO } from '../dtos';
-import { SORT_DURATION_DEFAULT } from '@app/constants';
+import { SORT_DURATION_DEFAULT, USER_ROLES } from '@app/constants';
 import { TMemberDTO } from '../types';
 import {
   UsersGetListRequestQueryDTO,
   UsersGetListResponseBodyDTO,
 } from '../dtos/users-getting.dtos';
 import {
-  USER_ROLES,
   USERS_LIST_DEFAULT_SORT_BY,
   USERS_MEMBER_RAW_SELECT,
 } from '../constants';

@@ -1,4 +1,4 @@
-import { USER_ROLES } from '../constants';
+import { USER_ROLES } from '@app/constants';
 
 export type DistrictMembersRoles =
   | USER_ROLES.DISTRICT_LEADER

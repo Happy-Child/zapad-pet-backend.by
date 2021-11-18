@@ -1,7 +1,7 @@
 import { UserEntity } from '@app/entities';
-import { USER_ROLES } from '../constants';
 import { Expose, plainToClass } from 'class-transformer';
 import { ClassTransformOptions } from 'class-transformer/types/interfaces';
+import { USER_ROLES } from '@app/constants';
 
 export class DistrictLeaderMemberDTO extends UserEntity {
   @Expose()

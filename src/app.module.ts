@@ -1,5 +1,4 @@
 import { Module } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
 import { ExceptionsModule } from '@app/exceptions';
 import { UsersModule } from './modules/users';
 import { DistrictsModule } from './modules/districts';
@@ -10,11 +9,12 @@ import { RegionsModule } from './modules/regions';
 import { AuthModule } from './modules/auth';
 import { StationsWorkersModule } from './modules/stations-workers';
 import { DistrictsLeadersModule } from './modules/districts-leaders';
-import ormconfig from '../ormconfig';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import ormConfig from '../ormconfig';
 
 @Module({
   imports: [
-    TypeOrmModule.forRoot({ ...ormconfig, migrationsRun: true }),
+    TypeOrmModule.forRoot(ormConfig),
     ExceptionsModule.forRoot(),
     AuthModule,
     UsersModule,

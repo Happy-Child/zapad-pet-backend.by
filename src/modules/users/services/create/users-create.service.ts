@@ -27,7 +27,7 @@ import {
 } from '@app/helpers';
 import { getHashByPassword } from '../../../auth/helpers';
 import { getGroupedFullUsersByRoles } from '../../helpers';
-import { ENTITIES_FIELDS } from '@app/constants';
+import { ENTITIES_FIELDS, USER_ROLES } from '@app/constants';
 import {
   DistrictLeaderEntity,
   EmailConfirmedEntity,
@@ -40,7 +40,6 @@ import { StationsWorkersCheckBeforeCreateService } from './stations-workers-chec
 import { UsersSendingMailService } from '../users-sending-mail.service';
 import { UsersGeneralService } from '../users-general.service';
 import { groupedByRoles } from '@app/helpers/grouped.helpers';
-import { USER_ROLES } from '../../constants';
 
 @Injectable()
 export class UsersCreateService {

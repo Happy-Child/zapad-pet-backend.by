@@ -3,7 +3,7 @@ import { TFullMemberDTO, TMemberDTO } from '../../users/types';
 import { AccountantDTO } from '../../users/dtos';
 import { UsersGettingService } from '../../users/services';
 import { isFullMember } from '../../users/helpers';
-import { ExceptionsUnprocessableEntity } from '@app/exceptions/errors';
+import { ExceptionsForbidden } from '@app/exceptions/errors';
 import { ENTITIES_FIELDS } from '@app/constants';
 import { AUTH_ERRORS } from '../constants';
 
@@ -20,7 +20,7 @@ export class AuthGeneralService {
   ): member is TFullMemberDTO {
     if (isFullMember(member)) return true;
 
-    throw new ExceptionsUnprocessableEntity([
+    throw new ExceptionsForbidden([
       {
         field: ENTITIES_FIELDS.UNKNOWN,
         messages: [AUTH_ERRORS.MEMBER_IS_NOT_FULL],

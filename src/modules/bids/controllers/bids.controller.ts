@@ -20,9 +20,9 @@ import {
   BidsUpdateService,
 } from '../services';
 import { AuthRoles } from '../../auth/decorators/auth-roles.decorators';
-import { USER_ROLES } from '../../users/constants';
 import { StationWorkerMemberJWTPayloadDTO } from '../../auth/dtos';
 import { BID_EDITABLE_STATUS } from '../constants';
+import { USER_ROLES } from '@app/constants';
 
 @Controller('bids')
 export class BidsController {

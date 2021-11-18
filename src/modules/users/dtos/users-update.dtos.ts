@@ -10,11 +10,7 @@ import {
   ValidateNested,
 } from 'class-validator';
 import { Type } from 'class-transformer';
-import {
-  USER_ROLES,
-  USERS_CREATE_ALLOWED_ROLES,
-  USERS_ERRORS,
-} from '../constants';
+import { USERS_CREATE_ALLOWED_ROLES, USERS_ERRORS } from '../constants';
 import { AUTH_ERRORS } from '../../auth/constants';
 import { AllowedRoles } from '../types';
 import { USER_NAME_LENGTH } from '../../auth/constants';
@@ -23,7 +19,7 @@ import {
   NullOrNumber,
   UniqueArrayByExistField,
 } from '@app/decorators';
-import { GENERAL_ERRORS } from '@app/constants';
+import { GENERAL_ERRORS, USER_ROLES } from '@app/constants';
 import { NonEmptyArray } from '@app/types';
 import { AddValidateIf } from '@app/decorators/add-validate-if.decorators';
 import { isNull } from '@app/helpers';

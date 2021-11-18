@@ -10,15 +10,18 @@ describe('AppController (e2e)', () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
     }).compile();
-
     app = moduleFixture.createNestApplication();
     await app.init();
   });
 
-  it('/ (GET)', () => {
+  afterAll(async () => {
+    await app.close();
+  });
+
+  it('auth/sign-in', () => {
     return request(app.getHttpServer())
-      .get('/')
-      .expect(200)
-      .expect('Hello World!');
+      .post('/auth/sign-in')
+      .send({ email: 'engineer_11@mail.ru', password: 'qwertyuiop123' })
+      .expect(403);
   });
 });

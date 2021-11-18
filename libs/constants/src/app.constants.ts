@@ -15,3 +15,15 @@ export const APP_VALIDATION_PIPE_OPTIONS = {
 export const APP_SERIALIZER_OPTIONS: ClassTransformOptions = {
   strategy: 'excludeAll',
 };
+
+export enum USER_ROLES {
+  MASTER = '1',
+  STATION_WORKER = '2',
+  DISTRICT_LEADER = '3',
+  ENGINEER = '4',
+  ACCOUNTANT = '5',
+}
+
+export enum NODE_INSTANCE {
+  TEST = 'test',
+}

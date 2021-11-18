@@ -4,7 +4,7 @@ import {
   StationWorkerEntity,
   UserEntity,
 } from '@app/entities';
-import { USER_ROLES } from '../../src/modules/users/constants';
+import { USER_ROLES } from '@app/constants';
 import stationWorkers from './users/stations-workers.fake';
 import districtsLeaders from './users/districts-leaders.fake';
 import engineers from './users/engineers.fake';

@@ -1,5 +1,5 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
-import districts from '../static/fake-db-data/districts.fake';
+import districts from '../static/fill-db/districts.fake';
 import { DistrictEntity } from '@app/entities';
 
 export class FillDistricts1631872626121 implements MigrationInterface {

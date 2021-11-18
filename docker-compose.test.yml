@@ -1,0 +1,13 @@
+version: '3.3'
+
+services:
+
+  postgres:
+    image: postgres:11.5-alpine
+    container_name: first_pet_project_test
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=pet_project
+      - POSTGRES_PASSWORD=
+    ports:
+      - "127.0.0.1:24013:5432"
