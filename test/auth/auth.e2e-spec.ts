@@ -24,7 +24,7 @@ describe('AuthModule (e2e)', () => {
     const moduleRef: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
     }).compile();
-    const app = await bootstrapTestApp(moduleRef);
+    app = await bootstrapTestApp(moduleRef);
     accessTokens = getTestAccessTokens(app.get(JwtService));
   });
 
