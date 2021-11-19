@@ -1,6 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { UsersRepository } from '../repositories';
-import { ExceptionsUnprocessableEntity } from '@app/exceptions/errors';
+import {
+  ExceptionsUnprocessableEntity,
+  ExceptionsNotFound,
+} from '@app/exceptions/errors';
 import { AUTH_ERRORS } from '../../auth/constants';
 import { ENTITIES_FIELDS } from '@app/constants';
 import { getPreparedChildrenErrors } from '@app/helpers/prepared-errors.helpers';
@@ -57,6 +60,6 @@ export class UsersGeneralService {
       field: 'id',
       messages: [USERS_ERRORS.USER_NOT_EXISTS],
     });
-    throw new ExceptionsUnprocessableEntity(preparedErrors);
+    throw new ExceptionsNotFound(preparedErrors);
   }
 }

@@ -97,11 +97,11 @@ export class UsersRepository extends GeneralRepository<UserEntity> {
     if (filterStationsWorkers) {
       builder.andWhere(`"sw"."clientId" = :id`, { id: data.clientId });
     } else if (filterDistrictLeaders) {
-      builder.andWhere(`"dl"."districtId" = :id`, {
+      builder.andWhere(`"dl"."leaderDistrictId" = :id`, {
         id: data.leaderDistrictId,
       });
     } else if (filterEngineers) {
-      builder.andWhere(`"e"."districtId" = :id`, {
+      builder.andWhere(`"e"."engineerDistrictId" = :id`, {
         id: data.engineerDistrictId,
       });
     }

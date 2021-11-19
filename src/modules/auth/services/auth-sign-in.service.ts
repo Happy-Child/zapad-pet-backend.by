@@ -1,7 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { plainToClass } from 'class-transformer';
-import { ExceptionsUnprocessableEntity } from '@app/exceptions/errors';
+import {
+  ExceptionsUnprocessableEntity,
+  ExceptionsForbidden,
+} from '@app/exceptions/errors';
 import { SignInRequestBodyDTO, SignInResponseBodyDTO } from '../dtos';
 import { AUTH_ERRORS } from '../constants';
 import { comparePasswords } from '../helpers';
@@ -40,7 +43,7 @@ export class AuthSignInService {
 
   public static checkEmailConfirmedOrFail(emailConfirmed: boolean): void {
     if (!emailConfirmed) {
-      throw new ExceptionsUnprocessableEntity([
+      throw new ExceptionsForbidden([
         {
           field: ENTITIES_FIELDS.EMAIL,
           messages: [AUTH_ERRORS.EMAIL_NOT_CONFIRMED],

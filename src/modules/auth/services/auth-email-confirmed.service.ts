@@ -2,7 +2,10 @@ import { Injectable } from '@nestjs/common';
 import { Connection } from 'typeorm';
 import { AuthEmailConfirmedRepository } from '../repositories';
 import { EmailConfirmationRequestBodyDTO } from '../dtos';
-import { ExceptionsUnprocessableEntity } from '@app/exceptions/errors';
+import {
+  ExceptionsUnprocessableEntity,
+  ExceptionsNotFound,
+} from '@app/exceptions/errors';
 import { AUTH_ERRORS } from '../constants';
 import { UsersRepository } from '../../users/repositories';
 import { UsersGettingService } from '../../users/services';
@@ -22,7 +25,7 @@ export class AuthEmailConfirmedService {
       { token: body.token },
       {
         exception: {
-          type: ExceptionsUnprocessableEntity,
+          type: ExceptionsNotFound,
           messages: [
             {
               field: 'token',

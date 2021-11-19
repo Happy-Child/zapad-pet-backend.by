@@ -20,11 +20,11 @@ export class EngineerEntity extends BaseEntity {
 
   @Column({ nullable: true })
   @Expose()
-  districtId!: number | null;
+  engineerDistrictId!: number | null;
 
   @ManyToOne(() => DistrictEntity, (district) => district.engineers)
   @JoinColumn({
-    name: 'districtId',
+    name: 'engineerDistrictId',
     referencedColumnName: 'id',
   })
   @Expose()

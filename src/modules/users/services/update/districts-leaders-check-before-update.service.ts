@@ -102,7 +102,7 @@ export class DistrictsLeadersCheckBeforeUpdateService {
       await districtsLeadersRepository.updateEntities(
         records.map(({ id }) => ({
           criteria: { userId: id },
-          inputs: { districtId: null },
+          inputs: { leaderDistrictId: null },
         })),
       );
     }
@@ -117,7 +117,11 @@ export class DistrictsLeadersCheckBeforeUpdateService {
       .createQueryBuilder('dl')
       .select('dl.userId as id, COUNT(b.id)::int AS count')
       .where('dl.userId IN (:...ids)', { ids })
-      .leftJoin(StationEntity, 'st', `"st"."districtId" = "dl"."districtId"`)
+      .leftJoin(
+        StationEntity,
+        'st',
+        `"st"."districtId" = "dl"."leaderDistrictId"`,
+      )
       .leftJoin(
         BidEntity,
         'b',

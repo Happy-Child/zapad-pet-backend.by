@@ -4,11 +4,10 @@ import {
   StationWorkerEntity,
   UserEntity,
 } from '@app/entities';
-import { USER_ROLES } from '@app/constants';
+import { FAKE_ACCOUNTANT, FAKE_MASTER } from '@app/constants';
 import stationWorkers from './users/stations-workers.fake';
 import districtsLeaders from './users/districts-leaders.fake';
 import engineers from './users/engineers.fake';
-import { FAKE_USER_DEFAULT_PASSWORD } from './constants';
 
 const data: Partial<
   UserEntity & StationWorkerEntity & DistrictLeaderEntity & EngineerEntity
@@ -16,20 +15,8 @@ const data: Partial<
   ...stationWorkers,
   ...districtsLeaders,
   ...engineers,
-  {
-    name: 'master',
-    email: 'master@mail.ru',
-    role: USER_ROLES.MASTER,
-    emailConfirmed: true,
-    password: FAKE_USER_DEFAULT_PASSWORD,
-  },
-  {
-    name: 'accountant',
-    email: 'accountant@mail.ru',
-    role: USER_ROLES.ACCOUNTANT,
-    emailConfirmed: true,
-    password: FAKE_USER_DEFAULT_PASSWORD,
-  },
+  FAKE_MASTER,
+  FAKE_ACCOUNTANT,
 ];
 
 export default data;

@@ -7,6 +7,8 @@ import {
   Param,
   ParseIntPipe,
   Query,
+  HttpCode,
+  HttpStatus,
 } from '@nestjs/common';
 import { ClientExtendedDTO } from '../dtos';
 import {
@@ -29,12 +31,14 @@ export class ClientsController {
     private readonly clientsGettingService: ClientsGettingService,
   ) {}
 
+  @HttpCode(HttpStatus.OK)
   @Post()
   async create(@Body() body: ClientEntity): Promise<true> {
     await this.clientsCreateService.create(body);
     return true;
   }
 
+  @HttpCode(HttpStatus.CREATED)
   @Put('/:id')
   async update(
     @Param('id', ParseIntPipe) id: number,
@@ -44,6 +48,7 @@ export class ClientsController {
     return true;
   }
 
+  @HttpCode(HttpStatus.OK)
   @Get('/:id')
   async getById(
     @Param('id', ParseIntPipe) id: number,
@@ -51,6 +56,7 @@ export class ClientsController {
     return this.clientsGettingService.getByIdOrFail(id);
   }
 
+  @HttpCode(HttpStatus.OK)
   @Get()
   async getList(
     @Query() query: ClientsGettingRequestQueryDTO,

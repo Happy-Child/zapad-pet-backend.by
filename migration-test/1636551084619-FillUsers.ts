@@ -6,7 +6,7 @@ import {
   UserEntity,
 } from '@app/entities';
 import users from '../static/fill-db-test/users.fake';
-import { USER_ROLES } from '@app/constants';
+import { FAKE_USER_PASSWORD_HASH, USER_ROLES } from '@app/constants';
 
 export class FillUsers1636551084619 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
@@ -15,7 +15,11 @@ export class FillUsers1636551084619 implements MigrationInterface {
     const requestsToCreateEngineers: Promise<any>[] = [];
 
     const requestsToCreateUsers = users.map(async (rawUser) => {
-      const { role, id } = await queryRunner.manager.save(UserEntity, rawUser);
+      const { role, id } = await queryRunner.manager.save(UserEntity, {
+        ...rawUser,
+        password: FAKE_USER_PASSWORD_HASH,
+      });
+
       switch (role) {
         case USER_ROLES.STATION_WORKER:
           requestsToCreatesStationsWorkers.push(

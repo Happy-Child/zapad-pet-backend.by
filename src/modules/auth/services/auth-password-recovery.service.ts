@@ -11,7 +11,7 @@ import { AuthSendingMailService } from './auth-sending-mail.service';
 import { PasswordRecoveryEntity } from '@app/entities';
 import { UsersRepository } from '../../users/repositories';
 import { UsersGettingService } from '../../users/services';
-import { ExceptionsUnprocessableEntity } from '@app/exceptions/errors';
+import { ExceptionsNotFound } from '@app/exceptions/errors';
 import { AUTH_ERRORS } from '../constants';
 
 @Injectable()
@@ -114,7 +114,7 @@ export class AuthPasswordRecoveryService {
         { token: body.token },
         {
           exception: {
-            type: ExceptionsUnprocessableEntity,
+            type: ExceptionsNotFound,
             messages: [
               {
                 field: 'token',

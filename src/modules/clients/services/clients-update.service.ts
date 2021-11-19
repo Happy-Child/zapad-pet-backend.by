@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { ClientsRepository } from '../repositories';
-import { ExceptionsUnprocessableEntity } from '@app/exceptions/errors';
+import { ExceptionsNotFound } from '@app/exceptions/errors';
 import { ClientsUpdateBodyDTO } from '../dtos';
 import { AUTH_ERRORS } from '../../auth/constants';
 import { ENTITIES_FIELDS } from '@app/constants';
@@ -18,7 +18,7 @@ export class ClientsUpdateService {
       { id },
       {
         exception: {
-          type: ExceptionsUnprocessableEntity,
+          type: ExceptionsNotFound,
           messages: [
             {
               field: ENTITIES_FIELDS.ID,

@@ -133,9 +133,9 @@ export class UsersUpdateService {
     repository: DistrictsLeadersRepository,
   ): Promise<void> {
     const recordsToUpdate: IRepositoryUpdateEntitiesItem<DistrictLeaderEntity>[] =
-      leaders.map(({ id: userId, leaderDistrictId: districtId }) => ({
+      leaders.map(({ id: userId, leaderDistrictId }) => ({
         criteria: { userId },
-        inputs: { districtId },
+        inputs: { leaderDistrictId },
       }));
 
     await repository.updateEntities(recordsToUpdate);
@@ -146,9 +146,9 @@ export class UsersUpdateService {
     repository: EngineersRepository,
   ): Promise<void> {
     const recordsToUpdate: IRepositoryUpdateEntitiesItem<EngineerEntity>[] =
-      engineers.map(({ id: userId, engineerDistrictId: districtId }) => ({
+      engineers.map(({ id: userId, engineerDistrictId }) => ({
         criteria: { userId },
-        inputs: { districtId },
+        inputs: { engineerDistrictId },
       }));
 
     await repository.updateEntities(recordsToUpdate);

@@ -6,6 +6,8 @@ import {
   Get,
   Query,
   Put,
+  HttpCode,
+  HttpStatus,
 } from '@nestjs/common';
 import { UsersCreateRequestBodyDTO, UsersDeleteRequestQueryDTO } from '../dtos';
 import {
@@ -24,23 +26,27 @@ export class UsersController {
     private readonly usersGettingService: UsersGettingService,
   ) {}
 
+  @HttpCode(HttpStatus.OK)
   @Post()
   async create(@Body() body: UsersCreateRequestBodyDTO): Promise<true> {
     await this.usersCreateService.execute(body);
     return true;
   }
 
+  @HttpCode(HttpStatus.CREATED)
   @Put()
   async update(@Body() body: UsersUpdateRequestBodyDTO): Promise<true> {
     await this.usersUpdateService.execute(body);
     return true;
   }
 
+  @HttpCode(HttpStatus.OK)
   @Get()
   async getList(@Query() query: UsersGetListRequestQueryDTO): Promise<any> {
     return this.usersGettingService.getList(query);
   }
 
+  @HttpCode(HttpStatus.OK)
   @Delete()
   async delete(@Query() query: UsersDeleteRequestQueryDTO): Promise<number[]> {
     return query.ids;

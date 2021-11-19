@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { NonEmptyArray } from '@app/types';
 import { getPreparedChildrenErrors } from '@app/helpers/prepared-errors.helpers';
-import { ExceptionsUnprocessableEntity } from '@app/exceptions/errors';
+import { ExceptionsNotFound } from '@app/exceptions/errors';
 import { DistrictsRepository } from '../../repositories';
 import { getItemsByUniqueField } from '@app/helpers';
 import { AUTH_ERRORS } from '../../../auth/constants';
@@ -35,6 +35,6 @@ export class DistrictsGeneralService {
       field: exceptionField,
       messages: [AUTH_ERRORS.DISTRICT_NOT_EXIST],
     });
-    throw new ExceptionsUnprocessableEntity(preparedErrors);
+    throw new ExceptionsNotFound(preparedErrors);
   }
 }

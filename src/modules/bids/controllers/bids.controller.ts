@@ -32,7 +32,7 @@ export class BidsController {
     private readonly bidsUpdateService: BidsUpdateService,
   ) {}
 
-  @HttpCode(HttpStatus.OK)
+  @HttpCode(HttpStatus.CREATED)
   @AuthRoles(USER_ROLES.STATION_WORKER)
   @Post()
   async create(
@@ -43,7 +43,7 @@ export class BidsController {
     return true;
   }
 
-  @HttpCode(HttpStatus.OK)
+  @HttpCode(HttpStatus.CREATED)
   @AuthRoles(USER_ROLES.STATION_WORKER)
   @Put('/:id')
   async update(

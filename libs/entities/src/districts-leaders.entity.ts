@@ -20,11 +20,11 @@ export class DistrictLeaderEntity extends BaseEntity {
 
   @Column({ nullable: true, unique: true })
   @Expose()
-  districtId!: number | null;
+  leaderDistrictId!: number | null;
 
   @OneToOne(() => DistrictEntity)
   @JoinColumn({
-    name: 'districtId',
+    name: 'leaderDistrictId',
     referencedColumnName: 'id',
   })
   @Expose()

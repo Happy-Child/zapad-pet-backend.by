@@ -19,7 +19,7 @@ export class DistrictsLeadersGeneralService {
     ) as NonEmptyArray<number>;
     const emptyDistrictsIds =
       await this.districtsLeadersRepository.returnNotExistingColumnValues(
-        'districtId',
+        'leaderDistrictId',
         districtsIds,
       );
 
