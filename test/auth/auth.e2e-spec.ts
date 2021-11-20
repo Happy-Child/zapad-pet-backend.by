@@ -2,7 +2,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication, HttpStatus } from '@nestjs/common';
 import request from 'supertest';
 import { AppModule } from '../../src/app.module';
-import { FAKE_STATIONS_WORKERS_MAP, FAKE_USER_PASSWORD } from '@app/constants';
 import { TEST_TIMEOUT } from '@app/constants/tests.constants';
 import {
   TEST_SIGN_IN_SHOULD_FORBIDDEN,
@@ -12,6 +11,8 @@ import { COOKIE } from '../../src/modules/auth/constants';
 import { JwtService } from '@nestjs/jwt';
 import { getTestAccessTokens } from './test-auth.helpers';
 import { bootstrapTestApp } from '../test.helpers';
+import { MOCK_USER_PASSWORD } from '../../static/mock-data/users/mock.constants';
+import { MOCK_STATIONS_WORKERS_MAP } from '../../static/mock-data/users/stations-workers.mock';
 
 describe('AuthModule (e2e)', () => {
   let app: INestApplication;
@@ -41,7 +42,7 @@ describe('AuthModule (e2e)', () => {
             .post(API_URL)
             .send({
               email: user.email,
-              password: FAKE_USER_PASSWORD,
+              password: MOCK_USER_PASSWORD,
             })
             .expect(({ status, body }) => {
               expect(status).toBe(HttpStatus.OK);
@@ -71,7 +72,7 @@ describe('AuthModule (e2e)', () => {
             .post(API_URL)
             .send({
               email: worker.email,
-              password: FAKE_USER_PASSWORD,
+              password: MOCK_USER_PASSWORD,
             })
             .expect(({ status }) => {
               expect(status).toBe(HttpStatus.FORBIDDEN);
@@ -92,7 +93,7 @@ describe('AuthModule (e2e)', () => {
           .post(API_URL)
           .send({
             email: 'not_existing_email@mail.ru',
-            password: FAKE_USER_PASSWORD,
+            password: MOCK_USER_PASSWORD,
           })
           .expect(({ status }) => {
             expect(status).toBe(HttpStatus.NOT_FOUND);
@@ -109,7 +110,7 @@ describe('AuthModule (e2e)', () => {
         return request(server)
           .post(API_URL)
           .send({
-            email: FAKE_STATIONS_WORKERS_MAP.WORKER_4.email,
+            email: MOCK_STATIONS_WORKERS_MAP.WORKER_4.email,
             password: 'invalidpass124',
           })
           .expect(({ status }) => {
@@ -126,7 +127,7 @@ describe('AuthModule (e2e)', () => {
 
         return request(server)
           .post(API_URL)
-          .send({ password: FAKE_USER_PASSWORD })
+          .send({ password: MOCK_USER_PASSWORD })
           .expect(({ status }) => {
             expect(status).toBe(HttpStatus.BAD_REQUEST);
           });
@@ -185,7 +186,7 @@ describe('AuthModule (e2e)', () => {
           .expect(({ status, body }) => {
             expect(status).toBe(HttpStatus.OK);
             expect(body).toStrictEqual({
-              ...FAKE_STATIONS_WORKERS_MAP.WORKER_1,
+              ...MOCK_STATIONS_WORKERS_MAP.WORKER_1,
               createdAt: expect.any(String),
               updatedAt: expect.any(String),
             });

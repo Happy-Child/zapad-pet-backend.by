@@ -17,7 +17,7 @@ export const isMember = (
 export const isFullMember = (member: TMemberDTO): member is TFullMemberDTO => {
   switch (member.role) {
     case USER_ROLES.STATION_WORKER:
-      return !(isNull(member.clientId) || isNull(member.stationId));
+      return !isNull(member.clientId) && !isNull(member.stationId);
     case USER_ROLES.DISTRICT_LEADER:
       return !isNull(member.leaderDistrictId);
     case USER_ROLES.ENGINEER:

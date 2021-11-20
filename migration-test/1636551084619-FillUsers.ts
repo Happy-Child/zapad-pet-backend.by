@@ -5,8 +5,9 @@ import {
   StationWorkerEntity,
   UserEntity,
 } from '@app/entities';
-import users from '../static/fill-db-test/users.fake';
-import { FAKE_USER_PASSWORD_HASH, USER_ROLES } from '@app/constants';
+import users from '../static/mock-data/users';
+import { MOCK_USER_PASSWORD_HASH } from '../static/mock-data/users/mock.constants';
+import { USER_ROLES } from '@app/constants';
 
 export class FillUsers1636551084619 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
@@ -17,7 +18,7 @@ export class FillUsers1636551084619 implements MigrationInterface {
     const requestsToCreateUsers = users.map(async (rawUser) => {
       const { role, id } = await queryRunner.manager.save(UserEntity, {
         ...rawUser,
-        password: FAKE_USER_PASSWORD_HASH,
+        password: MOCK_USER_PASSWORD_HASH,
       });
 
       switch (role) {

@@ -1,7 +1,7 @@
 import { DistrictEntity } from '@app/entities';
 
 // 118 entities
-const data: Partial<DistrictEntity>[] = [
+export const INITIAL_DISTRICT_DATA_MAP: Partial<DistrictEntity>[] = [
   {
     slug: 'baranavitski-raion',
     name: 'Барановичский',
@@ -593,5 +593,3 @@ const data: Partial<DistrictEntity>[] = [
     regionSlug: 'mahiliouskaia-voblasts',
   },
 ];
-
-export default data;
