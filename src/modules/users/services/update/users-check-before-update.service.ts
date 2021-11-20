@@ -11,9 +11,8 @@ import {
   groupedByRoles,
 } from '@app/helpers/grouped.helpers';
 import { isNonEmptyArray } from '@app/helpers';
-import { TMemberDTO } from '../../types';
+import { TUserDTO } from '../../types';
 import {
-  AccountantDTO,
   DistrictLeaderMemberDTO,
   EngineerMemberDTO,
   StationWorkerMemberDTO,
@@ -52,7 +51,7 @@ export class UsersCheckBeforeUpdateService {
 
   private allUsersMatchRolesOrFail(
     users: (UsersUpdateItemDTO & { index: number })[],
-    foundUsers: (TMemberDTO | AccountantDTO)[],
+    foundUsers: TUserDTO[],
   ): void {
     const usersWithInvalidRoles = users.filter(
       ({ id, role }) =>
@@ -70,7 +69,7 @@ export class UsersCheckBeforeUpdateService {
 
   private async allUpdatedEmailsNotExistingOrFail(
     users: (UsersUpdateItemDTO & { index: number })[],
-    foundUsers: (TMemberDTO | AccountantDTO)[],
+    foundUsers: TUserDTO[],
   ): Promise<void> {
     const { email: groupByEmail } = groupedByChangedFields(users, foundUsers, [
       'email',
@@ -83,7 +82,7 @@ export class UsersCheckBeforeUpdateService {
 
   private async checkMembersOrFail(
     indexedUsersToCheck: NonEmptyArray<UsersUpdateItemDTO & { index: number }>,
-    foundUsers: (TMemberDTO | AccountantDTO)[],
+    foundUsers: TUserDTO[],
     entityManager: EntityManager,
   ): Promise<void> {
     const { stationsWorkers, districtsLeaders, engineers } = groupedByRoles<

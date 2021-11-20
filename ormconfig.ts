@@ -22,7 +22,7 @@ export = {
   database: POSTGRES.DB,
   retryAttempts: POSTGRES.RETRY_ATTEMPTS,
   retryDelay: POSTGRES.RETRY_DELAY,
-  migrationsRun: true,
+  migrationsRun: false,
   migrations,
   entities,
   synchronize: false,

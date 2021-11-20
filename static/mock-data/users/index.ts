@@ -15,8 +15,8 @@ const data: Partial<
   ...Object.values(MOCK_STATIONS_WORKERS_MAP),
   ...Object.values(MOCK_DISTRICTS_LEADERS_MAP),
   ...Object.values(MOCK_ENGINEERS_MAP),
-  MOCK_MASTER,
   MOCK_ACCOUNTANT,
+  MOCK_MASTER,
 ];
 
 export default data;

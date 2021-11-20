@@ -7,10 +7,9 @@ import {
   IsString,
   IsInt,
 } from 'class-validator';
-import { ENTITIES_FIELDS, SORT_DURATION } from '@app/constants';
+import { ENTITIES_FIELDS, SORT_DURATION, USER_ROLES } from '@app/constants';
 import { ALLOWED_ROLES } from '../constants';
-import { AllowedRoles, TMemberDTO } from '../types';
-import { AccountantDTO } from './users-members.dtos';
+import { TUserDTO } from '../types';
 import { getSerializedMemberUser } from '../helpers';
 import { Type } from 'class-transformer';
 
@@ -35,7 +34,7 @@ export class UsersGetListRequestQueryDTO extends PaginationRequestDTO {
   @IsOptional()
   @ArrayUnique()
   @IsIn(ALLOWED_ROLES, { each: true })
-  role?: AllowedRoles[];
+  role?: USER_ROLES[];
 
   @IsOptional()
   @IsString()
@@ -57,9 +56,7 @@ export class UsersGetListRequestQueryDTO extends PaginationRequestDTO {
   engineerDistrictId?: number;
 }
 
-export class UsersGetListResponseBodyDTO extends PaginationResponseDTO<
-  TMemberDTO | AccountantDTO
-> {
+export class UsersGetListResponseBodyDTO extends PaginationResponseDTO<TUserDTO> {
   constructor(data: UsersGetListResponseBodyDTO) {
     super();
     Object.assign(this, data);

@@ -1,18 +1,18 @@
-import { TFullMemberDTO, TMemberDTO } from '../types';
+import { TFullMemberDTO, TMemberDTO, TUserDTO } from '../types';
 import { MEMBERS_ROLES } from '../constants';
 import { isNull } from '@app/helpers';
 import {
   AccountantDTO,
   DistrictLeaderMemberDTO,
   EngineerMemberDTO,
+  MasterDTO,
   StationWorkerMemberDTO,
 } from '../dtos';
 import { ClassTransformOptions } from 'class-transformer/types/interfaces';
 import { USER_ROLES } from '@app/constants';
 
-export const isMember = (
-  member: TMemberDTO | AccountantDTO,
-): member is TMemberDTO => MEMBERS_ROLES.includes(member.role);
+export const isMember = (member: TUserDTO): member is TMemberDTO =>
+  MEMBERS_ROLES.includes(member.role);
 
 export const isFullMember = (member: TMemberDTO): member is TFullMemberDTO => {
   switch (member.role) {
@@ -30,7 +30,7 @@ export const isFullMember = (member: TMemberDTO): member is TFullMemberDTO => {
 export const getSerializedMemberUser = (
   rawUser: any,
   serializeOptions?: ClassTransformOptions,
-): TMemberDTO | AccountantDTO => {
+): TUserDTO => {
   switch (rawUser.role) {
     case USER_ROLES.STATION_WORKER:
       return new StationWorkerMemberDTO(rawUser, serializeOptions);
@@ -38,7 +38,9 @@ export const getSerializedMemberUser = (
       return new DistrictLeaderMemberDTO(rawUser, serializeOptions);
     case USER_ROLES.ENGINEER:
       return new EngineerMemberDTO(rawUser, serializeOptions);
-    default:
+    case USER_ROLES.ACCOUNTANT:
       return new AccountantDTO(rawUser, serializeOptions);
+    default:
+      return new MasterDTO(rawUser, serializeOptions);
   }
 };

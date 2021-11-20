@@ -12,7 +12,6 @@ import {
 import { Type } from 'class-transformer';
 import { USERS_CREATE_ALLOWED_ROLES, USERS_ERRORS } from '../constants';
 import { AUTH_ERRORS } from '../../auth/constants';
-import { AllowedRoles } from '../types';
 import { USER_NAME_LENGTH } from '../../auth/constants';
 import {
   ArrayWithObjects,
@@ -31,7 +30,7 @@ export class UsersUpdateGeneralUserDTO {
 
   email!: string;
 
-  role!: AllowedRoles;
+  role!: USER_ROLES;
 }
 
 export class UsersUpdateStationWorkerDTO extends UsersUpdateGeneralUserDTO {
@@ -67,7 +66,7 @@ export class UsersUpdateItemDTO {
 
   @IsString()
   @IsIn(USERS_CREATE_ALLOWED_ROLES, { message: AUTH_ERRORS.INVALID_ROLE })
-  role!: AllowedRoles;
+  role!: USER_ROLES;
 
   @ValidateIf((data) => data.role === USER_ROLES.STATION_WORKER, {
     message: AUTH_ERRORS.CLIENT_ID_IS_REQUIRED,

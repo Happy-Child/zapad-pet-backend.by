@@ -1,8 +1,7 @@
 import { IsEmail, IsString, Length, Matches } from 'class-validator';
 import { Expose } from 'class-transformer';
 import { PASSWORD_LENGTH, PASSWORD_REGEX } from '../constants';
-import { TMemberDTO } from '../../users/types';
-import { AccountantDTO } from '../../users/dtos';
+import { TUserDTO } from '../../users/types';
 
 export class SignInRequestBodyDTO {
   @IsEmail()
@@ -16,7 +15,7 @@ export class SignInRequestBodyDTO {
 
 export class SignInResponseBodyDTO {
   @Expose()
-  user!: TMemberDTO | AccountantDTO;
+  user!: TUserDTO;
 
   @Expose()
   accessToken!: string;

@@ -1,4 +1,3 @@
-import { AllowedRoles } from '../types';
 import { USER_ROLES } from '@app/constants';
 
 interface IFullDistrictLeader {
@@ -18,7 +17,7 @@ interface IFullStationWorker {
 }
 
 interface IRawUser {
-  role: AllowedRoles;
+  role: USER_ROLES;
   clientId?: number | null;
   stationId?: number | null;
   leaderDistrictId?: number | null;
@@ -35,7 +34,7 @@ export const getGroupedFullUsersByRoles = <
   D extends IFullDistrictLeader,
   E extends IFullEngineer,
   S extends IFullStationWorker,
-  A extends { role: AllowedRoles } = { role: AllowedRoles },
+  A extends { role: USER_ROLES } = { role: USER_ROLES },
 >(
   rawUsers: IRawUser[],
 ): IGetGroupedFullUsersByRoles<D, E, S, A> => {

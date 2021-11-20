@@ -9,7 +9,7 @@ import {
 } from './test-auth.contants';
 import { COOKIE } from '../../src/modules/auth/constants';
 import { JwtService } from '@nestjs/jwt';
-import { getTestAccessTokens } from './test-auth.helpers';
+import { getTestAuthAccessTokens } from './test-auth.helpers';
 import { bootstrapTestApp } from '../test.helpers';
 import { MOCK_USER_PASSWORD } from '../../static/mock-data/users/mock.constants';
 import { MOCK_STATIONS_WORKERS_MAP } from '../../static/mock-data/users/stations-workers.mock';
@@ -26,7 +26,7 @@ describe('AuthModule (e2e)', () => {
       imports: [AppModule],
     }).compile();
     app = await bootstrapTestApp(moduleRef);
-    accessTokens = getTestAccessTokens(app.get(JwtService));
+    accessTokens = getTestAuthAccessTokens(app.get(JwtService));
   });
 
   describe('POST /auth/sign-in', () => {
@@ -140,7 +140,7 @@ describe('AuthModule (e2e)', () => {
     const API_URL = '/auth/me';
 
     it(
-      'response status should be 401',
+      'should be blocked users with invalid token',
       () => {
         const server = app.getHttpServer();
 
@@ -155,42 +155,37 @@ describe('AuthModule (e2e)', () => {
     );
 
     it(
-      'response status should be 403',
+      'should be allowed full users',
       () => {
         const server = app.getHttpServer();
 
-        return request(server)
-          .get(API_URL)
-          .set(
-            'Cookie',
-            `${COOKIE.ACCESS_TOKEN}=${accessTokens.fromStationWorker7};`,
-          )
-          .expect(({ status }) => {
-            expect(status).toBe(HttpStatus.FORBIDDEN);
-          });
-      },
-      TEST_TIMEOUT,
-    );
+        const requests = [
+          request(server)
+            .get(API_URL)
+            .set(
+              'Cookie',
+              `${COOKIE.ACCESS_TOKEN}=${accessTokens.fromStationWorker7};`,
+            )
+            .expect(({ status }) => {
+              expect(status).toBe(HttpStatus.FORBIDDEN);
+            }),
+          request(server)
+            .get(API_URL)
+            .set(
+              'Cookie',
+              `${COOKIE.ACCESS_TOKEN}=${accessTokens.fromStationWorker1};`,
+            )
+            .expect(({ status, body }) => {
+              expect(status).toBe(HttpStatus.OK);
+              expect(body).toStrictEqual({
+                ...MOCK_STATIONS_WORKERS_MAP.WORKER_1,
+                createdAt: expect.any(String),
+                updatedAt: expect.any(String),
+              });
+            }),
+        ];
 
-    it(
-      'response status should be 200',
-      () => {
-        const server = app.getHttpServer();
-
-        return request(server)
-          .get(API_URL)
-          .set(
-            'Cookie',
-            `${COOKIE.ACCESS_TOKEN}=${accessTokens.fromStationWorker1};`,
-          )
-          .expect(({ status, body }) => {
-            expect(status).toBe(HttpStatus.OK);
-            expect(body).toStrictEqual({
-              ...MOCK_STATIONS_WORKERS_MAP.WORKER_1,
-              createdAt: expect.any(String),
-              updatedAt: expect.any(String),
-            });
-          });
+        return Promise.all(requests);
       },
       TEST_TIMEOUT,
     );

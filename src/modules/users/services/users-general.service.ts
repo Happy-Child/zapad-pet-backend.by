@@ -9,8 +9,7 @@ import { ENTITIES_FIELDS } from '@app/constants';
 import { getPreparedChildrenErrors } from '@app/helpers/prepared-errors.helpers';
 import { NonEmptyArray } from '@app/types';
 import { UsersUpdateItemDTO } from '../dtos/users-update.dtos';
-import { TMemberDTO } from '../types';
-import { AccountantDTO } from '../dtos';
+import { TUserDTO } from '../types';
 import { USERS_ERRORS } from '../constants';
 
 @Injectable()
@@ -43,7 +42,7 @@ export class UsersGeneralService {
 
   public async allUsersExistingOrFail(
     users: NonEmptyArray<UsersUpdateItemDTO & { index: number }>,
-  ): Promise<(TMemberDTO | AccountantDTO)[]> {
+  ): Promise<TUserDTO[]> {
     const ids = users.map(({ id }) => id) as NonEmptyArray<number>;
     const foundUsers = await this.usersRepository.getUsersIds(ids);
 

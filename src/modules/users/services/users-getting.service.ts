@@ -7,8 +7,7 @@ import {
 import { RepositoryFindConditions } from '@app/repositories/types';
 import { UserEntity } from '@app/entities';
 import { ClassTransformOptions } from 'class-transformer/types/interfaces';
-import { TMemberDTO } from '../types';
-import { AccountantDTO } from '../dtos';
+import { TUserDTO } from '../types';
 import { ExceptionsNotFound } from '@app/exceptions/errors';
 import { AUTH_ERRORS } from '../../auth/constants';
 import { getSerializedMemberUser } from '../helpers';
@@ -22,7 +21,7 @@ export class UsersGettingService {
     conditions: RepositoryFindConditions<UserEntity>,
     serializeOptions?: ClassTransformOptions,
     exceptionField = 'id',
-  ): Promise<TMemberDTO | AccountantDTO> {
+  ): Promise<TUserDTO> {
     const queryBuilder = this.usersRepository
       .createQueryBuilder('u')
       .select(USERS_MEMBER_RAW_SELECT)

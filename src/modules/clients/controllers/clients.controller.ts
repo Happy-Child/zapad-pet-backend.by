@@ -22,6 +22,8 @@ import {
   ClientsGettingResponseBodyDTO,
 } from '../dtos';
 import { ClientEntity } from '@app/entities';
+import { USER_ROLES } from '@app/constants';
+import { AuthRoles } from '../../auth/decorators/auth-roles.decorators';
 
 @Controller('clients')
 export class ClientsController {
@@ -32,6 +34,7 @@ export class ClientsController {
   ) {}
 
   @HttpCode(HttpStatus.OK)
+  @AuthRoles(USER_ROLES.MASTER)
   @Post()
   async create(@Body() body: ClientEntity): Promise<true> {
     await this.clientsCreateService.create(body);
@@ -39,6 +42,7 @@ export class ClientsController {
   }
 
   @HttpCode(HttpStatus.CREATED)
+  @AuthRoles(USER_ROLES.MASTER)
   @Put('/:id')
   async update(
     @Param('id', ParseIntPipe) id: number,
@@ -49,6 +53,7 @@ export class ClientsController {
   }
 
   @HttpCode(HttpStatus.OK)
+  @AuthRoles(USER_ROLES.MASTER)
   @Get('/:id')
   async getById(
     @Param('id', ParseIntPipe) id: number,
@@ -57,6 +62,7 @@ export class ClientsController {
   }
 
   @HttpCode(HttpStatus.OK)
+  @AuthRoles(USER_ROLES.MASTER)
   @Get()
   async getList(
     @Query() query: ClientsGettingRequestQueryDTO,
