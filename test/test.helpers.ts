@@ -22,6 +22,7 @@ import {
 } from '../static/mock-data/users/users.mock';
 import { AppModule } from '../src/app.module';
 import { MailSenderGeneralService } from '@app/mail-sender/services';
+import { Connection } from 'typeorm';
 
 export const bootstrapTestApp = async (): Promise<INestApplication> => {
   const moduleRef: TestingModule = await Test.createTestingModule({
@@ -44,6 +45,10 @@ export const bootstrapTestApp = async (): Promise<INestApplication> => {
   );
 
   await app.init();
+  const connection = app.get(Connection);
+  await connection.synchronize(true);
+  await connection.runMigrations();
+
   return app;
 };
 

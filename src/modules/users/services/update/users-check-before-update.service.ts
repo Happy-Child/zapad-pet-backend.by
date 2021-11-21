@@ -108,7 +108,6 @@ export class UsersCheckBeforeUpdateService {
         this.stationsWorkersCheckBeforeUpdateService.executeOrFail(
           stationsWorkers,
           foundStationsWorkers,
-          entityManager,
         ),
       );
     }

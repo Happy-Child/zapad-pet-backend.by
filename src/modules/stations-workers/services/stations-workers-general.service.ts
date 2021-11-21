@@ -91,14 +91,14 @@ export class StationsWorkersGeneralService {
     foundWorkers: Pick<StationWorkerEntity, 'userId' | 'stationId'>[],
     workersToCheck: { stationWorkerId: number; index: number }[],
   ): void {
-    const workersWithStations = foundWorkers.filter(
+    const stationsWithWorkers = foundWorkers.filter(
       ({ stationId }) => !isNull(stationId),
     );
 
-    if (workersWithStations.length === 0) return;
+    if (stationsWithWorkers.length === 0) return;
 
     const result = workersToCheck.filter(({ stationWorkerId }) =>
-      workersWithStations.find((item) => item.userId === stationWorkerId),
+      stationsWithWorkers.find((item) => item.userId === stationWorkerId),
     );
 
     const preparedErrors = getPreparedChildrenErrors(result, {
@@ -135,14 +135,14 @@ export class StationsWorkersGeneralService {
     foundStations: { stationId: number; stationWorkerId: number | null }[],
     stationsToCheck: { stationId: number; index: number }[],
   ): void {
-    const workersWithStations = foundStations.filter(
+    const stationsWithWorkers = foundStations.filter(
       ({ stationWorkerId }) => !isNull(stationWorkerId),
     );
 
-    if (workersWithStations.length === 0) return;
+    if (stationsWithWorkers.length === 0) return;
 
     const result = stationsToCheck.filter(({ stationId }) =>
-      workersWithStations.find((item) => item.stationId === stationId),
+      stationsWithWorkers.find((item) => item.stationId === stationId),
     );
 
     const preparedErrors = getPreparedChildrenErrors(result, {

@@ -10,6 +10,8 @@ import mockUsersData from '../../static/mock-data/users';
 import {
   GET_USERS_VALID_RESPONSE_ITEMS,
   TEST_USERS_TO_CREATE,
+  UPDATE_ENGINEERS,
+  UPDATE_STATIONS_WORKERS,
 } from './test-users.constants';
 import { MOCK_STATIONS_WORKERS_MAP } from '../../static/mock-data/users/stations-workers.mock';
 import { getObjWithoutFields } from '@app/helpers';
@@ -176,7 +178,6 @@ describe('UsersModule (e2e)', () => {
                     ...getObjWithoutFields<any, any>(TEST_USERS_TO_CREATE[0], [
                       'password',
                     ]),
-                    id: 35,
                     emailConfirmed: false,
                     createdAt: expect.any(String),
                     updatedAt: expect.any(String),
@@ -185,7 +186,6 @@ describe('UsersModule (e2e)', () => {
                     ...getObjWithoutFields<any, any>(TEST_USERS_TO_CREATE[1], [
                       'password',
                     ]),
-                    id: 36,
                     emailConfirmed: false,
                     createdAt: expect.any(String),
                     updatedAt: expect.any(String),
@@ -233,6 +233,97 @@ describe('UsersModule (e2e)', () => {
       TEST_TIMEOUT,
     );
   });
+
+  describe('PUT /users', () => {
+    const API_URL = '/users';
+
+    it(
+      'should be forbidden all roles except master',
+      () => {
+        const server = app.getHttpServer();
+
+        const requests = Object.keys(accessTokensByRoles)
+          .filter((role) => role !== USER_ROLES.MASTER)
+          .map((role) =>
+            request(server)
+              .put(API_URL)
+              .set(
+                'Cookie',
+                `${COOKIE.ACCESS_TOKEN}=${
+                  accessTokensByRoles[role as USER_ROLES]
+                };`,
+              )
+              .expect(({ status }) => {
+                expect(status).toBe(HttpStatus.FORBIDDEN);
+              }),
+          );
+
+        return Promise.all(requests);
+      },
+      TEST_TIMEOUT,
+    );
+
+    it(
+      'should be update users',
+      () => {
+        const server = app.getHttpServer();
+
+        const requests = [
+          request(server)
+            .put(API_URL)
+            .set(
+              'Cookie',
+              `${COOKIE.ACCESS_TOKEN}=${
+                accessTokensByRoles[USER_ROLES.MASTER]
+              };`,
+            )
+            .send({
+              users: UPDATE_STATIONS_WORKERS,
+            })
+            .expect(({ status, body }) => {
+              expect(status).toBe(HttpStatus.CREATED);
+              expect(body).toStrictEqual(
+                UPDATE_STATIONS_WORKERS.map((item) => ({
+                  ...item,
+                  role: expect.any(String),
+                  emailConfirmed: expect.any(Boolean),
+                  createdAt: expect.any(String),
+                  updatedAt: expect.any(String),
+                })),
+              );
+            }),
+          request(server)
+            .put(API_URL)
+            .set(
+              'Cookie',
+              `${COOKIE.ACCESS_TOKEN}=${
+                accessTokensByRoles[USER_ROLES.MASTER]
+              };`,
+            )
+            .send({
+              users: UPDATE_ENGINEERS,
+            })
+            .expect(({ status, body }) => {
+              expect(status).toBe(HttpStatus.CREATED);
+              expect(body).toStrictEqual(
+                UPDATE_ENGINEERS.map((item) => ({
+                  ...item,
+                  role: expect.any(String),
+                  emailConfirmed: expect.any(Boolean),
+                  createdAt: expect.any(String),
+                  updatedAt: expect.any(String),
+                })),
+              );
+            }),
+        ];
+
+        return Promise.all(requests);
+      },
+      TEST_TIMEOUT,
+    );
+  });
+
+  // тест обровления как по отдельности, так и вместе. тест после изменения статуса заявок для работника и дркгих
 
   afterAll(async () => {
     await app.close();

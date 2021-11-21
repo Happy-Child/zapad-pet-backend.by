@@ -8,7 +8,6 @@ import { AUTH_ERRORS } from '../../auth/constants';
 import { ENTITIES_FIELDS } from '@app/constants';
 import { getPreparedChildrenErrors } from '@app/helpers/prepared-errors.helpers';
 import { NonEmptyArray } from '@app/types';
-import { UsersUpdateItemDTO } from '../dtos/users-update.dtos';
 import { TUserDTO } from '../types';
 import { USERS_ERRORS } from '../constants';
 
@@ -41,10 +40,10 @@ export class UsersGeneralService {
   }
 
   public async allUsersExistingOrFail(
-    users: NonEmptyArray<UsersUpdateItemDTO & { index: number }>,
+    users: NonEmptyArray<{ id: number; index: number }>,
   ): Promise<TUserDTO[]> {
     const ids = users.map(({ id }) => id) as NonEmptyArray<number>;
-    const foundUsers = await this.usersRepository.getUsersIds(ids);
+    const foundUsers = await this.usersRepository.getUsersByIds(ids);
 
     const foundUsersIds = foundUsers.map(({ id }) => id);
     if (foundUsersIds.length === ids.length) {

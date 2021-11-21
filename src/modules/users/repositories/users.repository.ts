@@ -23,7 +23,7 @@ import { getSerializedMemberUser } from '../helpers';
 export class UsersRepository extends GeneralRepository<UserEntity> {
   protected entitySerializer = UserEntity;
 
-  public async getUsersIds(ids: NonEmptyArray<number>): Promise<TUserDTO[]> {
+  public async getUsersByIds(ids: NonEmptyArray<number>): Promise<TUserDTO[]> {
     const queryBuilder = this.createQueryBuilder('u')
       .select(USERS_MEMBER_RAW_SELECT)
       .where(`u.role NOT IN ('${USER_ROLES.MASTER}') AND u.id IN (:...ids)`, {
@@ -32,9 +32,7 @@ export class UsersRepository extends GeneralRepository<UserEntity> {
 
     this.addJoinsForMembersData(queryBuilder);
 
-    const items = await queryBuilder
-      .orderBy('"createdAt"')
-      .getRawMany<TUserDTO>();
+    const items = await queryBuilder.orderBy('id').getRawMany<TUserDTO>();
 
     return items.map((item) => getSerializedMemberUser(item));
   }

@@ -21,6 +21,7 @@ import {
   UserEntity,
 } from '@app/entities';
 import { DistrictsLeadersRepository } from '../../../districts-leaders/repositories';
+import { TUserDTO } from '../../types';
 
 @Injectable()
 export class UsersUpdateService {
@@ -31,7 +32,9 @@ export class UsersUpdateService {
     private readonly connection: Connection,
   ) {}
 
-  public async execute({ users }: UsersUpdateRequestBodyDTO): Promise<void> {
+  public async execute({
+    users,
+  }: UsersUpdateRequestBodyDTO): Promise<TUserDTO[]> {
     const indexedUsers = getIndexedArray(users);
 
     await this.connection.transaction(async (manager) => {
@@ -41,6 +44,8 @@ export class UsersUpdateService {
       );
       await this.update(indexedUsers, manager);
     });
+
+    return this.usersGeneralService.allUsersExistingOrFail(indexedUsers);
   }
 
   private async update(

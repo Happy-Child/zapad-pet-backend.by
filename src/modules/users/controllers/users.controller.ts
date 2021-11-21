@@ -22,6 +22,7 @@ import {
 import { UsersUpdateRequestBodyDTO } from '../dtos/users-update.dtos';
 import { USER_ROLES } from '@app/constants';
 import { AuthRoles } from '../../auth/decorators/auth-roles.decorators';
+import { TUserDTO } from '../types';
 
 @Controller('users')
 export class UsersController {
@@ -42,9 +43,8 @@ export class UsersController {
   @HttpCode(HttpStatus.CREATED)
   @AuthRoles(USER_ROLES.MASTER)
   @Put()
-  async update(@Body() body: UsersUpdateRequestBodyDTO): Promise<true> {
-    await this.usersUpdateService.execute(body);
-    return true;
+  async update(@Body() body: UsersUpdateRequestBodyDTO): Promise<TUserDTO[]> {
+    return await this.usersUpdateService.execute(body);
   }
 
   @HttpCode(HttpStatus.OK)
