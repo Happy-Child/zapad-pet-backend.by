@@ -7,6 +7,7 @@ import {
   IsString,
   IsInt,
 } from 'class-validator';
+import { Transform } from 'class-transformer';
 import { ENTITIES_FIELDS, SORT_DURATION, USER_ROLES } from '@app/constants';
 import { ALLOWED_ROLES } from '../constants';
 import { TUserDTO } from '../types';
@@ -34,6 +35,7 @@ export class UsersGetListRequestQueryDTO extends PaginationRequestDTO {
   @IsOptional()
   @ArrayUnique()
   @IsIn(ALLOWED_ROLES, { each: true })
+  @Transform(({ value }) => (Array.isArray(value) ? value : [value]))
   role?: USER_ROLES[];
 
   @IsOptional()

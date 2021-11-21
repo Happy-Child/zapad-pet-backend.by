@@ -189,7 +189,7 @@ export class UsersCreateService {
     const records: Partial<DistrictLeaderEntity>[] = districtsLeaders.map(
       ({ leaderDistrictId, email }) => ({
         userId: createdUsers[email].id,
-        districtId: leaderDistrictId,
+        leaderDistrictId,
       }),
     );
     await districtsLeadersRepository.saveEntities(records);
@@ -208,7 +208,7 @@ export class UsersCreateService {
     const records: Partial<EngineerEntity>[] = engineers.map(
       ({ engineerDistrictId, email }) => ({
         userId: createdUsers[email].id,
-        districtId: engineerDistrictId,
+        engineerDistrictId,
       }),
     );
     await engineersRepository.saveEntities(records);

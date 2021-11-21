@@ -1,7 +1,5 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication, HttpStatus } from '@nestjs/common';
 import request from 'supertest';
-import { AppModule } from '../../src/app.module';
 import { TEST_TIMEOUT } from '@app/constants/tests.constants';
 import {
   TEST_SIGN_IN_SHOULD_FORBIDDEN,
@@ -22,10 +20,7 @@ describe('AuthModule (e2e)', () => {
   };
 
   beforeAll(async () => {
-    const moduleRef: TestingModule = await Test.createTestingModule({
-      imports: [AppModule],
-    }).compile();
-    app = await bootstrapTestApp(moduleRef);
+    app = await bootstrapTestApp();
     accessTokens = getTestAuthAccessTokens(app.get(JwtService));
   });
 

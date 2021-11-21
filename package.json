@@ -20,7 +20,7 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "export NODE_ENV=test && yarn docker:test up -d && (yarn schema:sync && yarn migrate:run && jest --config ./test/jest-e2e.json) && yarn docker:test down",
+    "test:e2e": "export NODE_ENV=test && yarn docker:test up -d && (yarn schema:sync && yarn migrate:run && jest --config ./test/jest-e2e.json); yarn docker:test down",
     "test:full": "yarn test && yarn test:e2e",
     "typeorm": "npx ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js",
     "schema:sync": "yarn typeorm schema:sync",

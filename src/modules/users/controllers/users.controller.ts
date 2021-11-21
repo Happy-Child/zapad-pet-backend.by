@@ -15,8 +15,13 @@ import {
   UsersGettingService,
   UsersCreateService,
 } from '../services';
-import { UsersGetListRequestQueryDTO } from '../dtos/users-getting.dtos';
+import {
+  UsersGetListRequestQueryDTO,
+  UsersGetListResponseBodyDTO,
+} from '../dtos/users-getting.dtos';
 import { UsersUpdateRequestBodyDTO } from '../dtos/users-update.dtos';
+import { USER_ROLES } from '@app/constants';
+import { AuthRoles } from '../../auth/decorators/auth-roles.decorators';
 
 @Controller('users')
 export class UsersController {
@@ -27,6 +32,7 @@ export class UsersController {
   ) {}
 
   @HttpCode(HttpStatus.OK)
+  @AuthRoles(USER_ROLES.MASTER)
   @Post()
   async create(@Body() body: UsersCreateRequestBodyDTO): Promise<true> {
     await this.usersCreateService.execute(body);
@@ -34,6 +40,7 @@ export class UsersController {
   }
 
   @HttpCode(HttpStatus.CREATED)
+  @AuthRoles(USER_ROLES.MASTER)
   @Put()
   async update(@Body() body: UsersUpdateRequestBodyDTO): Promise<true> {
     await this.usersUpdateService.execute(body);
@@ -41,12 +48,24 @@ export class UsersController {
   }
 
   @HttpCode(HttpStatus.OK)
+  @AuthRoles(USER_ROLES.MASTER)
+  @Get('/:id')
+  async getById(): Promise<void> {
+    // TUserDTO
+    // TODO
+  }
+
+  @HttpCode(HttpStatus.OK)
+  @AuthRoles(USER_ROLES.MASTER)
   @Get()
-  async getList(@Query() query: UsersGetListRequestQueryDTO): Promise<any> {
+  async getList(
+    @Query() query: UsersGetListRequestQueryDTO,
+  ): Promise<UsersGetListResponseBodyDTO> {
     return this.usersGettingService.getList(query);
   }
 
   @HttpCode(HttpStatus.OK)
+  @AuthRoles(USER_ROLES.MASTER)
   @Delete()
   async delete(@Query() query: UsersDeleteRequestQueryDTO): Promise<number[]> {
     return query.ids;

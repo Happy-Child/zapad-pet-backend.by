@@ -11,7 +11,7 @@ import {
   USER_ROLES,
 } from '@app/constants';
 import { Reflector } from '@nestjs/core';
-import { TestingModule } from '@nestjs/testing';
+import { Test, TestingModule } from '@nestjs/testing';
 import { JwtService } from '@nestjs/jwt';
 import { MOCK_STATIONS_WORKERS_MAP } from '../static/mock-data/users/stations-workers.mock';
 import { MOCK_DISTRICTS_LEADERS_MAP } from '../static/mock-data/users/districts-leaders.mock';
@@ -20,10 +20,20 @@ import {
   MOCK_ACCOUNTANT,
   MOCK_MASTER,
 } from '../static/mock-data/users/users.mock';
+import { AppModule } from '../src/app.module';
+import { MailSenderGeneralService } from '@app/mail-sender/services';
 
-export const bootstrapTestApp = async (
-  moduleRef: TestingModule,
-): Promise<INestApplication> => {
+export const bootstrapTestApp = async (): Promise<INestApplication> => {
+  const moduleRef: TestingModule = await Test.createTestingModule({
+    imports: [AppModule],
+  })
+    .overrideProvider(MailSenderGeneralService)
+    .useValue({
+      sendMail: () => {
+        console.log('Send email on test env');
+      },
+    })
+    .compile();
   const app = moduleRef.createNestApplication();
 
   app.use(cookieParser());

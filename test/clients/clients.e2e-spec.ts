@@ -1,8 +1,6 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import qs from 'querystring';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import request from 'supertest';
-import { AppModule } from '../../src/app.module';
 import { TEST_TIMEOUT } from '@app/constants/tests.constants';
 import { JwtService } from '@nestjs/jwt';
 import { bootstrapTestApp, getTestAccessTokensByRoles } from '../test.helpers';
@@ -18,11 +16,7 @@ describe('ClientsModule (e2e)', () => {
   let accessTokensByRoles: Record<USER_ROLES, string>;
 
   beforeAll(async () => {
-    const moduleRef: TestingModule = await Test.createTestingModule({
-      imports: [AppModule],
-    }).compile();
-    app = await bootstrapTestApp(moduleRef);
-
+    app = await bootstrapTestApp();
     accessTokensByRoles = getTestAccessTokensByRoles(app.get(JwtService), {
       engineerId: MOCK_ENGINEERS_MAP.ENGINEER_4.id!,
     });
