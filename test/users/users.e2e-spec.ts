@@ -266,65 +266,6 @@ describe('UsersModule (e2e)', () => {
     );
 
     it(
-      'should be update users',
-      () => {
-        const server = app.getHttpServer();
-
-        const requests = [
-          request(server)
-            .put(API_URL)
-            .set(
-              'Cookie',
-              `${COOKIE.ACCESS_TOKEN}=${
-                accessTokensByRoles[USER_ROLES.MASTER]
-              };`,
-            )
-            .send({
-              users: UPDATE_STATIONS_WORKERS,
-            })
-            .expect(({ status, body }) => {
-              expect(status).toBe(HttpStatus.CREATED);
-              expect(body).toStrictEqual(
-                UPDATE_STATIONS_WORKERS.map((item) => ({
-                  ...item,
-                  role: expect.any(String),
-                  emailConfirmed: expect.any(Boolean),
-                  createdAt: expect.any(String),
-                  updatedAt: expect.any(String),
-                })),
-              );
-            }),
-          request(server)
-            .put(API_URL)
-            .set(
-              'Cookie',
-              `${COOKIE.ACCESS_TOKEN}=${
-                accessTokensByRoles[USER_ROLES.MASTER]
-              };`,
-            )
-            .send({
-              users: UPDATE_ENGINEERS,
-            })
-            .expect(({ status, body }) => {
-              expect(status).toBe(HttpStatus.CREATED);
-              expect(body).toStrictEqual(
-                UPDATE_ENGINEERS.map((item) => ({
-                  ...item,
-                  role: expect.any(String),
-                  emailConfirmed: expect.any(Boolean),
-                  createdAt: expect.any(String),
-                  updatedAt: expect.any(String),
-                })),
-              );
-            }),
-        ];
-
-        return Promise.all(requests);
-      },
-      TEST_TIMEOUT,
-    );
-
-    it(
       'should be bad request',
       () => {
         const server = app.getHttpServer();
@@ -499,6 +440,82 @@ describe('UsersModule (e2e)', () => {
     );
 
     it(
+      'should be unprocessable entity after change bids statuses',
+      () => {
+        const server = app.getHttpServer();
+
+        const shouldByUnprocessableEntityByClientId = [
+          {
+            ...getObjWithoutFields<any, any>(
+              MOCK_STATIONS_WORKERS_MAP.WORKER_1,
+              ['password'],
+            ),
+            clientId: 2,
+          },
+          {
+            ...getObjWithoutFields<any, any>(
+              MOCK_STATIONS_WORKERS_MAP.WORKER_2,
+              ['password'],
+            ),
+            clientId: 4,
+          },
+        ];
+
+        const shouldByUnprocessableEntityByStationId = [
+          {
+            ...getObjWithoutFields<any, any>(
+              MOCK_STATIONS_WORKERS_MAP.WORKER_3,
+              ['password'],
+            ),
+            clientId: 2,
+            stationId: 7,
+          },
+          {
+            ...getObjWithoutFields<any, any>(
+              MOCK_STATIONS_WORKERS_MAP.WORKER_6,
+              ['password'],
+            ),
+            stationId: 1,
+          },
+        ];
+
+        const requests = [
+          request(server)
+            .put(API_URL)
+            .set(
+              'Cookie',
+              `${COOKIE.ACCESS_TOKEN}=${
+                accessTokensByRoles[USER_ROLES.MASTER]
+              };`,
+            )
+            .send({
+              users: shouldByUnprocessableEntityByClientId,
+            })
+            .expect(({ status }) => {
+              expect(status).toBe(HttpStatus.UNPROCESSABLE_ENTITY);
+            }),
+          request(server)
+            .put(API_URL)
+            .set(
+              'Cookie',
+              `${COOKIE.ACCESS_TOKEN}=${
+                accessTokensByRoles[USER_ROLES.MASTER]
+              };`,
+            )
+            .send({
+              users: shouldByUnprocessableEntityByStationId,
+            })
+            .expect(({ status }) => {
+              expect(status).toBe(HttpStatus.UNPROCESSABLE_ENTITY);
+            }),
+        ];
+
+        return Promise.all(requests);
+      },
+      TEST_TIMEOUT,
+    );
+
+    it(
       'should be not found',
       () => {
         const server = app.getHttpServer();
@@ -550,6 +567,65 @@ describe('UsersModule (e2e)', () => {
             })
             .expect(({ status }) => {
               expect(status).toBe(HttpStatus.NOT_FOUND);
+            }),
+        ];
+
+        return Promise.all(requests);
+      },
+      TEST_TIMEOUT,
+    );
+
+    it(
+      'should be update users',
+      () => {
+        const server = app.getHttpServer();
+
+        const requests = [
+          request(server)
+            .put(API_URL)
+            .set(
+              'Cookie',
+              `${COOKIE.ACCESS_TOKEN}=${
+                accessTokensByRoles[USER_ROLES.MASTER]
+              };`,
+            )
+            .send({
+              users: UPDATE_STATIONS_WORKERS,
+            })
+            .expect(({ status, body }) => {
+              expect(status).toBe(HttpStatus.CREATED);
+              expect(body).toStrictEqual(
+                UPDATE_STATIONS_WORKERS.map((item) => ({
+                  ...item,
+                  role: expect.any(String),
+                  emailConfirmed: expect.any(Boolean),
+                  createdAt: expect.any(String),
+                  updatedAt: expect.any(String),
+                })),
+              );
+            }),
+          request(server)
+            .put(API_URL)
+            .set(
+              'Cookie',
+              `${COOKIE.ACCESS_TOKEN}=${
+                accessTokensByRoles[USER_ROLES.MASTER]
+              };`,
+            )
+            .send({
+              users: UPDATE_ENGINEERS,
+            })
+            .expect(({ status, body }) => {
+              expect(status).toBe(HttpStatus.CREATED);
+              expect(body).toStrictEqual(
+                UPDATE_ENGINEERS.map((item) => ({
+                  ...item,
+                  role: expect.any(String),
+                  emailConfirmed: expect.any(Boolean),
+                  createdAt: expect.any(String),
+                  updatedAt: expect.any(String),
+                })),
+              );
             }),
         ];
 
