@@ -60,7 +60,7 @@ export class StationsCheckBeforeUpdateService {
       foundStations,
     );
 
-    await this.canBeDeleteReplacedWorkersAndDoItOrFail(
+    await this.canBeDeleteReplacedWorkersOrFail(
       groupedByStationWorkerId,
       foundStations,
     );
@@ -223,7 +223,7 @@ export class StationsCheckBeforeUpdateService {
     ];
   }
 
-  private async canBeDeleteReplacedWorkersAndDoItOrFail(
+  private async canBeDeleteReplacedWorkersOrFail(
     groupByStationWorkerId: (StationsUpdateItemDTO & { index: number })[],
     foundStations: StationExtendedDTO[],
   ): Promise<void> {

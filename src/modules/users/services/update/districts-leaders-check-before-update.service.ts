@@ -17,7 +17,6 @@ import {
   DISTRICTS_ERRORS,
 } from '../../../districts/constants';
 import { DistrictsLeadersGeneralService } from '../../../districts-leaders/services';
-import { EntityManager } from 'typeorm';
 
 @Injectable()
 export class DistrictsLeadersCheckBeforeUpdateService {
@@ -30,7 +29,6 @@ export class DistrictsLeadersCheckBeforeUpdateService {
   public async executeOrFail(
     leaders: NonEmptyArray<UsersUpdateDistrictLeaderDTO & { index: number }>,
     foundLeaders: DistrictLeaderMemberDTO[],
-    entityManager: EntityManager,
   ): Promise<void> {
     const groupedLeadersToCheck = groupedByChangedFields(
       leaders,
@@ -43,13 +41,9 @@ export class DistrictsLeadersCheckBeforeUpdateService {
       foundLeaders,
     );
 
-    const districtsLeadersRepository = entityManager.getCustomRepository(
-      DistrictsLeadersRepository,
-    );
-    await this.canBeDeleteReplacedDistrictsAndDoItOrFail(
+    await this.canBeDeleteReplacedDistrictsOrFail(
       groupedLeadersToCheck.leaderDistrictId,
       foundLeaders,
-      districtsLeadersRepository,
     );
 
     await this.checkAddedAndReplacedDistrictsOrFail(
@@ -84,10 +78,9 @@ export class DistrictsLeadersCheckBeforeUpdateService {
     }
   }
 
-  private async canBeDeleteReplacedDistrictsAndDoItOrFail(
+  private async canBeDeleteReplacedDistrictsOrFail(
     groupByDistrictId: (UsersUpdateDistrictLeaderDTO & { index: number })[],
     foundLeaders: DistrictLeaderMemberDTO[],
-    districtsLeadersRepository: DistrictsLeadersRepository,
   ): Promise<void> {
     const { deleted, replaced } = groupedByValueOfObjectKeyWillBe(
       groupByDistrictId,
@@ -99,12 +92,6 @@ export class DistrictsLeadersCheckBeforeUpdateService {
 
     if (isNonEmptyArray(records)) {
       await this.allLeadersCanBeChangeDistrictsOrFail(records);
-      await districtsLeadersRepository.updateEntities(
-        records.map(({ id }) => ({
-          criteria: { userId: id },
-          inputs: { leaderDistrictId: null },
-        })),
-      );
     }
   }
 
@@ -148,13 +135,25 @@ export class DistrictsLeadersCheckBeforeUpdateService {
     groupByDistrictId: (UsersUpdateDistrictLeaderDTO & { index: number })[],
     foundLeaders: DistrictLeaderMemberDTO[],
   ): Promise<void> {
-    const { added, replaced } = groupedByValueOfObjectKeyWillBe(
+    const { added, replaced, deleted } = groupedByValueOfObjectKeyWillBe(
       groupByDistrictId,
       foundLeaders,
       'leaderDistrictId',
     );
 
-    const records = [...added, ...replaced];
+    const records = [...added, ...replaced].filter((leader) => {
+      const foundLeaderByDistrictId = foundLeaders.find(
+        ({ leaderDistrictId }) => leader.leaderDistrictId === leaderDistrictId,
+      );
+
+      if (!foundLeaderByDistrictId) return true;
+
+      const foundLeaderBeChange = !![...deleted, ...replaced].find(
+        ({ id }) => foundLeaderByDistrictId.id === id,
+      );
+
+      return !foundLeaderBeChange;
+    });
 
     if (isNonEmptyArray(records)) {
       await this.districtsLeadersGeneralService.allDistrictsWithoutLeadersOrFail(

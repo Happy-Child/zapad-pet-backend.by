@@ -1,7 +1,4 @@
-import {
-  DistrictLeaderEntity,
-  UserEntity,
-} from '@app/entities';
+import { DistrictLeaderEntity, UserEntity } from '@app/entities';
 import { USER_ROLES } from '@app/constants';
 
 export const MOCK_DISTRICTS_LEADERS_MAP: Record<

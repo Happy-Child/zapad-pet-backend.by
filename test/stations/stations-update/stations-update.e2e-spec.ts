@@ -290,14 +290,10 @@ describe('StationsModule (e2e)', () => {
       () => {
         const server = app.getHttpServer();
 
-        const stationToUpdate = [
+        const stationsToUpdate1 = [
           {
             ...MOCK_STATIONS_MAP.STATION_1,
             stationWorkerId: MOCK_STATIONS_WORKERS_MAP.WORKER_4.id,
-          },
-          {
-            ...MOCK_STATIONS_MAP.STATION_2,
-            stationWorkerId: MOCK_STATIONS_WORKERS_MAP.WORKER_1.id,
           },
           {
             ...MOCK_STATIONS_MAP.STATION_6,
@@ -309,25 +305,51 @@ describe('StationsModule (e2e)', () => {
           },
         ];
 
-        return request(server)
-          .put(API_URL)
-          .set(
-            'Cookie',
-            `${COOKIE.ACCESS_TOKEN}=${accessTokensByRoles[USER_ROLES.MASTER]};`,
-          )
-          .send({
-            stations: stationToUpdate,
-          })
-          .expect(({ status, body }) => {
-            expect(status).toBe(HttpStatus.CREATED);
-            expect(body).toStrictEqual(
-              stationToUpdate.map((item) => ({
-                ...item,
-                createdAt: expect.any(String),
-                updatedAt: expect.any(String),
-              })),
-            );
-          });
+        const stationsToUpdate2 = [
+          {
+            ...MOCK_STATIONS_MAP.STATION_2,
+            stationWorkerId: MOCK_STATIONS_WORKERS_MAP.WORKER_2.id,
+          },
+          {
+            ...MOCK_STATIONS_MAP.STATION_3,
+            stationWorkerId: MOCK_STATIONS_WORKERS_MAP.WORKER_1.id,
+          },
+          {
+            ...MOCK_STATIONS_MAP.STATION_6,
+            stationWorkerId: MOCK_STATIONS_WORKERS_MAP.WORKER_5.id,
+          },
+          {
+            ...MOCK_STATIONS_MAP.STATION_7,
+            stationWorkerId: MOCK_STATIONS_WORKERS_MAP.WORKER_4.id,
+          },
+        ];
+
+        const requests = [stationsToUpdate1, stationsToUpdate2].map(
+          (stations) =>
+            request(server)
+              .put(API_URL)
+              .set(
+                'Cookie',
+                `${COOKIE.ACCESS_TOKEN}=${
+                  accessTokensByRoles[USER_ROLES.MASTER]
+                };`,
+              )
+              .send({
+                stations,
+              })
+              .expect(({ status, body }) => {
+                expect(status).toBe(HttpStatus.CREATED);
+                expect(body).toStrictEqual(
+                  stations.map((item) => ({
+                    ...item,
+                    createdAt: expect.any(String),
+                    updatedAt: expect.any(String),
+                  })),
+                );
+              }),
+        );
+
+        return Promise.all(requests);
       },
       TEST_TIMEOUT,
     );

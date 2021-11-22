@@ -83,12 +83,12 @@ export class StationsUpdateService {
     stationsToUpdate: StationsUpdateItemDTO[],
     repository: StationsRepository,
   ): Promise<void> {
-    const recordsToUpdate: IRepositoryUpdateEntitiesItem<StationEntity>[] =
+    const records: IRepositoryUpdateEntitiesItem<StationEntity>[] =
       stationsToUpdate.map(({ id, number, districtId, clientId }) => ({
         criteria: { id },
         inputs: { number, districtId, clientId },
       }));
-    await repository.updateEntities(recordsToUpdate);
+    await repository.updateEntities(records);
   }
 
   private async addedAndReplacedStationsWorkers(
@@ -96,29 +96,40 @@ export class StationsUpdateService {
     foundStations: StationExtendedDTO[],
     repository: StationsWorkersRepository,
   ): Promise<void> {
-    const { added, replaced } = groupedByValueOfObjectKeyWillBe(
+    const { added, replaced, deleted } = groupedByValueOfObjectKeyWillBe(
       groupByStationWorkerId,
       foundStations,
       'stationWorkerId',
     );
 
-    const addedAndReplaced = [...added, ...replaced];
-
-    const recordsToUpdate: IRepositoryUpdateEntitiesItem<StationWorkerEntity>[] =
-      [];
-
-    // TODO delete "stationId" implement on stage of data checking before saving (stationsCheckBeforeUpdateService.executeOrFail)
-
-    if (isNonEmptyArray(addedAndReplaced)) {
-      const records = addedAndReplaced.map(
-        ({ id, clientId, stationWorkerId: userId }) => ({
-          criteria: { userId, clientId },
-          inputs: { stationId: id },
-        }),
+    const replacedIds = replaced.map(({ id }) => id);
+    const preparedReplacedRecords = foundStations
+      .filter(({ id }) => replacedIds.includes(id))
+      .map(
+        ({ stationWorkerId }) =>
+          foundStations.find(
+            (item) => item.stationWorkerId === stationWorkerId,
+          )!,
       );
-      recordsToUpdate.push(...records);
+    const recordsToDelete = [...deleted, ...preparedReplacedRecords];
+
+    if (isNonEmptyArray(recordsToDelete)) {
+      const records: IRepositoryUpdateEntitiesItem<StationWorkerEntity>[] =
+        recordsToDelete.map(({ id: stationId, clientId }) => ({
+          criteria: { stationId, clientId },
+          inputs: { stationId: null },
+        }));
+      await repository.updateEntities(records);
     }
 
-    await repository.updateEntities(recordsToUpdate);
+    const addedAndReplaced = [...added, ...replaced];
+    if (isNonEmptyArray(addedAndReplaced)) {
+      const records: IRepositoryUpdateEntitiesItem<StationWorkerEntity>[] =
+        addedAndReplaced.map(({ id, clientId, stationWorkerId: userId }) => ({
+          criteria: { userId, clientId },
+          inputs: { stationId: id },
+        }));
+      await repository.updateEntities(records);
+    }
   }
 }

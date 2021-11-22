@@ -30,7 +30,7 @@
     "migrate:revert": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:revert",
     "prepare": "husky install",
     "type-check": "tsc",
-    "l": "yarn lint --fix && yarn tsc"
+    "l": "yarn lint && yarn tsc"
   },
   "dependencies": {
     "@nestjs/common": "^8.0.0",

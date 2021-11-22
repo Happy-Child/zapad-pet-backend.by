@@ -25,7 +25,6 @@ import { UsersGeneralService } from '../users-general.service';
 import { UsersRepository } from '../../repositories';
 import { DistrictsLeadersCheckBeforeUpdateService } from './districts-leaders-check-before-update.service';
 import { EngineersCheckBeforeUpdateService } from './engineers-check-before-update.service';
-import { EntityManager } from 'typeorm';
 
 @Injectable()
 export class UsersCheckBeforeUpdateService {
@@ -39,14 +38,11 @@ export class UsersCheckBeforeUpdateService {
 
   public async executeOrFail(
     indexedUsers: NonEmptyArray<UsersUpdateItemDTO & { index: number }>,
-    entityManager: EntityManager,
+    foundUsers: TUserDTO[],
   ): Promise<void> {
-    const foundUsers = await this.usersGeneralService.allUsersExistingOrFail(
-      indexedUsers,
-    );
     this.allUsersMatchRolesOrFail(indexedUsers, foundUsers);
     await this.allUpdatedEmailsNotExistingOrFail(indexedUsers, foundUsers);
-    await this.checkMembersOrFail(indexedUsers, foundUsers, entityManager);
+    await this.checkMembersOrFail(indexedUsers, foundUsers);
   }
 
   private allUsersMatchRolesOrFail(
@@ -83,7 +79,6 @@ export class UsersCheckBeforeUpdateService {
   private async checkMembersOrFail(
     indexedUsersToCheck: NonEmptyArray<UsersUpdateItemDTO & { index: number }>,
     foundUsers: TUserDTO[],
-    entityManager: EntityManager,
   ): Promise<void> {
     const { stationsWorkers, districtsLeaders, engineers } = groupedByRoles<
       UsersUpdateStationWorkerDTO & { index: number },
@@ -116,7 +111,6 @@ export class UsersCheckBeforeUpdateService {
         this.districtsLeadersCheckBeforeUpdateService.executeOrFail(
           districtsLeaders,
           foundDistrictsLeaders,
-          entityManager,
         ),
       );
     }

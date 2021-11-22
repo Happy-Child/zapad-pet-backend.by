@@ -7,7 +7,11 @@ import {
   UsersUpdateStationWorkerDTO,
 } from '../../dtos/users-update.dtos';
 import { EngineersRepository, UsersRepository } from '../../repositories';
-import { getIndexedArray, isNonEmptyArray } from '@app/helpers';
+import {
+  getIndexedArray,
+  groupedByValueOfObjectKeyWillBe,
+  isNonEmptyArray,
+} from '@app/helpers';
 import { UsersGeneralService } from '../users-general.service';
 import { UsersCheckBeforeUpdateService } from './users-check-before-update.service';
 import { groupedByRoles } from '@app/helpers/grouped.helpers';
@@ -23,6 +27,8 @@ import {
 import { DistrictsLeadersRepository } from '../../../districts-leaders/repositories';
 import { TUserDTO } from '../../types';
 import { NonEmptyArray } from '@app/types';
+import { DistrictLeaderMemberDTO, StationWorkerMemberDTO } from '../../dtos';
+import { USER_ROLES } from '@app/constants';
 
 @Injectable()
 export class UsersUpdateService {
@@ -38,12 +44,16 @@ export class UsersUpdateService {
   }: UsersUpdateRequestBodyDTO): Promise<TUserDTO[]> {
     const indexedUsers = getIndexedArray(users);
 
+    const foundUsers = await this.usersGeneralService.allUsersExistingOrFail(
+      indexedUsers,
+    );
+
     await this.connection.transaction(async (manager) => {
       await this.usersCheckBeforeUpdateService.executeOrFail(
         indexedUsers,
-        manager,
+        foundUsers,
       );
-      await this.update(indexedUsers, manager);
+      await this.update(indexedUsers, foundUsers, manager);
     });
 
     const ids = indexedUsers.map(({ id }) => id) as NonEmptyArray<number>;
@@ -52,6 +62,7 @@ export class UsersUpdateService {
 
   private async update(
     users: UsersUpdateItemDTO[],
+    foundUsers: TUserDTO[],
     manager: EntityManager,
   ): Promise<void> {
     const usersRepository = manager.getCustomRepository(UsersRepository);
@@ -68,6 +79,7 @@ export class UsersUpdateService {
 
     await this.updateMembers(
       users,
+      foundUsers,
       stationsWorkersRepository,
       districtsLeadersRepository,
       engineersRepository,
@@ -88,6 +100,7 @@ export class UsersUpdateService {
 
   private async updateMembers(
     users: UsersUpdateItemDTO[],
+    foundUsers: TUserDTO[],
     stationsWorkersRepository: StationsWorkersRepository,
     districtsLeadersRepository: DistrictsLeadersRepository,
     engineersRepository: EngineersRepository,
@@ -102,13 +115,18 @@ export class UsersUpdateService {
 
     if (isNonEmptyArray(stationsWorkers)) {
       requestsToUpdate.push(
-        this.updateStationsWorkers(stationsWorkers, stationsWorkersRepository),
+        this.updateStationsWorkers(
+          stationsWorkers,
+          foundUsers,
+          stationsWorkersRepository,
+        ),
       );
     }
     if (isNonEmptyArray(districtsLeaders)) {
       requestsToUpdate.push(
         this.updateDistrictsLeaders(
           districtsLeaders,
+          foundUsers,
           districtsLeadersRepository,
         ),
       );
@@ -124,40 +142,94 @@ export class UsersUpdateService {
 
   private async updateStationsWorkers(
     workers: UsersUpdateStationWorkerDTO[],
+    foundUsers: TUserDTO[],
     repository: StationsWorkersRepository,
   ): Promise<void> {
-    const recordsToUpdate: IRepositoryUpdateEntitiesItem<StationWorkerEntity>[] =
-      workers.map(({ id: userId, stationId, clientId }) => ({
-        criteria: { userId },
-        inputs: { stationId, clientId },
-      }));
+    const { added, replaced, deleted } = groupedByValueOfObjectKeyWillBe(
+      workers,
+      foundUsers as StationWorkerMemberDTO[],
+      'stationId',
+    );
 
-    await repository.updateEntities(recordsToUpdate);
+    const preparedReplacedRecords = replaced.map(
+      ({ stationId }) =>
+        foundUsers.find(
+          (item): item is StationWorkerMemberDTO =>
+            item.role === USER_ROLES.STATION_WORKER &&
+            item.stationId === stationId,
+        )!,
+    );
+    const recordsToDelete = [...deleted, ...preparedReplacedRecords];
+    if (isNonEmptyArray(recordsToDelete)) {
+      const records: IRepositoryUpdateEntitiesItem<StationWorkerEntity>[] =
+        recordsToDelete.map(({ id: userId, stationId, clientId }) => ({
+          criteria: { userId },
+          inputs: { stationId, clientId },
+        }));
+      await repository.updateEntities(records);
+    }
+
+    const addedAndReplacedWorkers = [...added, ...replaced];
+    if (isNonEmptyArray(addedAndReplacedWorkers)) {
+      const recordsToUpdate: IRepositoryUpdateEntitiesItem<StationWorkerEntity>[] =
+        addedAndReplacedWorkers.map(({ id: userId, clientId, stationId }) => ({
+          criteria: { userId },
+          inputs: { clientId, stationId },
+        }));
+      await repository.updateEntities(recordsToUpdate);
+    }
   }
 
   private async updateDistrictsLeaders(
     leaders: UsersUpdateDistrictLeaderDTO[],
+    foundUsers: TUserDTO[],
     repository: DistrictsLeadersRepository,
   ): Promise<void> {
-    const recordsToUpdate: IRepositoryUpdateEntitiesItem<DistrictLeaderEntity>[] =
-      leaders.map(({ id: userId, leaderDistrictId }) => ({
-        criteria: { userId },
-        inputs: { leaderDistrictId },
-      }));
+    const { added, replaced, deleted } = groupedByValueOfObjectKeyWillBe(
+      leaders,
+      foundUsers as DistrictLeaderMemberDTO[],
+      'leaderDistrictId',
+    );
 
-    await repository.updateEntities(recordsToUpdate);
+    const preparedReplacedRecords = replaced.map(
+      ({ leaderDistrictId }) =>
+        foundUsers.find(
+          (item): item is DistrictLeaderMemberDTO =>
+            item.role === USER_ROLES.DISTRICT_LEADER &&
+            item.leaderDistrictId === leaderDistrictId,
+        )!,
+    );
+    const recordsToDelete = [...deleted, ...preparedReplacedRecords];
+    if (isNonEmptyArray(recordsToDelete)) {
+      const records: IRepositoryUpdateEntitiesItem<DistrictLeaderEntity>[] =
+        recordsToDelete.map(({ id: userId }) => ({
+          criteria: { userId },
+          inputs: { leaderDistrictId: null },
+        }));
+      await repository.updateEntities(records);
+    }
+
+    const recordsToAddedAndReplaced = [...added, ...replaced];
+    if (isNonEmptyArray(recordsToAddedAndReplaced)) {
+      const records: IRepositoryUpdateEntitiesItem<DistrictLeaderEntity>[] =
+        recordsToAddedAndReplaced.map(({ id: userId, leaderDistrictId }) => ({
+          criteria: { userId },
+          inputs: { leaderDistrictId },
+        }));
+      await repository.updateEntities(records);
+    }
   }
 
   private async updateEngineers(
     engineers: UsersUpdateEngineerDTO[],
     repository: EngineersRepository,
   ): Promise<void> {
-    const recordsToUpdate: IRepositoryUpdateEntitiesItem<EngineerEntity>[] =
+    const records: IRepositoryUpdateEntitiesItem<EngineerEntity>[] =
       engineers.map(({ id: userId, engineerDistrictId }) => ({
         criteria: { userId },
         inputs: { engineerDistrictId },
       }));
 
-    await repository.updateEntities(recordsToUpdate);
+    await repository.updateEntities(records);
   }
 }

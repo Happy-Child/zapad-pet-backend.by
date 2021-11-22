@@ -133,13 +133,12 @@ describe('UsersModule (e2e)', () => {
             email: `district_leader_${index + 1}@mail.ru`,
           }));
 
-        const mockDistrictLeaders = Object.values(MOCK_DISTRICTS_LEADERS_MAP);
-        const shouldBeUnprocessableEntityByLeaderDistrictId =
-          mockDistrictLeaders.map((item, index) => ({
-            ...getObjWithoutFields<any, any>(item, ['password']),
-            leaderDistrictId:
-              mockDistrictLeaders.reverse()[index].leaderDistrictId,
-          }));
+        const shouldBeUnprocessableEntityByLeaderDistrictId = [
+          {
+            ...MOCK_DISTRICTS_LEADERS_MAP.LEADER_1,
+            leaderDistrictId: 75,
+          },
+        ];
 
         const shouldByUnprocessableEntityByClientId = [
           {
@@ -257,7 +256,20 @@ describe('UsersModule (e2e)', () => {
       () => {
         const server = app.getHttpServer();
 
+        const mockDistrictLeaders = Object.values(MOCK_DISTRICTS_LEADERS_MAP);
+        const shouldBeSuccessDistrictsLeaders = mockDistrictLeaders
+          .map((item, index) => ({
+            ...getObjWithoutFields<any, any>(item, ['password']),
+            leaderDistrictId:
+              mockDistrictLeaders.reverse()[index].leaderDistrictId,
+          }))
+          .sort((a, b) => a.id! - b.id!);
+
         const requests = [
+          shouldBeSuccessDistrictsLeaders,
+          TEST_USERS_UPDATE_ENGINEERS,
+          TEST_USERS_UPDATE_STATIONS_WORKERS,
+        ].map((users) =>
           request(server)
             .put(API_URL)
             .set(
@@ -267,12 +279,12 @@ describe('UsersModule (e2e)', () => {
               };`,
             )
             .send({
-              users: TEST_USERS_UPDATE_STATIONS_WORKERS,
+              users,
             })
             .expect(({ status, body }) => {
               expect(status).toBe(HttpStatus.CREATED);
               expect(body).toStrictEqual(
-                TEST_USERS_UPDATE_STATIONS_WORKERS.map((item) => ({
+                users.map((item) => ({
                   ...item,
                   role: expect.any(String),
                   emailConfirmed: expect.any(Boolean),
@@ -281,30 +293,7 @@ describe('UsersModule (e2e)', () => {
                 })),
               );
             }),
-          request(server)
-            .put(API_URL)
-            .set(
-              'Cookie',
-              `${COOKIE.ACCESS_TOKEN}=${
-                accessTokensByRoles[USER_ROLES.MASTER]
-              };`,
-            )
-            .send({
-              users: TEST_USERS_UPDATE_ENGINEERS,
-            })
-            .expect(({ status, body }) => {
-              expect(status).toBe(HttpStatus.CREATED);
-              expect(body).toStrictEqual(
-                TEST_USERS_UPDATE_ENGINEERS.map((item) => ({
-                  ...item,
-                  role: expect.any(String),
-                  emailConfirmed: expect.any(Boolean),
-                  createdAt: expect.any(String),
-                  updatedAt: expect.any(String),
-                })),
-              );
-            }),
-        ];
+        );
 
         return Promise.all(requests);
       },
