@@ -21,6 +21,7 @@ export class ExceptionsAppValidationPipe implements PipeTransform {
 
     if (errors.length) {
       const details = this.getFormattedErrors(metatype, errors);
+      console.log(JSON.stringify(details, null, 2));
       throw new ExceptionsBadRequest(details);
     }
 

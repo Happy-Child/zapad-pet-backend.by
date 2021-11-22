@@ -17,12 +17,14 @@ import { Type } from 'class-transformer';
 export class UsersGetListRequestQueryDTO extends PaginationRequestDTO {
   @IsOptional()
   @IsIn([
+    ENTITIES_FIELDS.ID,
     ENTITIES_FIELDS.NAME,
     ENTITIES_FIELDS.EMAIL,
     ENTITIES_FIELDS.CREATED_AT,
     ENTITIES_FIELDS.ROLE,
   ])
   sortBy?:
+    | ENTITIES_FIELDS.ID
     | ENTITIES_FIELDS.NAME
     | ENTITIES_FIELDS.EMAIL
     | ENTITIES_FIELDS.CREATED_AT
