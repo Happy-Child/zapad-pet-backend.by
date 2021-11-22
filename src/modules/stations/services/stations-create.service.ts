@@ -60,6 +60,7 @@ export class StationsCreateService {
     await this.stationsGeneralService.allStationsNumbersNotExistsOrFail(
       indexedStations,
     );
+
     await this.districtsGeneralService.allDistrictsExistsOrFail(
       indexedStations,
       'districtId',

@@ -20,8 +20,6 @@ import {
   groupedByNull,
 } from '@app/helpers/grouped.helpers';
 import { StationExtendedDTO, StationsUpdateItemDTO } from '../../dtos';
-import { StationsWorkersRepository } from '../../../stations-workers/repositories';
-import { EntityManager } from 'typeorm';
 
 type TIndexedStationsUpdateItemDTO = StationsUpdateItemDTO & { index: number };
 
@@ -38,7 +36,6 @@ export class StationsCheckBeforeUpdateService {
   public async executeOrFail(
     stationsToCheck: (StationsUpdateItemDTO & { index: number })[],
     foundStations: StationExtendedDTO[],
-    entityManager: EntityManager,
   ): Promise<void> {
     const {
       number: groupedByNumber,
@@ -63,13 +60,9 @@ export class StationsCheckBeforeUpdateService {
       foundStations,
     );
 
-    const stationsWorkersRepository = entityManager.getCustomRepository(
-      StationsWorkersRepository,
-    );
     await this.canBeDeleteReplacedWorkersAndDoItOrFail(
       groupedByStationWorkerId,
       foundStations,
-      stationsWorkersRepository,
     );
 
     await this.checkMatchingWorkersAndClientsOrFail(
@@ -87,7 +80,8 @@ export class StationsCheckBeforeUpdateService {
     const requestsToCheck: Promise<any>[] = [];
 
     const [
-      stationsToCheckExistingAndMatchingWorkersWithClients,
+      stationsToCheckMatchingWorkersWithClients,
+      _,
       stationsToCheckExistingClients,
     ] = this.getGroupedStationsToCheckWorkersAndClients(
       groupByClientsId,
@@ -95,10 +89,10 @@ export class StationsCheckBeforeUpdateService {
       foundStations,
     );
 
-    if (isNonEmptyArray(stationsToCheckExistingAndMatchingWorkersWithClients)) {
+    if (isNonEmptyArray(stationsToCheckMatchingWorkersWithClients)) {
       requestsToCheck.push(
         this.stationsWorkersGeneralService.allWorkersExistingOrFail(
-          stationsToCheckExistingAndMatchingWorkersWithClients,
+          stationsToCheckMatchingWorkersWithClients,
         ),
       );
     }
@@ -119,28 +113,38 @@ export class StationsCheckBeforeUpdateService {
     groupByStationWorkerId: (StationsUpdateItemDTO & { index: number })[],
     foundStations: StationExtendedDTO[],
   ): Promise<void> {
-    const [stationsToCheckExistingAndMatchingWorkersWithClients] =
-      this.getGroupedStationsToCheckWorkersAndClients(
-        groupByClientsId,
-        groupByStationWorkerId,
-        foundStations,
-      );
+    const [
+      stationsToCheckMatchingWorkersWithClients,
+      stationsToCheckEmptyWorkers,
+    ] = this.getGroupedStationsToCheckWorkersAndClients(
+      groupByClientsId,
+      groupByStationWorkerId,
+      foundStations,
+    );
 
-    if (isNonEmptyArray(stationsToCheckExistingAndMatchingWorkersWithClients)) {
+    if (isNonEmptyArray(stationsToCheckMatchingWorkersWithClients)) {
       const foundStationsWorkers =
         await this.stationsWorkersGeneralService.allWorkersExistingOrFail(
-          stationsToCheckExistingAndMatchingWorkersWithClients,
+          stationsToCheckMatchingWorkersWithClients,
         );
 
       this.stationsWorkersGeneralService.allWorkersMatchOfClientsOrFail(
         foundStationsWorkers,
-        stationsToCheckExistingAndMatchingWorkersWithClients,
+        stationsToCheckMatchingWorkersWithClients,
       );
 
-      this.stationsWorkersGeneralService.allWorkersWithoutStationsExistingOrFail(
-        foundStationsWorkers,
-        stationsToCheckExistingAndMatchingWorkersWithClients,
-      );
+      if (isNonEmptyArray(stationsToCheckEmptyWorkers)) {
+        const workersIds = stationsToCheckEmptyWorkers.map(
+          ({ stationWorkerId }) => stationWorkerId,
+        );
+        const filteredWorkers = foundStationsWorkers.filter(({ id }) =>
+          workersIds.includes(id),
+        );
+        this.stationsWorkersGeneralService.allWorkersWithoutStationsExistingOrFail(
+          filteredWorkers,
+          stationsToCheckEmptyWorkers,
+        );
+      }
     }
   }
 
@@ -149,6 +153,9 @@ export class StationsCheckBeforeUpdateService {
     groupByStationWorkerId: (StationsUpdateItemDTO & { index: number })[],
     foundStations: StationExtendedDTO[],
   ): [
+    (Omit<TIndexedStationsUpdateItemDTO, 'stationWorkerId'> & {
+      stationWorkerId: number;
+    })[],
     (Omit<TIndexedStationsUpdateItemDTO, 'stationWorkerId'> & {
       stationWorkerId: number;
     })[],
@@ -172,7 +179,7 @@ export class StationsCheckBeforeUpdateService {
       'stationWorkerId',
     );
 
-    const stationsToCheckExistingAndMatchingWorkersWithClients = uniqBy(
+    const stationsToCheckMatchingWorkersWithClients = uniqBy(
       [
         ...stationsReplacedClientsWithStations,
         ...groupByWorkerIdNextStates.added,
@@ -180,19 +187,45 @@ export class StationsCheckBeforeUpdateService {
       ],
       'id',
     ) as (Omit<TIndexedStationsUpdateItemDTO, 'stationWorkerId'> & {
+      clientId: number;
       stationWorkerId: number;
     })[];
 
+    const stationsToCheckEmptyWorkers = [
+      ...groupByWorkerIdNextStates.added,
+      ...groupByWorkerIdNextStates.replaced,
+    ].filter((station) => {
+      const foundStationByWorkerId = foundStations.find(
+        ({ stationWorkerId }) => station.stationWorkerId === stationWorkerId,
+      );
+
+      if (!foundStationByWorkerId) return true;
+
+      const foundStationBeChange = !![
+        ...groupByWorkerIdNextStates.deleted,
+        ...groupByWorkerIdNextStates.replaced,
+      ].find(({ id }) => foundStationByWorkerId.id === id);
+
+      return !foundStationBeChange;
+    }) as (Omit<TIndexedStationsUpdateItemDTO, 'stationWorkerId'> & {
+      clientId: number;
+      stationWorkerId: number;
+    })[];
+
+    const stationsToCheckExistingClients = [
+      ...stationsReplacedClientsWithoutStations,
+    ];
+
     return [
-      stationsToCheckExistingAndMatchingWorkersWithClients,
-      stationsReplacedClientsWithoutStations,
+      stationsToCheckMatchingWorkersWithClients,
+      stationsToCheckEmptyWorkers,
+      stationsToCheckExistingClients,
     ];
   }
 
   private async canBeDeleteReplacedWorkersAndDoItOrFail(
     groupByStationWorkerId: (StationsUpdateItemDTO & { index: number })[],
     foundStations: StationExtendedDTO[],
-    stationsWorkersRepository: StationsWorkersRepository,
   ): Promise<void> {
     const { deleted, replaced } = groupedByValueOfObjectKeyWillBe(
       groupByStationWorkerId,
@@ -204,12 +237,6 @@ export class StationsCheckBeforeUpdateService {
 
     if (isNonEmptyArray(records)) {
       await this.allStationsCanBeChangeWorkersOrFail(records);
-      await stationsWorkersRepository.updateEntities(
-        records.map(({ id, clientId }) => ({
-          criteria: { stationId: id, clientId },
-          inputs: { stationId: null },
-        })),
-      );
     }
   }
 

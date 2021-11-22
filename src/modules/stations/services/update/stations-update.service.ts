@@ -18,31 +18,37 @@ import { StationEntity, StationWorkerEntity } from '@app/entities';
 import { StationsCheckBeforeUpdateService } from './stations-check-before-update.service';
 import { StationsWorkersRepository } from '../../../stations-workers/repositories';
 import { GROUPED_UPDATING_STATIONS_FIELDS } from '../../constants';
+import { NonEmptyArray } from '@app/types';
 
 @Injectable()
 export class StationsUpdateService {
   constructor(
+    private readonly stationsRepository: StationsRepository,
     private readonly stationsGeneralService: StationsGeneralService,
     private readonly stationsCheckBeforeUpdateService: StationsCheckBeforeUpdateService,
     private readonly connection: Connection,
   ) {}
 
-  public async execute(data: StationsUpdateRequestBodyDTO): Promise<void> {
-    const stationsToCheck = getIndexedArray(data.stations);
+  public async execute(
+    data: StationsUpdateRequestBodyDTO,
+  ): Promise<StationExtendedDTO[]> {
+    const indexedStations = getIndexedArray(data.stations);
 
     const foundStations =
       await this.stationsGeneralService.allStationsExistsOrFail(
-        stationsToCheck,
+        indexedStations,
       );
 
     await this.connection.transaction(async (manager) => {
       await this.stationsCheckBeforeUpdateService.executeOrFail(
-        stationsToCheck,
+        indexedStations,
         foundStations,
-        manager,
       );
       await this.update(data.stations, foundStations, manager);
     });
+
+    const ids = indexedStations.map(({ id }) => id) as NonEmptyArray<number>;
+    return this.stationsRepository.getStationsByIds(ids);
   }
 
   private async update(

@@ -95,6 +95,12 @@ describe('UsersModule (e2e)', () => {
         ];
 
         const requests = [
+          shouldBeBadRequestById,
+          shouldBeBadRequestByEmails,
+          shouldBeBadRequestByRoles,
+          shouldBeBadRequestByLeaderDistrictId,
+          shouldBeBadRequestByClientId,
+        ].map((users) =>
           request(server)
             .put(API_URL)
             .set(
@@ -104,68 +110,12 @@ describe('UsersModule (e2e)', () => {
               };`,
             )
             .send({
-              users: shouldBeBadRequestById,
+              users,
             })
             .expect(({ status }) => {
               expect(status).toBe(HttpStatus.BAD_REQUEST);
             }),
-          request(server)
-            .put(API_URL)
-            .set(
-              'Cookie',
-              `${COOKIE.ACCESS_TOKEN}=${
-                accessTokensByRoles[USER_ROLES.MASTER]
-              };`,
-            )
-            .send({
-              users: shouldBeBadRequestByEmails,
-            })
-            .expect(({ status }) => {
-              expect(status).toBe(HttpStatus.BAD_REQUEST);
-            }),
-          request(server)
-            .put(API_URL)
-            .set(
-              'Cookie',
-              `${COOKIE.ACCESS_TOKEN}=${
-                accessTokensByRoles[USER_ROLES.MASTER]
-              };`,
-            )
-            .send({
-              users: shouldBeBadRequestByRoles,
-            })
-            .expect(({ status }) => {
-              expect(status).toBe(HttpStatus.BAD_REQUEST);
-            }),
-          request(server)
-            .put(API_URL)
-            .set(
-              'Cookie',
-              `${COOKIE.ACCESS_TOKEN}=${
-                accessTokensByRoles[USER_ROLES.MASTER]
-              };`,
-            )
-            .send({
-              users: shouldBeBadRequestByLeaderDistrictId,
-            })
-            .expect(({ status }) => {
-              expect(status).toBe(HttpStatus.BAD_REQUEST);
-            }),
-          request(server)
-            .put(API_URL)
-            .set(
-              'Cookie',
-              `${COOKIE.ACCESS_TOKEN}=${
-                accessTokensByRoles[USER_ROLES.MASTER]
-              };`,
-            )
-            .send({
-              users: shouldBeBadRequestByClientId,
-            })
-            .expect(({ status }) => {
-              expect(status).toBe(HttpStatus.BAD_REQUEST);
-            }),
-        ];
+        );
 
         return Promise.all(requests);
       },
@@ -227,6 +177,11 @@ describe('UsersModule (e2e)', () => {
         ];
 
         const requests = [
+          shouldBeUnprocessableEntityByEmails,
+          shouldBeUnprocessableEntityByLeaderDistrictId,
+          shouldByUnprocessableEntityByClientId,
+          shouldByUnprocessableEntityByStationId,
+        ].map((users) =>
           request(server)
             .put(API_URL)
             .set(
@@ -236,54 +191,12 @@ describe('UsersModule (e2e)', () => {
               };`,
             )
             .send({
-              users: shouldBeUnprocessableEntityByEmails,
+              users,
             })
             .expect(({ status }) => {
               expect(status).toBe(HttpStatus.UNPROCESSABLE_ENTITY);
             }),
-          request(server)
-            .put(API_URL)
-            .set(
-              'Cookie',
-              `${COOKIE.ACCESS_TOKEN}=${
-                accessTokensByRoles[USER_ROLES.MASTER]
-              };`,
-            )
-            .send({
-              users: shouldBeUnprocessableEntityByLeaderDistrictId,
-            })
-            .expect(({ status }) => {
-              expect(status).toBe(HttpStatus.UNPROCESSABLE_ENTITY);
-            }),
-          request(server)
-            .put(API_URL)
-            .set(
-              'Cookie',
-              `${COOKIE.ACCESS_TOKEN}=${
-                accessTokensByRoles[USER_ROLES.MASTER]
-              };`,
-            )
-            .send({
-              users: shouldByUnprocessableEntityByClientId,
-            })
-            .expect(({ status }) => {
-              expect(status).toBe(HttpStatus.UNPROCESSABLE_ENTITY);
-            }),
-          request(server)
-            .put(API_URL)
-            .set(
-              'Cookie',
-              `${COOKIE.ACCESS_TOKEN}=${
-                accessTokensByRoles[USER_ROLES.MASTER]
-              };`,
-            )
-            .send({
-              users: shouldByUnprocessableEntityByStationId,
-            })
-            .expect(({ status }) => {
-              expect(status).toBe(HttpStatus.UNPROCESSABLE_ENTITY);
-            }),
-        ];
+        );
 
         return Promise.all(requests);
       },
@@ -315,6 +228,9 @@ describe('UsersModule (e2e)', () => {
         ];
 
         const requests = [
+          shouldBeBadRequestByDistrictId,
+          shouldBeBadRequestByClientIdOrStationId,
+        ].map((users) =>
           request(server)
             .put(API_URL)
             .set(
@@ -324,26 +240,12 @@ describe('UsersModule (e2e)', () => {
               };`,
             )
             .send({
-              users: shouldBeBadRequestByDistrictId,
+              users,
             })
             .expect(({ status }) => {
               expect(status).toBe(HttpStatus.NOT_FOUND);
             }),
-          request(server)
-            .put(API_URL)
-            .set(
-              'Cookie',
-              `${COOKIE.ACCESS_TOKEN}=${
-                accessTokensByRoles[USER_ROLES.MASTER]
-              };`,
-            )
-            .send({
-              users: shouldBeBadRequestByClientIdOrStationId,
-            })
-            .expect(({ status }) => {
-              expect(status).toBe(HttpStatus.NOT_FOUND);
-            }),
-        ];
+        );
 
         return Promise.all(requests);
       },

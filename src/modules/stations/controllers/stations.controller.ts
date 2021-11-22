@@ -36,14 +36,15 @@ export class StationsController {
   async create(
     @Body() body: StationsCreateRequestBodyDTO,
   ): Promise<StationExtendedDTO[]> {
-    return await this.stationsCreateService.execute(body);
+    return this.stationsCreateService.execute(body);
   }
 
   @HttpCode(HttpStatus.CREATED)
   @AuthRoles(USER_ROLES.MASTER)
   @Put()
-  async update(@Body() body: StationsUpdateRequestBodyDTO): Promise<true> {
-    await this.stationsUpdateService.execute(body);
-    return true;
+  async update(
+    @Body() body: StationsUpdateRequestBodyDTO,
+  ): Promise<StationExtendedDTO[]> {
+    return this.stationsUpdateService.execute(body);
   }
 }

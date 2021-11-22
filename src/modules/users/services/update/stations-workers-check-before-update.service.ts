@@ -180,7 +180,8 @@ export class StationsWorkersCheckBeforeUpdateService {
       clientId: number;
       stationId: number;
     })[],
-    (Omit<TIndexedUsersUpdateStationWorkerDTO, 'stationId'> & {
+    (Omit<TIndexedUsersUpdateStationWorkerDTO, 'clientId' | 'stationId'> & {
+      clientId: number;
       stationId: number;
     })[],
     (Omit<TIndexedUsersUpdateStationWorkerDTO, 'clientId'> & {
@@ -238,6 +239,7 @@ export class StationsWorkersCheckBeforeUpdateService {
         ...groupByStationIdNextStates.deleted,
         ...groupByStationIdNextStates.replaced,
       ].find(({ id }) => foundWorkerByStationId.id === id);
+
       return !foundWorkerBeChange;
     }) as (Omit<
       TIndexedUsersUpdateStationWorkerDTO,

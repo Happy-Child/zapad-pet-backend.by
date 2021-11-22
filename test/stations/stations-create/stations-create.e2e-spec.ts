@@ -67,39 +67,23 @@ describe('StationsModule (e2e)', () => {
           }),
         );
 
-        const requests = [
-          request(server)
-            .post(API_URL)
-            .set(
-              'Cookie',
-              `${COOKIE.ACCESS_TOKEN}=${
-                accessTokensByRoles[USER_ROLES.MASTER]
-              };`,
-            )
-            .send({
-              stations: shouldBeErrorByNumber.map((item) => ({
-                ...item,
-                stationWorkerId: null,
-              })),
-            })
-            .expect(({ status }) => {
-              expect(status).toBe(HttpStatus.BAD_REQUEST);
-            }),
-          request(server)
-            .post(API_URL)
-            .set(
-              'Cookie',
-              `${COOKIE.ACCESS_TOKEN}=${
-                accessTokensByRoles[USER_ROLES.MASTER]
-              };`,
-            )
-            .send({
-              stations: shouldBeErrorByWorkerId,
-            })
-            .expect(({ status }) => {
-              expect(status).toBe(HttpStatus.BAD_REQUEST);
-            }),
-        ];
+        const requests = [shouldBeErrorByNumber, shouldBeErrorByWorkerId].map(
+          (stations) =>
+            request(server)
+              .post(API_URL)
+              .set(
+                'Cookie',
+                `${COOKIE.ACCESS_TOKEN}=${
+                  accessTokensByRoles[USER_ROLES.MASTER]
+                };`,
+              )
+              .send({
+                stations,
+              })
+              .expect(({ status }) => {
+                expect(status).toBe(HttpStatus.BAD_REQUEST);
+              }),
+        );
 
         return Promise.all(requests);
       },
@@ -162,6 +146,10 @@ describe('StationsModule (e2e)', () => {
         ];
 
         const requests = [
+          shouldBeErrorByNumber,
+          shouldBeErrorByWorkerAndClientId1,
+          shouldBeErrorByWorkerAndClientId2,
+        ].map((stations) =>
           request(server)
             .post(API_URL)
             .set(
@@ -171,40 +159,12 @@ describe('StationsModule (e2e)', () => {
               };`,
             )
             .send({
-              stations: shouldBeErrorByNumber,
+              stations,
             })
             .expect(({ status }) => {
               expect(status).toBe(HttpStatus.UNPROCESSABLE_ENTITY);
             }),
-          request(server)
-            .post(API_URL)
-            .set(
-              'Cookie',
-              `${COOKIE.ACCESS_TOKEN}=${
-                accessTokensByRoles[USER_ROLES.MASTER]
-              };`,
-            )
-            .send({
-              stations: shouldBeErrorByWorkerAndClientId1,
-            })
-            .expect(({ status }) => {
-              expect(status).toBe(HttpStatus.UNPROCESSABLE_ENTITY);
-            }),
-          request(server)
-            .post(API_URL)
-            .set(
-              'Cookie',
-              `${COOKIE.ACCESS_TOKEN}=${
-                accessTokensByRoles[USER_ROLES.MASTER]
-              };`,
-            )
-            .send({
-              stations: shouldBeErrorByWorkerAndClientId2,
-            })
-            .expect(({ status }) => {
-              expect(status).toBe(HttpStatus.UNPROCESSABLE_ENTITY);
-            }),
-        ];
+        );
 
         return Promise.all(requests);
       },
@@ -233,6 +193,9 @@ describe('StationsModule (e2e)', () => {
         );
 
         const requests = [
+          shouldBeErrorByDistrictId,
+          shouldBeErrorByClientId,
+        ].map((stations) =>
           request(server)
             .post(API_URL)
             .set(
@@ -242,26 +205,12 @@ describe('StationsModule (e2e)', () => {
               };`,
             )
             .send({
-              stations: shouldBeErrorByDistrictId,
+              stations,
             })
             .expect(({ status }) => {
               expect(status).toBe(HttpStatus.NOT_FOUND);
             }),
-          request(server)
-            .post(API_URL)
-            .set(
-              'Cookie',
-              `${COOKIE.ACCESS_TOKEN}=${
-                accessTokensByRoles[USER_ROLES.MASTER]
-              };`,
-            )
-            .send({
-              stations: shouldBeErrorByClientId,
-            })
-            .expect(({ status }) => {
-              expect(status).toBe(HttpStatus.NOT_FOUND);
-            }),
-        ];
+        );
 
         return Promise.all(requests);
       },
@@ -273,32 +222,26 @@ describe('StationsModule (e2e)', () => {
       () => {
         const server = app.getHttpServer();
 
-        const requests = [
-          request(server)
-            .post(API_URL)
-            .set(
-              'Cookie',
-              `${COOKIE.ACCESS_TOKEN}=${
-                accessTokensByRoles[USER_ROLES.MASTER]
-              };`,
-            )
-            .send({
-              stations: TEST_STATIONS_CREATE_ITEMS,
-            })
-            .expect(({ status, body }) => {
-              expect(status).toBe(HttpStatus.OK);
-              expect(body).toStrictEqual(
-                TEST_STATIONS_CREATE_ITEMS.map((item) => ({
-                  ...item,
-                  id: expect.any(Number),
-                  createdAt: expect.any(String),
-                  updatedAt: expect.any(String),
-                })),
-              );
-            }),
-        ];
-
-        return Promise.all(requests);
+        return request(server)
+          .post(API_URL)
+          .set(
+            'Cookie',
+            `${COOKIE.ACCESS_TOKEN}=${accessTokensByRoles[USER_ROLES.MASTER]};`,
+          )
+          .send({
+            stations: TEST_STATIONS_CREATE_ITEMS,
+          })
+          .expect(({ status, body }) => {
+            expect(status).toBe(HttpStatus.OK);
+            expect(body).toStrictEqual(
+              TEST_STATIONS_CREATE_ITEMS.map((item) => ({
+                ...item,
+                id: expect.any(Number),
+                createdAt: expect.any(String),
+                updatedAt: expect.any(String),
+              })),
+            );
+          });
       },
       TEST_TIMEOUT,
     );

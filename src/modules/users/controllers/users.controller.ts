@@ -46,7 +46,7 @@ export class UsersController {
   @AuthRoles(USER_ROLES.MASTER)
   @Put()
   async update(@Body() body: UsersUpdateRequestBodyDTO): Promise<TUserDTO[]> {
-    return await this.usersUpdateService.execute(body);
+    return this.usersUpdateService.execute(body);
   }
 
   @HttpCode(HttpStatus.OK)
