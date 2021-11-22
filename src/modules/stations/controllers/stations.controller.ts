@@ -1,6 +1,7 @@
 import {
   Controller,
   Post,
+  Get,
   Body,
   Put,
   HttpCode,
@@ -11,6 +12,8 @@ import {
   StationsUpdateRequestBodyDTO,
 } from '../dtos';
 import { StationsCreateService, StationsUpdateService } from '../services';
+import { USER_ROLES } from '@app/constants';
+import { AuthRoles } from '../../auth/decorators/auth-roles.decorators';
 
 @Controller('stations')
 export class StationsController {
@@ -20,6 +23,14 @@ export class StationsController {
   ) {}
 
   @HttpCode(HttpStatus.OK)
+  @AuthRoles(USER_ROLES.MASTER)
+  @Get()
+  async getList(): Promise<void> {
+    //
+  }
+
+  @HttpCode(HttpStatus.OK)
+  @AuthRoles(USER_ROLES.MASTER)
   @Post()
   async create(@Body() body: StationsCreateRequestBodyDTO): Promise<true> {
     await this.stationsCreateService.execute(body);
@@ -27,6 +38,7 @@ export class StationsController {
   }
 
   @HttpCode(HttpStatus.CREATED)
+  @AuthRoles(USER_ROLES.MASTER)
   @Put()
   async update(@Body() body: StationsUpdateRequestBodyDTO): Promise<true> {
     await this.stationsUpdateService.execute(body);

@@ -2,17 +2,20 @@ import { HttpStatus, INestApplication } from '@nestjs/common';
 import request from 'supertest';
 import { TEST_TIMEOUT } from '@app/constants/tests.constants';
 import { JwtService } from '@nestjs/jwt';
-import { bootstrapTestApp, getTestAccessTokensByRoles } from '../test.helpers';
-import { COOKIE } from '../../src/modules/auth/constants';
+import {
+  bootstrapTestApp,
+  getTestAccessTokensByRoles,
+} from '../../test.helpers';
+import { COOKIE } from '../../../src/modules/auth/constants';
 import { USER_ROLES } from '@app/constants';
 import {
-  UPDATE_ENGINEERS,
-  UPDATE_STATIONS_WORKERS,
-} from './test-users.constants';
-import { MOCK_STATIONS_WORKERS_MAP } from '../../static/mock-data/users/stations-workers.mock';
+  TEST_USERS_UPDATE_ENGINEERS,
+  TEST_USERS_UPDATE_STATIONS_WORKERS,
+} from './users-update.test-constants';
+import { MOCK_STATIONS_WORKERS_MAP } from '../../../static/mock-data/users/stations-workers.mock';
 import { getObjWithoutFields } from '@app/helpers';
-import { MOCK_ENGINEERS_MAP } from '../../static/mock-data/users/engineers.mock';
-import { MOCK_DISTRICTS_LEADERS_MAP } from '../../static/mock-data/users/districts-leaders.mock';
+import { MOCK_ENGINEERS_MAP } from '../../../static/mock-data/users/engineers.mock';
+import { MOCK_DISTRICTS_LEADERS_MAP } from '../../../static/mock-data/users/districts-leaders.mock';
 
 describe('UsersModule (e2e)', () => {
   let app: INestApplication;
@@ -57,24 +60,24 @@ describe('UsersModule (e2e)', () => {
       () => {
         const server = app.getHttpServer();
 
-        const shouldBeBadRequestById = UPDATE_STATIONS_WORKERS.map((item) => ({
-          ...item,
-          id: 1,
-        }));
-
-        const shouldBeBadRequestByEmails = UPDATE_STATIONS_WORKERS.map(
+        const shouldBeBadRequestById = TEST_USERS_UPDATE_STATIONS_WORKERS.map(
           (item) => ({
+            ...item,
+            id: 1,
+          }),
+        );
+
+        const shouldBeBadRequestByEmails =
+          TEST_USERS_UPDATE_STATIONS_WORKERS.map((item) => ({
             ...item,
             email: 'not_unieue@mail.ru',
-          }),
-        );
+          }));
 
-        const shouldBeBadRequestByRoles = UPDATE_STATIONS_WORKERS.map(
-          (item) => ({
+        const shouldBeBadRequestByRoles =
+          TEST_USERS_UPDATE_STATIONS_WORKERS.map((item) => ({
             ...item,
             role: USER_ROLES.ENGINEER,
-          }),
-        );
+          }));
 
         const shouldBeBadRequestByLeaderDistrictId = Object.values(
           MOCK_DISTRICTS_LEADERS_MAP,
@@ -84,7 +87,7 @@ describe('UsersModule (e2e)', () => {
         }));
 
         const shouldBeBadRequestByClientId = [
-          ...UPDATE_STATIONS_WORKERS.map((item, index) => ({
+          ...TEST_USERS_UPDATE_STATIONS_WORKERS.map((item, index) => ({
             ...item,
             clientId: null,
             stationId: index + 1,
@@ -174,12 +177,11 @@ describe('UsersModule (e2e)', () => {
       () => {
         const server = app.getHttpServer();
 
-        const shouldBeUnprocessableEntityByEmails = UPDATE_STATIONS_WORKERS.map(
-          (item, index) => ({
+        const shouldBeUnprocessableEntityByEmails =
+          TEST_USERS_UPDATE_STATIONS_WORKERS.map((item, index) => ({
             ...item,
             email: `district_leader_${index + 1}@mail.ru`,
-          }),
-        );
+          }));
 
         const mockDistrictLeaders = Object.values(MOCK_DISTRICTS_LEADERS_MAP);
 
@@ -319,7 +321,7 @@ describe('UsersModule (e2e)', () => {
         ];
 
         const shouldBeBadRequestByClientIdOrStationId = [
-          ...UPDATE_STATIONS_WORKERS.map((item, index) => ({
+          ...TEST_USERS_UPDATE_STATIONS_WORKERS.map((item, index) => ({
             ...item,
             clientId: 100,
             stationId: 1000 + index,
@@ -377,12 +379,12 @@ describe('UsersModule (e2e)', () => {
               };`,
             )
             .send({
-              users: UPDATE_STATIONS_WORKERS,
+              users: TEST_USERS_UPDATE_STATIONS_WORKERS,
             })
             .expect(({ status, body }) => {
               expect(status).toBe(HttpStatus.CREATED);
               expect(body).toStrictEqual(
-                UPDATE_STATIONS_WORKERS.map((item) => ({
+                TEST_USERS_UPDATE_STATIONS_WORKERS.map((item) => ({
                   ...item,
                   role: expect.any(String),
                   emailConfirmed: expect.any(Boolean),
@@ -400,12 +402,12 @@ describe('UsersModule (e2e)', () => {
               };`,
             )
             .send({
-              users: UPDATE_ENGINEERS,
+              users: TEST_USERS_UPDATE_ENGINEERS,
             })
             .expect(({ status, body }) => {
               expect(status).toBe(HttpStatus.CREATED);
               expect(body).toStrictEqual(
-                UPDATE_ENGINEERS.map((item) => ({
+                TEST_USERS_UPDATE_ENGINEERS.map((item) => ({
                   ...item,
                   role: expect.any(String),
                   emailConfirmed: expect.any(Boolean),
