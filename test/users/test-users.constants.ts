@@ -196,16 +196,6 @@ export const GET_USERS_VALID_RESPONSE_ITEMS = [
 
 export const UPDATE_STATIONS_WORKERS = [
   {
-    ...getObjWithoutFields<any, any>(TEST_USERS_TO_CREATE[0], ['password']),
-    email: 'test_station_worker_updated1@mail.ru',
-    stationId: null,
-  },
-  getObjWithoutFields<any, any>(TEST_USERS_TO_CREATE[2], ['password']),
-  {
-    ...getObjWithoutFields<any, any>(TEST_USERS_TO_CREATE[1], ['password']),
-    stationId: TEST_USERS_TO_CREATE[0].stationId,
-  },
-  {
     ...MOCK_STATIONS_WORKERS_MAP.WORKER_6,
     clientId: null,
     stationId: null,

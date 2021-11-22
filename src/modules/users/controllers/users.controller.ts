@@ -8,6 +8,8 @@ import {
   Put,
   HttpCode,
   HttpStatus,
+  Param,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { UsersCreateRequestBodyDTO, UsersDeleteRequestQueryDTO } from '../dtos';
 import {
@@ -50,9 +52,8 @@ export class UsersController {
   @HttpCode(HttpStatus.OK)
   @AuthRoles(USER_ROLES.MASTER)
   @Get('/:id')
-  async getById(): Promise<void> {
-    // TUserDTO
-    // TODO
+  async getById(@Param('id', ParseIntPipe) id: number): Promise<TUserDTO> {
+    return this.usersGettingService.getFullUserOrFail({ id });
   }
 
   @HttpCode(HttpStatus.OK)
