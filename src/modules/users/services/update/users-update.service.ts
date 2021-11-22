@@ -22,6 +22,7 @@ import {
 } from '@app/entities';
 import { DistrictsLeadersRepository } from '../../../districts-leaders/repositories';
 import { TUserDTO } from '../../types';
+import { NonEmptyArray } from '@app/types';
 
 @Injectable()
 export class UsersUpdateService {
@@ -45,7 +46,8 @@ export class UsersUpdateService {
       await this.update(indexedUsers, manager);
     });
 
-    return this.usersGeneralService.allUsersExistingOrFail(indexedUsers);
+    const ids = indexedUsers.map(({ id }) => id) as NonEmptyArray<number>;
+    return this.usersRepository.getUsersByIds(ids);
   }
 
   private async update(

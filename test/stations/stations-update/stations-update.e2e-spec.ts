@@ -46,6 +46,115 @@ describe('StationsModule (e2e)', () => {
       },
       TEST_TIMEOUT,
     );
+
+    it.skip(
+      'should be bad request',
+      () => {
+        const server = app.getHttpServer();
+
+        const requests = [
+          request(server)
+            .put(API_URL)
+            .set(
+              'Cookie',
+              `${COOKIE.ACCESS_TOKEN}=${
+                accessTokensByRoles[USER_ROLES.MASTER]
+              };`,
+            )
+            .send({
+              stations: [],
+            })
+            .expect(({ status }) => {
+              expect(status).toBe(HttpStatus.BAD_REQUEST);
+            }),
+        ];
+
+        return Promise.all(requests);
+      },
+      TEST_TIMEOUT,
+    );
+
+    it.skip(
+      'should be unprocessable entity',
+      () => {
+        const server = app.getHttpServer();
+
+        const requests = [
+          request(server)
+            .put(API_URL)
+            .set(
+              'Cookie',
+              `${COOKIE.ACCESS_TOKEN}=${
+                accessTokensByRoles[USER_ROLES.MASTER]
+              };`,
+            )
+            .send({
+              stations: [],
+            })
+            .expect(({ status }) => {
+              expect(status).toBe(HttpStatus.UNPROCESSABLE_ENTITY);
+            }),
+        ];
+
+        return Promise.all(requests);
+      },
+      TEST_TIMEOUT,
+    );
+
+    it.skip(
+      'should be not found',
+      () => {
+        const server = app.getHttpServer();
+
+        const requests = [
+          request(server)
+            .put(API_URL)
+            .set(
+              'Cookie',
+              `${COOKIE.ACCESS_TOKEN}=${
+                accessTokensByRoles[USER_ROLES.MASTER]
+              };`,
+            )
+            .send({
+              stations: [],
+            })
+            .expect(({ status }) => {
+              expect(status).toBe(HttpStatus.NOT_FOUND);
+            }),
+        ];
+
+        return Promise.all(requests);
+      },
+      TEST_TIMEOUT,
+    );
+
+    it.skip(
+      'should be update stations',
+      () => {
+        const server = app.getHttpServer();
+
+        const requests = [
+          request(server)
+            .put(API_URL)
+            .set(
+              'Cookie',
+              `${COOKIE.ACCESS_TOKEN}=${
+                accessTokensByRoles[USER_ROLES.MASTER]
+              };`,
+            )
+            .send({
+              stations: [],
+            })
+            .expect(({ status, body }) => {
+              expect(status).toBe(HttpStatus.OK);
+              expect(body).toStrictEqual([]);
+            }),
+        ];
+
+        return Promise.all(requests);
+      },
+      TEST_TIMEOUT,
+    );
   });
 
   afterAll(async () => {

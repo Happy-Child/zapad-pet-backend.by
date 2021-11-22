@@ -12,6 +12,7 @@ import { STATION_NUMBER_LENGTH } from '../../../src/modules/stations/constants';
 import { BidEntity } from '@app/entities/bid.entity';
 import { ClientEntity } from '@app/entities/client.entity';
 import { StationWorkerEntity } from '@app/entities/stations-workers.entity';
+import { Expose } from 'class-transformer';
 
 @Entity({ name: 'station' })
 export class StationEntity extends BaseEntity {
@@ -21,9 +22,11 @@ export class StationEntity extends BaseEntity {
     nullable: false,
     unique: true,
   })
+  @Expose()
   @Check(`length(number) = ${STATION_NUMBER_LENGTH}`)
   number!: string;
 
+  @Expose()
   @Column({ nullable: false })
   clientId!: number;
 
@@ -34,6 +37,7 @@ export class StationEntity extends BaseEntity {
   })
   client!: ClientEntity;
 
+  @Expose()
   @Column({ nullable: false })
   districtId!: number;
 

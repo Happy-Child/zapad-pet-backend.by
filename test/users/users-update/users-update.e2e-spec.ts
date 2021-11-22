@@ -184,54 +184,12 @@ describe('UsersModule (e2e)', () => {
           }));
 
         const mockDistrictLeaders = Object.values(MOCK_DISTRICTS_LEADERS_MAP);
-
         const shouldBeUnprocessableEntityByLeaderDistrictId =
           mockDistrictLeaders.map((item, index) => ({
             ...getObjWithoutFields<any, any>(item, ['password']),
             leaderDistrictId:
               mockDistrictLeaders.reverse()[index].leaderDistrictId,
           }));
-
-        const requests = [
-          request(server)
-            .put(API_URL)
-            .set(
-              'Cookie',
-              `${COOKIE.ACCESS_TOKEN}=${
-                accessTokensByRoles[USER_ROLES.MASTER]
-              };`,
-            )
-            .send({
-              users: shouldBeUnprocessableEntityByEmails,
-            })
-            .expect(({ status }) => {
-              expect(status).toBe(HttpStatus.UNPROCESSABLE_ENTITY);
-            }),
-          request(server)
-            .put(API_URL)
-            .set(
-              'Cookie',
-              `${COOKIE.ACCESS_TOKEN}=${
-                accessTokensByRoles[USER_ROLES.MASTER]
-              };`,
-            )
-            .send({
-              users: shouldBeUnprocessableEntityByLeaderDistrictId,
-            })
-            .expect(({ status }) => {
-              expect(status).toBe(HttpStatus.UNPROCESSABLE_ENTITY);
-            }),
-        ];
-
-        return Promise.all(requests);
-      },
-      TEST_TIMEOUT,
-    );
-
-    it(
-      'should be unprocessable entity after change bids statuses',
-      () => {
-        const server = app.getHttpServer();
 
         const shouldByUnprocessableEntityByClientId = [
           {
@@ -269,6 +227,34 @@ describe('UsersModule (e2e)', () => {
         ];
 
         const requests = [
+          request(server)
+            .put(API_URL)
+            .set(
+              'Cookie',
+              `${COOKIE.ACCESS_TOKEN}=${
+                accessTokensByRoles[USER_ROLES.MASTER]
+              };`,
+            )
+            .send({
+              users: shouldBeUnprocessableEntityByEmails,
+            })
+            .expect(({ status }) => {
+              expect(status).toBe(HttpStatus.UNPROCESSABLE_ENTITY);
+            }),
+          request(server)
+            .put(API_URL)
+            .set(
+              'Cookie',
+              `${COOKIE.ACCESS_TOKEN}=${
+                accessTokensByRoles[USER_ROLES.MASTER]
+              };`,
+            )
+            .send({
+              users: shouldBeUnprocessableEntityByLeaderDistrictId,
+            })
+            .expect(({ status }) => {
+              expect(status).toBe(HttpStatus.UNPROCESSABLE_ENTITY);
+            }),
           request(server)
             .put(API_URL)
             .set(

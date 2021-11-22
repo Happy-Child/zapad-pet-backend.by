@@ -4,7 +4,10 @@ import { getItemsByUniqueField } from '@app/helpers';
 import { getPreparedChildrenErrors } from '@app/helpers/prepared-errors.helpers';
 import { ENTITIES_FIELDS } from '@app/constants';
 import { AUTH_ERRORS } from '../../../auth/constants';
-import { ExceptionsUnprocessableEntity } from '@app/exceptions/errors';
+import {
+  ExceptionsNotFound,
+  ExceptionsUnprocessableEntity,
+} from '@app/exceptions/errors';
 import { ClientsRepository } from '../../repositories';
 import { CLIENTS_ERRORS } from '../../constants';
 
@@ -36,7 +39,7 @@ export class ClientsGeneralService {
       field: ENTITIES_FIELDS.CLIENT_ID,
       messages: [AUTH_ERRORS.CLIENT_NOT_EXIST],
     });
-    throw new ExceptionsUnprocessableEntity(preparedErrors);
+    throw new ExceptionsNotFound(preparedErrors);
   }
 
   public async clientNameNotExistsOrFail(name: string): Promise<void> {

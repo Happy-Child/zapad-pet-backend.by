@@ -9,7 +9,6 @@ import {
   ExceptionsUnprocessableEntity,
 } from '@app/exceptions/errors';
 import { StationsRepository } from '../../repositories';
-import { StationWorkerEntity } from '@app/entities';
 import { StationExtendedDTO } from '../../dtos';
 import {
   BID_STATUTES_BLOCKING_UPDATE_STATION,
@@ -26,17 +25,7 @@ export class StationsGeneralService {
   ): Promise<NonEmptyArray<StationExtendedDTO>> {
     const ids = items.map(({ id }) => id) as NonEmptyArray<number>;
 
-    const foundRecords = await this.stationsRepository
-      .createQueryBuilder('st')
-      .select('st.*, sw.userId as "stationWorkerId"')
-      .where(`st.id IN (:...ids)`, { ids })
-      .leftJoin(
-        StationWorkerEntity,
-        'sw',
-        '"sw"."stationId" = st.id AND "sw"."clientId" = st.clientId',
-      )
-      .orderBy(`st.id`)
-      .getRawMany();
+    const foundRecords = await this.stationsRepository.getStationsByIds(ids);
 
     const allIdsExisting = ids.length === foundRecords.length;
 

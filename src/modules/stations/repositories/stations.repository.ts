@@ -1,12 +1,30 @@
 import { EntityRepository } from 'typeorm';
 import { GeneralRepository } from '@app/repositories';
-import { BidEntity, StationEntity } from '@app/entities';
+import { BidEntity, StationEntity, StationWorkerEntity } from '@app/entities';
 import { NonEmptyArray } from '@app/types';
 import { BID_STATUS } from '../../bids/constants';
+import { StationExtendedDTO } from '../dtos';
 
 @EntityRepository(StationEntity)
 export class StationsRepository extends GeneralRepository<StationEntity> {
   protected entitySerializer = StationEntity;
+
+  public async getStationsByIds(
+    ids: NonEmptyArray<number>,
+  ): Promise<StationExtendedDTO[]> {
+    const items = await this.createQueryBuilder('st')
+      .select('st.*, sw.userId as "stationWorkerId"')
+      .where(`st.id IN (:...ids)`, { ids })
+      .leftJoin(
+        StationWorkerEntity,
+        'sw',
+        '"sw"."stationId" = st.id AND "sw"."clientId" = st.clientId',
+      )
+      .orderBy(`st.id`)
+      .getRawMany();
+
+    return items.map((item) => new StationExtendedDTO(item));
+  }
 
   public async getStationsWithAggrBidsByStatuses(
     ids: NonEmptyArray<number>,

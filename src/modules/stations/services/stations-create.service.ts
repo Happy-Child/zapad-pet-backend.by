@@ -1,5 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { StationsCreateItemDTO, StationsCreateRequestBodyDTO } from '../dtos';
+import {
+  StationExtendedDTO,
+  StationsCreateItemDTO,
+  StationsCreateRequestBodyDTO,
+} from '../dtos';
 import { Connection } from 'typeorm';
 import { StationsRepository } from '../repositories';
 import { getIndexedArray, isNonEmptyArray } from '@app/helpers';
@@ -39,9 +43,13 @@ export class StationsCreateService {
     private readonly connection: Connection,
   ) {}
 
-  public async execute(data: StationsCreateRequestBodyDTO): Promise<void> {
+  public async execute(
+    data: StationsCreateRequestBodyDTO,
+  ): Promise<StationExtendedDTO[]> {
     await this.checkStationsBeforeCreate(data.stations);
-    await this.create(data.stations);
+    const createdStations = await this.create(data.stations);
+    const ids = createdStations.map(({ id }) => id) as NonEmptyArray<number>;
+    return this.stationsRepository.getStationsByIds(ids);
   }
 
   private async checkStationsBeforeCreate(
@@ -88,13 +96,15 @@ export class StationsCreateService {
     }
   }
 
-  private async create(stations: StationsCreateItemDTO[]): Promise<void> {
+  private async create(
+    stations: StationsCreateItemDTO[],
+  ): Promise<StationEntity[]> {
     const [stationsWithWorkers] = groupedByNull(
       stations,
       'stationWorkerId',
     ) as [TStationsCreateItemWithWorker[], TStationsCreateItemWithoutWorker[]];
 
-    await this.connection.transaction(async (manager) => {
+    return this.connection.transaction(async (manager) => {
       const stationsRepository =
         manager.getCustomRepository(StationsRepository);
       const createdStations = await stationsRepository.saveEntities(
@@ -112,6 +122,8 @@ export class StationsCreateService {
           manager.getCustomRepository(StationsWorkersRepository),
         );
       }
+
+      return createdStations;
     });
   }
 

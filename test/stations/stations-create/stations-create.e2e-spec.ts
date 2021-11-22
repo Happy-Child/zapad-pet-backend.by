@@ -8,6 +8,7 @@ import {
 } from '../../test.helpers';
 import { COOKIE } from '../../../src/modules/auth/constants';
 import { USER_ROLES } from '@app/constants';
+import { TEST_STATIONS_CREATE_ITEMS } from './stations-create.test-constants';
 
 describe('StationsModule (e2e)', () => {
   let app: INestApplication;
@@ -41,6 +42,261 @@ describe('StationsModule (e2e)', () => {
                 expect(status).toBe(HttpStatus.FORBIDDEN);
               }),
           );
+
+        return Promise.all(requests);
+      },
+      TEST_TIMEOUT,
+    );
+
+    it(
+      'should be bad request',
+      () => {
+        const server = app.getHttpServer();
+
+        const shouldBeErrorByNumber = TEST_STATIONS_CREATE_ITEMS.map(
+          (item) => ({
+            ...item,
+            number: '12345678',
+          }),
+        );
+
+        const shouldBeErrorByWorkerId = TEST_STATIONS_CREATE_ITEMS.map(
+          (item) => ({
+            ...item,
+            stationWorkerId: 5,
+          }),
+        );
+
+        const requests = [
+          request(server)
+            .post(API_URL)
+            .set(
+              'Cookie',
+              `${COOKIE.ACCESS_TOKEN}=${
+                accessTokensByRoles[USER_ROLES.MASTER]
+              };`,
+            )
+            .send({
+              stations: shouldBeErrorByNumber.map((item) => ({
+                ...item,
+                stationWorkerId: null,
+              })),
+            })
+            .expect(({ status }) => {
+              expect(status).toBe(HttpStatus.BAD_REQUEST);
+            }),
+          request(server)
+            .post(API_URL)
+            .set(
+              'Cookie',
+              `${COOKIE.ACCESS_TOKEN}=${
+                accessTokensByRoles[USER_ROLES.MASTER]
+              };`,
+            )
+            .send({
+              stations: shouldBeErrorByWorkerId,
+            })
+            .expect(({ status }) => {
+              expect(status).toBe(HttpStatus.BAD_REQUEST);
+            }),
+        ];
+
+        return Promise.all(requests);
+      },
+      TEST_TIMEOUT,
+    );
+
+    it(
+      'should be unprocessable entity',
+      () => {
+        const server = app.getHttpServer();
+
+        const shouldBeErrorByNumber = [
+          {
+            ...TEST_STATIONS_CREATE_ITEMS[0],
+            number: 'NMB0000001',
+          },
+          {
+            ...TEST_STATIONS_CREATE_ITEMS[1],
+            number: 'NMB0000002',
+          },
+          {
+            ...TEST_STATIONS_CREATE_ITEMS[2],
+            number: 'NMB0000003',
+          },
+        ];
+
+        const shouldBeErrorByWorkerAndClientId1 = [
+          {
+            ...TEST_STATIONS_CREATE_ITEMS[0],
+            clientId: 3,
+          },
+          {
+            ...TEST_STATIONS_CREATE_ITEMS[1],
+            clientId: 3,
+            stationWorkerId: 8,
+          },
+          {
+            ...TEST_STATIONS_CREATE_ITEMS[2],
+            clientId: 3,
+            stationWorkerId: 9,
+          },
+          {
+            ...TEST_STATIONS_CREATE_ITEMS[3],
+            clientId: 3,
+            stationWorkerId: 7,
+          },
+        ];
+
+        const shouldBeErrorByWorkerAndClientId2 = [
+          {
+            ...TEST_STATIONS_CREATE_ITEMS[0],
+            clientId: 1,
+            stationWorkerId: 1,
+          },
+          {
+            ...TEST_STATIONS_CREATE_ITEMS[1],
+            clientId: 1,
+            stationWorkerId: 2,
+          },
+        ];
+
+        const requests = [
+          request(server)
+            .post(API_URL)
+            .set(
+              'Cookie',
+              `${COOKIE.ACCESS_TOKEN}=${
+                accessTokensByRoles[USER_ROLES.MASTER]
+              };`,
+            )
+            .send({
+              stations: shouldBeErrorByNumber,
+            })
+            .expect(({ status }) => {
+              expect(status).toBe(HttpStatus.UNPROCESSABLE_ENTITY);
+            }),
+          request(server)
+            .post(API_URL)
+            .set(
+              'Cookie',
+              `${COOKIE.ACCESS_TOKEN}=${
+                accessTokensByRoles[USER_ROLES.MASTER]
+              };`,
+            )
+            .send({
+              stations: shouldBeErrorByWorkerAndClientId1,
+            })
+            .expect(({ status }) => {
+              expect(status).toBe(HttpStatus.UNPROCESSABLE_ENTITY);
+            }),
+          request(server)
+            .post(API_URL)
+            .set(
+              'Cookie',
+              `${COOKIE.ACCESS_TOKEN}=${
+                accessTokensByRoles[USER_ROLES.MASTER]
+              };`,
+            )
+            .send({
+              stations: shouldBeErrorByWorkerAndClientId2,
+            })
+            .expect(({ status }) => {
+              expect(status).toBe(HttpStatus.UNPROCESSABLE_ENTITY);
+            }),
+        ];
+
+        return Promise.all(requests);
+      },
+      TEST_TIMEOUT,
+    );
+
+    it(
+      'should be not found',
+      () => {
+        const server = app.getHttpServer();
+
+        const shouldBeErrorByDistrictId = TEST_STATIONS_CREATE_ITEMS.map(
+          (item) => ({
+            ...item,
+            stationWorkerId: null,
+            districtId: 999,
+          }),
+        );
+
+        const shouldBeErrorByClientId = TEST_STATIONS_CREATE_ITEMS.map(
+          (item) => ({
+            ...item,
+            stationWorkerId: null,
+            clientId: 999,
+          }),
+        );
+
+        const requests = [
+          request(server)
+            .post(API_URL)
+            .set(
+              'Cookie',
+              `${COOKIE.ACCESS_TOKEN}=${
+                accessTokensByRoles[USER_ROLES.MASTER]
+              };`,
+            )
+            .send({
+              stations: shouldBeErrorByDistrictId,
+            })
+            .expect(({ status }) => {
+              expect(status).toBe(HttpStatus.NOT_FOUND);
+            }),
+          request(server)
+            .post(API_URL)
+            .set(
+              'Cookie',
+              `${COOKIE.ACCESS_TOKEN}=${
+                accessTokensByRoles[USER_ROLES.MASTER]
+              };`,
+            )
+            .send({
+              stations: shouldBeErrorByClientId,
+            })
+            .expect(({ status }) => {
+              expect(status).toBe(HttpStatus.NOT_FOUND);
+            }),
+        ];
+
+        return Promise.all(requests);
+      },
+      TEST_TIMEOUT,
+    );
+
+    it(
+      'should be create stations',
+      () => {
+        const server = app.getHttpServer();
+
+        const requests = [
+          request(server)
+            .post(API_URL)
+            .set(
+              'Cookie',
+              `${COOKIE.ACCESS_TOKEN}=${
+                accessTokensByRoles[USER_ROLES.MASTER]
+              };`,
+            )
+            .send({
+              stations: TEST_STATIONS_CREATE_ITEMS,
+            })
+            .expect(({ status, body }) => {
+              expect(status).toBe(HttpStatus.OK);
+              expect(body).toStrictEqual(
+                TEST_STATIONS_CREATE_ITEMS.map((item) => ({
+                  ...item,
+                  id: expect.any(Number),
+                  createdAt: expect.any(String),
+                  updatedAt: expect.any(String),
+                })),
+              );
+            }),
+        ];
 
         return Promise.all(requests);
       },

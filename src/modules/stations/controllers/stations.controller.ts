@@ -8,6 +8,7 @@ import {
   HttpStatus,
 } from '@nestjs/common';
 import {
+  StationExtendedDTO,
   StationsCreateRequestBodyDTO,
   StationsUpdateRequestBodyDTO,
 } from '../dtos';
@@ -32,9 +33,10 @@ export class StationsController {
   @HttpCode(HttpStatus.OK)
   @AuthRoles(USER_ROLES.MASTER)
   @Post()
-  async create(@Body() body: StationsCreateRequestBodyDTO): Promise<true> {
-    await this.stationsCreateService.execute(body);
-    return true;
+  async create(
+    @Body() body: StationsCreateRequestBodyDTO,
+  ): Promise<StationExtendedDTO[]> {
+    return await this.stationsCreateService.execute(body);
   }
 
   @HttpCode(HttpStatus.CREATED)
