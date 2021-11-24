@@ -24,6 +24,9 @@ export enum USER_ROLES {
   ACCOUNTANT = '5',
 }
 
-export enum NODE_INSTANCE {
+export enum ENVIRONMENTS {
   TEST = 'test',
+  LOCAL = 'local',
+  PROD = 'production',
+  DEVELOP = 'develop',
 }

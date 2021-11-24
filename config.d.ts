@@ -1,5 +1,8 @@
 declare module 'config' {
   import { Algorithm } from 'jsonwebtoken';
+  import { ENVIRONMENTS } from '@app/constants';
+
+  export const NODE_ENV: ENVIRONMENTS;
 
   export const APPS: {
     API: {

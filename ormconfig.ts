@@ -1,14 +1,14 @@
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
-import { POSTGRES } from 'config';
+import { POSTGRES, NODE_ENV } from 'config';
 import * as Entities from '@app/entities';
 import * as Migrations from './migration';
 import * as TestMigrations from './migration-test';
-import { NODE_INSTANCE } from '@app/constants';
+import { ENVIRONMENTS } from '@app/constants';
 
 const entities = Object.values(Entities);
 let migrations = Object.values(Migrations);
 
-if (true || process.env.NODE_ENV === NODE_INSTANCE.TEST) {
+if ([ENVIRONMENTS.TEST, ENVIRONMENTS.LOCAL].includes(NODE_ENV)) {
   const testMigrations = Object.values(TestMigrations);
   migrations = [...migrations, ...testMigrations];
 }

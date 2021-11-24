@@ -1,4 +1,5 @@
 {
+  "NODE_ENV": "local",
   "APPS": {
     "API": {
       "PORT": 3001,
