@@ -15,18 +15,14 @@ import {
   StationDTO,
   StationsGetListRequestQueryDTO,
   StationsGetListResponseBodyDTO,
-  StationStatisticDTO,
   StationWithStatisticsDTO,
 } from '../dtos/stations-getting.dtos';
 import {
-  STATIONS_ERRORS,
   STATIONS_LIST_DEFAULT_SORT_BY,
   STATIONS_LIST_DEFAULT_SORT_DURATION,
   STATIONS_SORT_BY,
 } from '../constants';
 import { isUndefined } from '@app/helpers';
-import { ExceptionsNotFound } from '@app/exceptions/errors';
-import { ENTITIES_FIELDS } from '@app/constants';
 import { BidsGeneralService } from '../../bids/services';
 
 const getTotalStationsListSortBy = (type: STATIONS_SORT_BY): string => {
@@ -82,40 +78,18 @@ export class StationsRepository extends GeneralRepository<StationEntity> {
       .getRawMany();
   }
 
-  public async getStationOrFail(id: number): Promise<StationEntity> {
-    return await this.getOneOrFail(
-      { id },
-      {
-        repository: { relations: ['bids'] },
-        exception: {
-          type: ExceptionsNotFound,
-          messages: [
-            {
-              field: ENTITIES_FIELDS.ID,
-              messages: [STATIONS_ERRORS.STATION_NOT_FOUND],
-            },
-          ],
-        },
-      },
-    );
-  }
-
-  public async getStationWithStatisticOrFail(
+  public async getStationWithStatistic(
     id: number,
   ): Promise<StationWithStatisticsDTO> {
-    await this.getStationOrFail(id);
-
     const queryBuilder = this.createQueryBuilder('st');
 
     this.mapDetailsToStations(queryBuilder);
 
-    queryBuilder.leftJoinAndMapMany(
-      'st.bids',
-      BidEntity,
-      'b',
-      '"b"."stationId" = :id',
-      { id },
-    );
+    queryBuilder
+      .where({ id })
+      .leftJoinAndMapMany('st.bids', BidEntity, 'b', '"b"."stationId" = :id', {
+        id,
+      });
 
     const station = (await queryBuilder.getOne()) as unknown as StationDTO & {
       bids: BidEntity[];
@@ -127,18 +101,6 @@ export class StationsRepository extends GeneralRepository<StationEntity> {
     return new StationWithStatisticsDTO({
       ...station,
       statistics: { bidsCountByStatuses },
-    });
-  }
-
-  public async getStationStatisticById(
-    id: number,
-  ): Promise<StationStatisticDTO> {
-    const station = await this.getStationOrFail(id);
-
-    return new StationStatisticDTO({
-      bidsCountByStatuses: BidsGeneralService.getAggrBidsCountByStatuses(
-        station.bids,
-      ),
     });
   }
 

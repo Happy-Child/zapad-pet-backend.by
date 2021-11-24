@@ -6,17 +6,28 @@ import {
   StationStatisticDTO,
   StationWithStatisticsDTO,
 } from '../dtos/stations-getting.dtos';
+import { StationsGeneralService } from './general';
+import { BidsGeneralService } from '../../bids/services';
 
 @Injectable()
 export class StationsGettingService {
-  constructor(private readonly stationsRepository: StationsRepository) {}
+  constructor(
+    private readonly stationsGeneralService: StationsGeneralService,
+    private readonly stationsRepository: StationsRepository,
+  ) {}
 
   public async getById(id: number): Promise<StationWithStatisticsDTO> {
-    return this.stationsRepository.getStationWithStatisticOrFail(id);
+    await this.stationsGeneralService.getStationOrFail(id);
+    return this.stationsRepository.getStationWithStatistic(id);
   }
 
   public async getStatisticsById(id: number): Promise<StationStatisticDTO> {
-    return this.stationsRepository.getStationStatisticById(id);
+    const station = await this.stationsGeneralService.getStationOrFail(id);
+    return new StationStatisticDTO({
+      bidsCountByStatuses: BidsGeneralService.getAggrBidsCountByStatuses(
+        station.bids,
+      ),
+    });
   }
 
   public async getList(

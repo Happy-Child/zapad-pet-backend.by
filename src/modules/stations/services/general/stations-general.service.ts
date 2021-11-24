@@ -14,10 +14,30 @@ import {
   BID_STATUTES_BLOCKING_UPDATE_STATION,
   STATIONS_ERRORS,
 } from '../../constants';
+import { StationEntity } from '@app/entities';
+import { ENTITIES_FIELDS } from '@app/constants';
 
 @Injectable()
 export class StationsGeneralService {
   constructor(private readonly stationsRepository: StationsRepository) {}
+
+  public async getStationOrFail(id: number): Promise<StationEntity> {
+    return await this.stationsRepository.getOneOrFail(
+      { id },
+      {
+        repository: { relations: ['bids'] },
+        exception: {
+          type: ExceptionsNotFound,
+          messages: [
+            {
+              field: ENTITIES_FIELDS.ID,
+              messages: [STATIONS_ERRORS.STATION_NOT_FOUND],
+            },
+          ],
+        },
+      },
+    );
+  }
 
   public async allStationsExistsOrFail(
     items: NonEmptyArray<{ id: number; index: number }>,

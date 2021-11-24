@@ -5,10 +5,31 @@ import { ExceptionsNotFound } from '@app/exceptions/errors';
 import { DistrictsRepository } from '../../repositories';
 import { getItemsByUniqueField } from '@app/helpers';
 import { AUTH_ERRORS } from '../../../auth/constants';
+import { ENTITIES_FIELDS } from '@app/constants';
+import { DISTRICTS_ERRORS } from '../../constants';
 
 @Injectable()
 export class DistrictsGeneralService {
   constructor(private readonly districtsRepository: DistrictsRepository) {}
+
+  public async districtExistsOrFail(id: number): Promise<void> {
+    await this.districtsRepository.getOneOrFail(
+      {
+        id,
+      },
+      {
+        exception: {
+          type: ExceptionsNotFound,
+          messages: [
+            {
+              field: ENTITIES_FIELDS.ID,
+              messages: [DISTRICTS_ERRORS.DISTRICT_NOT_EXIST],
+            },
+          ],
+        },
+      },
+    );
+  }
 
   public async allDistrictsExistsOrFail(
     items: NonEmptyArray<{ districtId: number; index: number }>,
