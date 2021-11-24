@@ -8,7 +8,7 @@ import { NODE_INSTANCE } from '@app/constants';
 const entities = Object.values(Entities);
 let migrations = Object.values(Migrations);
 
-if (process.env.NODE_ENV === NODE_INSTANCE.TEST) {
+if (true || process.env.NODE_ENV === NODE_INSTANCE.TEST) {
   const testMigrations = Object.values(TestMigrations);
   migrations = [...migrations, ...testMigrations];
 }

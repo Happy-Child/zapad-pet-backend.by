@@ -6,7 +6,7 @@ import {
   UserEntity,
 } from '@app/entities';
 import { GeneralRepository } from '@app/repositories';
-import { SORT_DURATION_DEFAULT, USER_ROLES } from '@app/constants';
+import { USER_ROLES } from '@app/constants';
 import { TUserDTO } from '../types';
 import {
   UsersGetListRequestQueryDTO,
@@ -14,6 +14,7 @@ import {
 } from '../dtos/users-getting.dtos';
 import {
   USERS_LIST_DEFAULT_SORT_BY,
+  USERS_LIST_DEFAULT_SORT_DURATION,
   USERS_MEMBER_RAW_SELECT,
 } from '../constants';
 import { NonEmptyArray } from '@app/types';
@@ -42,11 +43,14 @@ export class UsersRepository extends GeneralRepository<UserEntity> {
   ): Promise<UsersGetListResponseBodyDTO> {
     const totalSkip = data.skip || 0;
     const totalSortBy = data.sortBy || USERS_LIST_DEFAULT_SORT_BY;
-    const totalSortDuration = data.sortDuration || SORT_DURATION_DEFAULT;
+    const totalSortDuration =
+      data.sortDuration || USERS_LIST_DEFAULT_SORT_DURATION;
 
     const queryBuilder = this.createQueryBuilder('u')
       .select(USERS_MEMBER_RAW_SELECT)
       .where(`u.role NOT IN ('${USER_ROLES.MASTER}')`);
+
+    this.addJoinsForMembersData(queryBuilder);
 
     if (data.search) {
       queryBuilder.andWhere(
@@ -56,9 +60,8 @@ export class UsersRepository extends GeneralRepository<UserEntity> {
 
     if (data.role?.length) {
       queryBuilder.andWhere(`role IN (:...values)`, { values: data.role });
-      this.addJoinFilterMembersByRole(queryBuilder, data);
+      this.addFilterMembersByRole(queryBuilder, data);
     }
-    this.addJoinsForMembersData(queryBuilder);
 
     const totalItemsCount = await queryBuilder.getCount();
     const items = await queryBuilder
@@ -67,18 +70,16 @@ export class UsersRepository extends GeneralRepository<UserEntity> {
       .limit(data.take)
       .getRawMany<TUserDTO>();
 
-    const serializedItems = items.map((item) => getSerializedMemberUser(item));
-
-    return {
+    return new UsersGetListResponseBodyDTO({
       totalItemsCount,
-      items: serializedItems,
+      items,
       skip: totalSkip,
       take: data.take,
-    };
+    });
   }
 
   // TODO empty result if set 'role[dl & e] & leaderDistrictId & engineerDistrictId'
-  private addJoinFilterMembersByRole(
+  private addFilterMembersByRole(
     builder: SelectQueryBuilder<UserEntity>,
     data: UsersGetListRequestQueryDTO,
   ): void {

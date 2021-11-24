@@ -9,6 +9,7 @@ import {
   StationsUpdateService,
   StationsGeneralService,
   StationsCreateService,
+  StationsGettingService,
 } from './services';
 import { ClientsModule } from '../clients';
 import { DistrictsModule } from '../districts';
@@ -33,6 +34,7 @@ import { StationsWorkersRepository } from '../stations-workers/repositories';
     StationsCreateService,
     StationsCheckBeforeUpdateService,
     StationsUpdateService,
+    StationsGettingService,
   ],
   exports: [StationsGeneralService],
 })

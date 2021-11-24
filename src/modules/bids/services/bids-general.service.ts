@@ -11,6 +11,8 @@ import {
   ExceptionsNotFound,
 } from '@app/exceptions/errors';
 import { BidEntity } from '@app/entities';
+import { BidsCountByStatusesDTO } from '../dtos/bids-general.dtos';
+import { plainToClass } from 'class-transformer';
 
 const getNextBidStatusByEditable = (isEditable: boolean) =>
   isEditable ? BID_STATUS.EDITING : BID_STATUS.PENDING_ASSIGNMENT_TO_ENGINEER;
@@ -79,5 +81,24 @@ export class BidsGeneralService {
         },
       },
     );
+  }
+
+  public static getAggrBidsCountByStatuses(
+    bids: BidEntity[] | null | undefined,
+  ): BidsCountByStatusesDTO {
+    const dto = plainToClass(BidsCountByStatusesDTO, {});
+    const result = Object.keys(dto).reduce(
+      (map, key) => ({
+        ...map,
+        [key]: 0,
+      }),
+      dto,
+    );
+
+    if (!bids) return result;
+
+    bids.forEach(({ status }) => result[status]++);
+
+    return result;
   }
 }

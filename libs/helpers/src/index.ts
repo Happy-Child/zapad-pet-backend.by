@@ -5,3 +5,4 @@ export * from './value-of-object-key-will-be.helpers';
 export * from './types-checking.helpers';
 export * from './grouped.helpers';
 export * from './object.helpers';
+export * from './transforms.helpers';

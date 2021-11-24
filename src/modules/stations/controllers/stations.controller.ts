@@ -6,28 +6,52 @@ import {
   Put,
   HttpCode,
   HttpStatus,
+  Query,
+  Param,
+  ParseIntPipe,
 } from '@nestjs/common';
 import {
   StationExtendedDTO,
   StationsCreateRequestBodyDTO,
   StationsUpdateRequestBodyDTO,
 } from '../dtos';
-import { StationsCreateService, StationsUpdateService } from '../services';
+import {
+  StationsCreateService,
+  StationsGettingService,
+  StationsUpdateService,
+} from '../services';
 import { USER_ROLES } from '@app/constants';
 import { AuthRoles } from '../../auth/decorators/auth-roles.decorators';
+import {
+  StationsGetListRequestQueryDTO,
+  StationsGetListResponseBodyDTO,
+  StationWithStatisticsDTO,
+} from '../dtos/stations-getting.dtos';
 
 @Controller('stations')
 export class StationsController {
   constructor(
     private readonly stationsCreateService: StationsCreateService,
     private readonly stationsUpdateService: StationsUpdateService,
+    private readonly stationsGettingService: StationsGettingService,
   ) {}
 
   @HttpCode(HttpStatus.OK)
   @AuthRoles(USER_ROLES.MASTER)
   @Get()
-  async getList(): Promise<void> {
-    //
+  async getList(
+    @Query() query: StationsGetListRequestQueryDTO,
+  ): Promise<StationsGetListResponseBodyDTO> {
+    return this.stationsGettingService.getList(query);
+  }
+
+  @HttpCode(HttpStatus.OK)
+  @AuthRoles(USER_ROLES.MASTER)
+  @Get('/:id')
+  async getById(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<StationWithStatisticsDTO> {
+    return this.stationsGettingService.getById(id);
   }
 
   @HttpCode(HttpStatus.OK)

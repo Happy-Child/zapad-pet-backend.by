@@ -43,7 +43,6 @@ export class UsersGettingService {
   async getList(
     query: UsersGetListRequestQueryDTO,
   ): Promise<UsersGetListResponseBodyDTO> {
-    const result = await this.usersRepository.getUsersWithPagination(query);
-    return new UsersGetListResponseBodyDTO(result);
+    return this.usersRepository.getUsersWithPagination(query);
   }
 }
