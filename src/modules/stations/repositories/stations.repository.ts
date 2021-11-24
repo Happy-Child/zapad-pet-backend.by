@@ -15,6 +15,7 @@ import {
   StationDTO,
   StationsGetListRequestQueryDTO,
   StationsGetListResponseBodyDTO,
+  StationStatisticDTO,
   StationWithStatisticsDTO,
 } from '../dtos/stations-getting.dtos';
 import {
@@ -81,12 +82,11 @@ export class StationsRepository extends GeneralRepository<StationEntity> {
       .getRawMany();
   }
 
-  public async getStationByIdOrFail(
-    id: number,
-  ): Promise<StationWithStatisticsDTO> {
-    await this.getOneOrFail(
+  public async getStationOrFail(id: number): Promise<StationEntity> {
+    return await this.getOneOrFail(
       { id },
       {
+        repository: { relations: ['bids'] },
         exception: {
           type: ExceptionsNotFound,
           messages: [
@@ -98,10 +98,17 @@ export class StationsRepository extends GeneralRepository<StationEntity> {
         },
       },
     );
+  }
+
+  public async getStationWithStatisticOrFail(
+    id: number,
+  ): Promise<StationWithStatisticsDTO> {
+    await this.getStationOrFail(id);
 
     const queryBuilder = this.createQueryBuilder('st');
 
     this.mapDetailsToStations(queryBuilder);
+
     queryBuilder.leftJoinAndMapMany(
       'st.bids',
       BidEntity,
@@ -120,6 +127,18 @@ export class StationsRepository extends GeneralRepository<StationEntity> {
     return new StationWithStatisticsDTO({
       ...station,
       statistics: { bidsCountByStatuses },
+    });
+  }
+
+  public async getStationStatisticById(
+    id: number,
+  ): Promise<StationStatisticDTO> {
+    const station = await this.getStationOrFail(id);
+
+    return new StationStatisticDTO({
+      bidsCountByStatuses: BidsGeneralService.getAggrBidsCountByStatuses(
+        station.bids,
+      ),
     });
   }
 

@@ -25,6 +25,7 @@ import { AuthRoles } from '../../auth/decorators/auth-roles.decorators';
 import {
   StationsGetListRequestQueryDTO,
   StationsGetListResponseBodyDTO,
+  StationStatisticDTO,
   StationWithStatisticsDTO,
 } from '../dtos/stations-getting.dtos';
 
@@ -52,6 +53,15 @@ export class StationsController {
     @Param('id', ParseIntPipe) id: number,
   ): Promise<StationWithStatisticsDTO> {
     return this.stationsGettingService.getById(id);
+  }
+
+  @HttpCode(HttpStatus.OK)
+  @AuthRoles(USER_ROLES.MASTER)
+  @Get('/:id/statistics')
+  async getStatisticsById(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<StationStatisticDTO> {
+    return this.stationsGettingService.getStatisticsById(id);
   }
 
   @HttpCode(HttpStatus.OK)

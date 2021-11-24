@@ -106,6 +106,19 @@ export class StationStatisticDTO {
   @Expose()
   @Type(() => BidsCountByStatusesDTO)
   bidsCountByStatuses!: BidsCountByStatusesDTO;
+
+  constructor(
+    data: StationStatisticDTO,
+    serializeOptions?: ClassTransformOptions,
+  ) {
+    Object.assign(
+      this,
+      plainToClass(StationStatisticDTO, data, {
+        ...serializeOptions,
+        excludeExtraneousValues: true,
+      }),
+    );
+  }
 }
 
 export class StationWithStatisticsDTO extends StationDTO {

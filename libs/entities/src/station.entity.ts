@@ -40,5 +40,6 @@ export class StationEntity extends BaseEntity {
   districtId!: number;
 
   @OneToMany(() => BidEntity, (bid) => bid.station)
+  @Expose()
   bids!: BidEntity[];
 }

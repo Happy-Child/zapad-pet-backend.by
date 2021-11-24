@@ -3,6 +3,7 @@ import { StationsRepository } from '../repositories';
 import {
   StationsGetListRequestQueryDTO,
   StationsGetListResponseBodyDTO,
+  StationStatisticDTO,
   StationWithStatisticsDTO,
 } from '../dtos/stations-getting.dtos';
 
@@ -11,7 +12,11 @@ export class StationsGettingService {
   constructor(private readonly stationsRepository: StationsRepository) {}
 
   public async getById(id: number): Promise<StationWithStatisticsDTO> {
-    return this.stationsRepository.getStationByIdOrFail(id);
+    return this.stationsRepository.getStationWithStatisticOrFail(id);
+  }
+
+  public async getStatisticsById(id: number): Promise<StationStatisticDTO> {
+    return this.stationsRepository.getStationStatisticById(id);
   }
 
   public async getList(
