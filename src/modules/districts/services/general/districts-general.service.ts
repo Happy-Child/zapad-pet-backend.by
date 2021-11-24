@@ -7,13 +7,14 @@ import { getItemsByUniqueField } from '@app/helpers';
 import { AUTH_ERRORS } from '../../../auth/constants';
 import { ENTITIES_FIELDS } from '@app/constants';
 import { DISTRICTS_ERRORS } from '../../constants';
+import { DistrictEntity } from '@app/entities';
 
 @Injectable()
 export class DistrictsGeneralService {
   constructor(private readonly districtsRepository: DistrictsRepository) {}
 
-  public async districtExistsOrFail(id: number): Promise<void> {
-    await this.districtsRepository.getOneOrFail(
+  public async getDistrictOrFail(id: number): Promise<DistrictEntity> {
+    return await this.districtsRepository.getOneOrFail(
       {
         id,
       },

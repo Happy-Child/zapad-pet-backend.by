@@ -11,7 +11,7 @@ export class DistrictsGettingService {
   ) {}
 
   public async getStatisticsById(id: number): Promise<DistrictStatisticDTO> {
-    await this.districtsGeneralService.districtExistsOrFail(id);
+    await this.districtsGeneralService.getDistrictOrFail(id);
     return this.districtsRepository.getDistrictStatisticById(id);
   }
 }

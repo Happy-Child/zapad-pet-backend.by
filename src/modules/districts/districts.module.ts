@@ -1,8 +1,7 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { DistrictsRepository } from './repositories';
-import { DistrictsGeneralService } from './services';
-import { DistrictsGettingService } from './services/districts-getting.service';
+import { DistrictsGeneralService, DistrictsGettingService } from './services';
 import { DistrictsController } from './controllers/districts.controller';
 
 @Module({
