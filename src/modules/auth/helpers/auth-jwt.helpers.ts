@@ -2,7 +2,7 @@ import { TFullMemberDTO } from '../../users/types';
 import { TMemberJWTPayloadDTO } from '../types';
 import { USER_ROLES } from '@app/constants';
 
-export const getJWTPayloadByMember = (
+export const getJwtPayloadByMember = (
   member: TFullMemberDTO,
 ): TMemberJWTPayloadDTO => {
   const result = { userId: member.id };

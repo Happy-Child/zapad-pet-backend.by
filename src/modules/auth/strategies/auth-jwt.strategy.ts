@@ -6,11 +6,11 @@ import { readFile } from '@app/helpers';
 import { COOKIE } from '../constants';
 import { AuthGeneralService, AuthSignInService } from '../services';
 import { IAuthJWTTokenPayload } from '../interfaces';
-import { getJWTPayloadByMember } from '../helpers';
+import { getJwtPayloadByMember } from '../helpers';
 import { SimpleUserJWTPayloadDTO } from '../dtos';
 import { TMemberJWTPayloadDTO } from '../types';
 import { isMember } from '../../users/helpers';
-import { TFullMemberDTO } from '../../users/types';
+import { TFullMemberDTO, TUserDTO } from '../../users/types';
 import { EntityFinderGeneralService } from '../../entity-finder/services';
 
 @Injectable()
@@ -25,13 +25,7 @@ export class AuthJwtStrategy extends PassportStrategy(Strategy) {
             if (req.cookies && req.cookies[COOKIE.ACCESS_TOKEN]) {
               return req.cookies[COOKIE.ACCESS_TOKEN];
             }
-
-            const tokenHeaderRaw = req.header(COOKIE.ACCESS_TOKEN);
-            if (tokenHeaderRaw) {
-              return tokenHeaderRaw.replace('Bearer ', '');
-            }
           }
-
           return null;
         },
       ]),
@@ -48,11 +42,17 @@ export class AuthJwtStrategy extends PassportStrategy(Strategy) {
       id: payload.sub,
     });
 
+    return this.getFinalPayloadOrFail(user);
+  }
+
+  private getFinalPayloadOrFail(
+    user: TUserDTO,
+  ): TMemberJWTPayloadDTO | SimpleUserJWTPayloadDTO {
     AuthSignInService.checkEmailConfirmedOrFail(user.emailConfirmed);
 
     if (isMember(user)) {
       AuthGeneralService.isFullMemberOrFail(user);
-      return getJWTPayloadByMember(user as TFullMemberDTO);
+      return getJwtPayloadByMember(user as TFullMemberDTO);
     } else {
       return {
         userId: user.id,
