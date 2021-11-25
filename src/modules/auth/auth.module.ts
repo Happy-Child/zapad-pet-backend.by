@@ -18,7 +18,7 @@ import { MailSenderModule } from '@app/mail-sender';
 import { PugModule } from '@app/pug';
 import { JwtModule } from '@nestjs/jwt';
 import { readFile } from '@app/helpers';
-import { UsersModule } from '../users';
+import { EntityFinderModule } from '../entity-finder';
 
 @Module({
   imports: [
@@ -34,7 +34,7 @@ import { UsersModule } from '../users';
         expiresIn: config.JWT.EXPIRATION,
       },
     }),
-    UsersModule,
+    EntityFinderModule,
     MailSenderModule,
     PugModule,
   ],

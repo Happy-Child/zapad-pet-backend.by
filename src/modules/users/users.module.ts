@@ -1,46 +1,27 @@
 import { Module } from '@nestjs/common';
 import { UsersController } from './controllers/users.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { UsersEmailConfirmedRepository, UsersRepository } from './repositories';
 import {
-  EngineersRepository,
-  UsersEmailConfirmedRepository,
-  UsersRepository,
-} from './repositories';
-import {
-  UsersCheckBeforeCreateService,
   UsersCreateService,
   UsersUpdateService,
   UsersGeneralService,
   UsersSendingMailService,
   UsersGettingService,
-  StationsWorkersCheckBeforeCreateService,
   UsersCheckBeforeUpdateService,
-  StationsWorkersCheckBeforeUpdateService,
-  DistrictsLeadersCheckBeforeUpdateService,
-  EngineersCheckBeforeUpdateService,
 } from './services';
 import { MailSenderModule } from '@app/mail-sender';
 import { PugModule } from '@app/pug';
-import { DistrictsModule } from '../districts';
-import { ClientsModule } from '../clients';
 import { DistrictsLeadersModule } from '../districts-leaders';
-import { StationsModule } from '../stations';
-import { StationsWorkersRepository } from '../stations-workers/repositories';
 import { StationsWorkersModule } from '../stations-workers';
-import { DistrictsLeadersRepository } from '../districts-leaders/repositories';
+import { EngineersModule } from '../engineers';
+import { EntityFinderModule } from '../entity-finder';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([
-      EngineersRepository,
-      StationsWorkersRepository,
-      DistrictsLeadersRepository,
-      UsersRepository,
-      UsersEmailConfirmedRepository,
-    ]),
-    ClientsModule,
-    DistrictsModule,
-    StationsModule,
+    TypeOrmModule.forFeature([UsersRepository, UsersEmailConfirmedRepository]),
+    EntityFinderModule,
+    EngineersModule,
     DistrictsLeadersModule,
     StationsWorkersModule,
     MailSenderModule,
@@ -49,16 +30,11 @@ import { DistrictsLeadersRepository } from '../districts-leaders/repositories';
   controllers: [UsersController],
   providers: [
     UsersGeneralService,
-    StationsWorkersCheckBeforeCreateService,
-    UsersCheckBeforeCreateService,
     UsersCreateService,
     UsersSendingMailService,
     UsersGettingService,
     UsersUpdateService,
     UsersCheckBeforeUpdateService,
-    StationsWorkersCheckBeforeUpdateService,
-    DistrictsLeadersCheckBeforeUpdateService,
-    EngineersCheckBeforeUpdateService,
   ],
   exports: [UsersGettingService],
 })

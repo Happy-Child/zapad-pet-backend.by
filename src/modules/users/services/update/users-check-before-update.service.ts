@@ -12,19 +12,17 @@ import {
 } from '@app/helpers/grouped.helpers';
 import { isNonEmptyArray } from '@app/helpers';
 import { TUserDTO } from '../../types';
-import {
-  DistrictLeaderMemberDTO,
-  EngineerMemberDTO,
-  StationWorkerMemberDTO,
-} from '../../dtos';
 import { getPreparedChildrenErrors } from '@app/helpers/prepared-errors.helpers';
 import { USERS_ERRORS } from '../../constants';
 import { ExceptionsUnprocessableEntity } from '@app/exceptions/errors';
-import { StationsWorkersCheckBeforeUpdateService } from './stations-workers-check-before-update.service';
 import { UsersGeneralService } from '../users-general.service';
 import { UsersRepository } from '../../repositories';
-import { DistrictsLeadersCheckBeforeUpdateService } from './districts-leaders-check-before-update.service';
-import { EngineersCheckBeforeUpdateService } from './engineers-check-before-update.service';
+import { DistrictsLeadersCheckBeforeUpdateService } from '../../../districts-leaders/services';
+import { EngineersCheckBeforeUpdateService } from '../../../engineers/services';
+import { StationsWorkersCheckBeforeUpdateService } from '../../../stations-workers/services';
+import { StationWorkerMemberDTO } from '../../../stations-workers/dtos';
+import { EngineerMemberDTO } from '../../../engineers/dtos';
+import { DistrictLeaderMemberDTO } from '../../../districts-leaders/dtos';
 
 @Injectable()
 export class UsersCheckBeforeUpdateService {

@@ -1,113 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { NonEmptyArray } from '@app/types';
-import { StationWorkerEntity } from '@app/entities';
 import { getPreparedChildrenErrors } from '@app/helpers/prepared-errors.helpers';
 import { STATIONS_ERRORS } from '../../stations/constants';
-import {
-  ExceptionsNotFound,
-  ExceptionsUnprocessableEntity,
-} from '@app/exceptions/errors';
+import { ExceptionsUnprocessableEntity } from '@app/exceptions/errors';
 import { isNull } from '@app/helpers';
-import { StationsWorkersRepository } from '../repositories';
 
 @Injectable()
 export class StationsWorkersGeneralService {
-  constructor(
-    private readonly stationsWorkersRepository: StationsWorkersRepository,
-  ) {}
-
-  public async allWorkersExistingOrFail(
-    workers: NonEmptyArray<{ stationWorkerId: number; index: number }>,
-    exceptionField = 'stationWorkerId',
-  ): Promise<NonEmptyArray<StationWorkerEntity>> {
-    const workersIds = workers.map(
-      ({ stationWorkerId }) => stationWorkerId,
-    ) as NonEmptyArray<number>;
-
-    const foundRecords = await this.stationsWorkersRepository.getManyByColumn(
-      workersIds,
-      'userId',
-    );
-
-    const allIdsExisting = workersIds.length === foundRecords.length;
-
-    if (!allIdsExisting) {
-      const recordsIds = foundRecords.map(({ userId }) => userId);
-      const result = workers.filter(
-        (item) => !recordsIds.includes(item.stationWorkerId),
-      );
-
-      const preparedErrors = getPreparedChildrenErrors(result, {
-        field: exceptionField,
-        messages: [STATIONS_ERRORS.STATION_WORKER_NOT_EXIST],
-      });
-      throw new ExceptionsNotFound(preparedErrors);
-    }
-
-    return foundRecords as NonEmptyArray<StationWorkerEntity>;
-  }
-
-  public async allWorkersExistingAndMatchOfClientsOrFail(
-    recordsToCheck: NonEmptyArray<{
-      stationWorkerId: number;
-      clientId: number;
-      index: number;
-    }>,
-  ): Promise<StationWorkerEntity[]> {
-    const workers = await this.allWorkersExistingOrFail(recordsToCheck);
-    this.allWorkersMatchOfClientsOrFail(workers, recordsToCheck);
-    return workers;
-  }
-
-  public allWorkersMatchOfClientsOrFail(
-    foundWorkers: Pick<StationWorkerEntity, 'userId' | 'clientId'>[],
-    workersToCheck: {
-      stationWorkerId: number;
-      clientId: number | null;
-      index: number;
-    }[],
-  ): void {
-    const workersWithInvalidClients = workersToCheck.filter(
-      ({ stationWorkerId, clientId }) =>
-        !foundWorkers.find(
-          (item) =>
-            item.userId === stationWorkerId && item.clientId === clientId,
-        ),
-    );
-
-    if (workersWithInvalidClients.length === 0) return;
-
-    const preparedErrors = getPreparedChildrenErrors(
-      workersWithInvalidClients,
-      {
-        field: 'clientId',
-        messages: [STATIONS_ERRORS.CLIENT_NOT_EXISTS_OR_DONT_HAVE_THIS_WORKER],
-      },
-    );
-    throw new ExceptionsUnprocessableEntity(preparedErrors);
-  }
-
-  public allWorkersWithoutStationsExistingOrFail(
-    foundWorkers: Pick<StationWorkerEntity, 'userId' | 'stationId'>[],
-    workersToCheck: { stationWorkerId: number; index: number }[],
-  ): void {
-    const stationsWithWorkers = foundWorkers.filter(
-      ({ stationId }) => !isNull(stationId),
-    );
-
-    if (stationsWithWorkers.length === 0) return;
-
-    const result = workersToCheck.filter(({ stationWorkerId }) =>
-      stationsWithWorkers.find((item) => item.userId === stationWorkerId),
-    );
-
-    const preparedErrors = getPreparedChildrenErrors(result, {
-      field: 'stationWorkerId',
-      messages: [STATIONS_ERRORS.THIS_STATION_WORKER_HAVE_STATION],
-    });
-    throw new ExceptionsUnprocessableEntity(preparedErrors);
-  }
-
   public allStationsMatchOfClientsOrFail(
     foundStations: { stationId: number; clientId: number }[],
     stationsToCheck: { stationId: number; clientId: number; index: number }[],
@@ -131,7 +29,7 @@ export class StationsWorkersGeneralService {
     throw new ExceptionsUnprocessableEntity(preparedErrors);
   }
 
-  public allStationsWithoutWorkersExistingOrFail(
+  public allStationsWithoutWorkersOrFail(
     foundStations: { stationId: number; stationWorkerId: number | null }[],
     stationsToCheck: { stationId: number; index: number }[],
   ): void {

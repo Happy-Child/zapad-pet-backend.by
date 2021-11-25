@@ -11,11 +11,13 @@ import { SimpleUserJWTPayloadDTO } from '../dtos';
 import { TMemberJWTPayloadDTO } from '../types';
 import { isMember } from '../../users/helpers';
 import { TFullMemberDTO } from '../../users/types';
-import { UsersGettingService } from '../../users/services';
+import { EntityFinderGeneralService } from '../../entity-finder/services';
 
 @Injectable()
 export class AuthJwtStrategy extends PassportStrategy(Strategy) {
-  constructor(private readonly usersGettingService: UsersGettingService) {
+  constructor(
+    private readonly entityFinderGeneralService: EntityFinderGeneralService,
+  ) {
     super({
       jwtFromRequest: ExtractJwt.fromExtractors([
         (req) => {
@@ -42,7 +44,7 @@ export class AuthJwtStrategy extends PassportStrategy(Strategy) {
   public async validate(
     payload: IAuthJWTTokenPayload,
   ): Promise<TMemberJWTPayloadDTO | SimpleUserJWTPayloadDTO> {
-    const user = await this.usersGettingService.getFullUserOrFail({
+    const user = await this.entityFinderGeneralService.getFullUserOrFail({
       id: payload.sub,
     });
 

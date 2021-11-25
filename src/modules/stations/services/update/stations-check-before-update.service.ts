@@ -2,8 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { uniqBy } from 'lodash';
 import { isNonEmptyArray } from '@app/helpers';
 import { StationsGeneralService } from '../general';
-import { DistrictsGeneralService } from '../../../districts/services';
-import { ClientsGeneralService } from '../../../clients/services';
 import { NonEmptyArray } from '@app/types';
 import {
   BID_STATUTES_BLOCKING_CHANGE_WORKER_ON_STATION,
@@ -13,13 +11,14 @@ import {
 import { getPreparedChildrenErrors } from '@app/helpers/prepared-errors.helpers';
 import { ExceptionsUnprocessableEntity } from '@app/exceptions/errors';
 import { StationsRepository } from '../../repositories';
-import { StationsWorkersGeneralService } from '../../../stations-workers/services';
 import {
   groupedByChangedFields,
   groupedByValueOfObjectKeyWillBe,
   groupedByNull,
 } from '@app/helpers/grouped.helpers';
 import { StationExtendedDTO, StationsUpdateItemDTO } from '../../dtos';
+import { EntityFinderGeneralService } from '../../../entity-finder/services';
+import { StationsUpdateHelpersService } from './stations-update-helpers.service';
 
 type TIndexedStationsUpdateItemDTO = StationsUpdateItemDTO & { index: number };
 
@@ -28,9 +27,8 @@ export class StationsCheckBeforeUpdateService {
   constructor(
     private readonly stationsRepository: StationsRepository,
     private readonly stationsGeneralService: StationsGeneralService,
-    private readonly districtsGeneralService: DistrictsGeneralService,
-    private readonly clientsGeneralService: ClientsGeneralService,
-    private readonly stationsWorkersGeneralService: StationsWorkersGeneralService,
+    private readonly entityFinderGeneralService: EntityFinderGeneralService,
+    private readonly stationsUpdateHelpersService: StationsUpdateHelpersService,
   ) {}
 
   public async executeOrFail(
@@ -91,7 +89,7 @@ export class StationsCheckBeforeUpdateService {
 
     if (isNonEmptyArray(stationsToCheckMatchingWorkersWithClients)) {
       requestsToCheck.push(
-        this.stationsWorkersGeneralService.allWorkersExistingOrFail(
+        this.entityFinderGeneralService.allWorkersExistingOrFail(
           stationsToCheckMatchingWorkersWithClients,
         ),
       );
@@ -99,7 +97,7 @@ export class StationsCheckBeforeUpdateService {
 
     if (isNonEmptyArray(stationsToCheckExistingClients)) {
       requestsToCheck.push(
-        this.clientsGeneralService.allClientsExistsOrFail(
+        this.entityFinderGeneralService.allClientsExistsOrFail(
           stationsToCheckExistingClients,
         ),
       );
@@ -124,11 +122,11 @@ export class StationsCheckBeforeUpdateService {
 
     if (isNonEmptyArray(stationsToCheckMatchingWorkersWithClients)) {
       const foundStationsWorkers =
-        await this.stationsWorkersGeneralService.allWorkersExistingOrFail(
+        await this.entityFinderGeneralService.allWorkersExistingOrFail(
           stationsToCheckMatchingWorkersWithClients,
         );
 
-      this.stationsWorkersGeneralService.allWorkersMatchOfClientsOrFail(
+      this.stationsUpdateHelpersService.allWorkersMatchOfClientsOrFail(
         foundStationsWorkers,
         stationsToCheckMatchingWorkersWithClients,
       );
@@ -140,7 +138,7 @@ export class StationsCheckBeforeUpdateService {
         const filteredWorkers = foundStationsWorkers.filter(({ id }) =>
           workersIds.includes(id),
         );
-        this.stationsWorkersGeneralService.allWorkersWithoutStationsExistingOrFail(
+        this.stationsUpdateHelpersService.allWorkersWithoutStationsOrFail(
           filteredWorkers,
           stationsToCheckEmptyWorkers,
         );
@@ -284,7 +282,7 @@ export class StationsCheckBeforeUpdateService {
           groupByNumber,
         );
       if (isNonEmptyArray(groupByDistrictId))
-        await this.districtsGeneralService.allDistrictsExistsOrFail(
+        await this.entityFinderGeneralService.allDistrictsExistsOrFail(
           groupByDistrictId,
           'districtId',
         );

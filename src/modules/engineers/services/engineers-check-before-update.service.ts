@@ -1,26 +1,24 @@
 import { Injectable } from '@nestjs/common';
 import { NonEmptyArray } from '@app/types';
-import { UsersUpdateEngineerDTO } from '../../dtos/users-update.dtos';
-import { EngineerMemberDTO } from '../../dtos';
+import { UsersUpdateEngineerDTO } from '../../users/dtos/users-update.dtos';
 import {
   groupedByChangedFields,
   groupedByValueOfObjectKeyWillBe,
 } from '@app/helpers/grouped.helpers';
 import { isNonEmptyArray } from '@app/helpers';
-import { DistrictsGeneralService } from '../../../districts/services';
 import { BidEntity } from '@app/entities';
 import { getPreparedChildrenErrors } from '@app/helpers/prepared-errors.helpers';
 import { ExceptionsUnprocessableEntity } from '@app/exceptions/errors';
-import { EngineersRepository } from '../../repositories';
-import {
-  BID_STATUTES_BLOCKING_CHANGE_ENGINEER_ON_DISTRICT,
-  USERS_ERRORS,
-} from '../../constants';
+import { USERS_ERRORS } from '../../users/constants';
+import { EngineersRepository } from '../repositories';
+import { BID_STATUTES_BLOCKING_CHANGE_ENGINEER_ON_DISTRICT } from '../constants';
+import { EngineerMemberDTO } from '../dtos';
+import { EntityFinderGeneralService } from '../../entity-finder/services';
 
 @Injectable()
 export class EngineersCheckBeforeUpdateService {
   constructor(
-    private readonly districtsGeneralService: DistrictsGeneralService,
+    private readonly entityFinderGeneralService: EntityFinderGeneralService,
     private readonly engineersRepository: EngineersRepository,
   ) {}
 
@@ -63,7 +61,7 @@ export class EngineersCheckBeforeUpdateService {
         index,
       })) as NonEmptyArray<{ districtId: number; index: number }>;
 
-      await this.districtsGeneralService.allDistrictsExistsOrFail(
+      await this.entityFinderGeneralService.allDistrictsExistsOrFail(
         preparedRecords,
       );
     }

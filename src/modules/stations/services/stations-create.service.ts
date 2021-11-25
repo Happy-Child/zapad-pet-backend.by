@@ -9,12 +9,11 @@ import { StationsRepository } from '../repositories';
 import { getIndexedArray, isNonEmptyArray } from '@app/helpers';
 import { StationEntity } from '@app/entities';
 import { StationsGeneralService } from './general';
-import { ClientsGeneralService } from '../../clients/services';
-import { DistrictsGeneralService } from '../../districts/services';
-import { StationsWorkersGeneralService } from '../../stations-workers/services';
 import { StationsWorkersRepository } from '../../stations-workers/repositories';
 import { groupedByNull } from '@app/helpers/grouped.helpers';
 import { NonEmptyArray } from '@app/types';
+import { EntityFinderGeneralService } from '../../entity-finder/services';
+import { StationsUpdateHelpersService } from './update/stations-update-helpers.service';
 
 type TStationsCreateItemWithWorker = Omit<
   StationsCreateItemDTO,
@@ -37,9 +36,8 @@ export class StationsCreateService {
   constructor(
     private readonly stationsRepository: StationsRepository,
     private readonly stationsGeneralService: StationsGeneralService,
-    private readonly clientsGeneralService: ClientsGeneralService,
-    private readonly districtsGeneralService: DistrictsGeneralService,
-    private readonly stationsWorkersGeneralService: StationsWorkersGeneralService,
+    private readonly entityFinderGeneralService: EntityFinderGeneralService,
+    private readonly stationsUpdateHelpersService: StationsUpdateHelpersService,
     private readonly connection: Connection,
   ) {}
 
@@ -61,7 +59,7 @@ export class StationsCreateService {
       indexedStations,
     );
 
-    await this.districtsGeneralService.allDistrictsExistsOrFail(
+    await this.entityFinderGeneralService.allDistrictsExistsOrFail(
       indexedStations,
       'districtId',
     );
@@ -80,10 +78,10 @@ export class StationsCreateService {
     if (isNonEmptyArray(stationsWithWorkers)) {
       // Check existing clients and workers
       const foundWorkers =
-        await this.stationsWorkersGeneralService.allWorkersExistingAndMatchOfClientsOrFail(
+        await this.stationsUpdateHelpersService.allWorkersExistingAndMatchOfClientsOrFail(
           stationsWithWorkers,
         );
-      this.stationsWorkersGeneralService.allWorkersWithoutStationsExistingOrFail(
+      this.stationsUpdateHelpersService.allWorkersWithoutStationsOrFail(
         foundWorkers,
         stationsWithWorkers,
       );
@@ -91,7 +89,7 @@ export class StationsCreateService {
 
     if (isNonEmptyArray(stationsWithoutWorkers)) {
       // Check existing only clients
-      await this.clientsGeneralService.allClientsExistsOrFail(
+      await this.entityFinderGeneralService.allClientsExistsOrFail(
         stationsWithoutWorkers,
       );
     }

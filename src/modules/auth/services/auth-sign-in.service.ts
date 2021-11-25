@@ -11,18 +11,18 @@ import { comparePasswords } from '../helpers';
 import { ENTITIES_FIELDS } from '@app/constants';
 import { USER_EXPOSE_GROUPS } from '../../users/constants';
 import { isMember } from '../../users/helpers';
-import { UsersGettingService } from '../../users/services';
 import { AuthGeneralService } from './auth-general.service';
+import { EntityFinderGeneralService } from '../../entity-finder/services';
 
 @Injectable()
 export class AuthSignInService {
   constructor(
-    private readonly usersGettingService: UsersGettingService,
+    private readonly entityFinderGeneralService: EntityFinderGeneralService,
     private readonly jwtService: JwtService,
   ) {}
 
   async signIn(body: SignInRequestBodyDTO): Promise<SignInResponseBodyDTO> {
-    const user = await this.usersGettingService.getFullUserOrFail(
+    const user = await this.entityFinderGeneralService.getFullUserOrFail(
       {
         email: body.email,
       },

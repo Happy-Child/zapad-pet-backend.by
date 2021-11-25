@@ -10,14 +10,14 @@ import { AuthPasswordRecoveryRepository } from '../repositories';
 import { AuthSendingMailService } from './auth-sending-mail.service';
 import { PasswordRecoveryEntity } from '@app/entities';
 import { UsersRepository } from '../../users/repositories';
-import { UsersGettingService } from '../../users/services';
 import { ExceptionsNotFound } from '@app/exceptions/errors';
 import { AUTH_ERRORS } from '../constants';
+import { EntityFinderGeneralService } from '../../entity-finder/services';
 
 @Injectable()
 export class AuthPasswordRecoveryService {
   constructor(
-    private readonly usersGettingService: UsersGettingService,
+    private readonly entityFinderGeneralService: EntityFinderGeneralService,
     private readonly authPasswordRecoveryRepository: AuthPasswordRecoveryRepository,
     private readonly authSendingMailService: AuthSendingMailService,
     private readonly connection: Connection,
@@ -26,7 +26,7 @@ export class AuthPasswordRecoveryService {
   async passwordRecovery(
     email: string,
   ): Promise<PasswordRecoveryResponseBodyDTO> {
-    await this.usersGettingService.getFullUserOrFail({ email });
+    await this.entityFinderGeneralService.getFullUserOrFail({ email });
 
     const prevPasswordRecoveryData =
       await this.authPasswordRecoveryRepository.getOne({
@@ -125,7 +125,7 @@ export class AuthPasswordRecoveryService {
         },
       );
 
-    const user = await this.usersGettingService.getFullUserOrFail({
+    const user = await this.entityFinderGeneralService.getFullUserOrFail({
       email: passwordRecoveryData.email,
     });
 

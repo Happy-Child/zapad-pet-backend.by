@@ -53,7 +53,7 @@ export class UsersController {
   @AuthRoles(USER_ROLES.MASTER)
   @Get('/:id')
   async getById(@Param('id', ParseIntPipe) id: number): Promise<TUserDTO> {
-    return this.usersGettingService.getFullUserOrFail({ id });
+    return this.usersGettingService.getUserOrFail(id);
   }
 
   @HttpCode(HttpStatus.OK)

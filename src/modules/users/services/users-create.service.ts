@@ -11,42 +11,42 @@ import {
   UsersCreateItemDTO,
   UsersCreateRequestBodyDTO,
   UsersCreateStationWorkerDTO,
-} from '../../dtos';
+} from '../dtos';
 import {
   UsersEmailConfirmedRepository,
-  EngineersRepository,
   UsersRepository,
-} from '../../repositories';
-import { DistrictsLeadersRepository } from '../../../districts-leaders/repositories';
-import { StationsWorkersRepository } from '../../../stations-workers/repositories';
+} from '../repositories';
+import { DistrictsLeadersRepository } from '../../districts-leaders/repositories';
+import { StationsWorkersRepository } from '../../stations-workers/repositories';
 import {
-  generateRandomToken,
   getIndexedArray,
   isNonEmptyArray,
   toObjectByField,
 } from '@app/helpers';
-import { getHashByPassword } from '../../../auth/helpers';
-import { getGroupedFullUsersByRoles } from '../../helpers';
+import { getHashByPassword } from '../../auth/helpers';
+import { getGroupedFullUsersByRoles } from '../helpers';
 import { ENTITIES_FIELDS, USER_ROLES } from '@app/constants';
 import {
   DistrictLeaderEntity,
-  EmailConfirmedEntity,
   EngineerEntity,
   StationWorkerEntity,
   UserEntity,
 } from '@app/entities';
-import { UsersCheckBeforeCreateService } from './users-check-before-create.service';
-import { StationsWorkersCheckBeforeCreateService } from './stations-workers-check-before-create.service';
-import { UsersSendingMailService } from '../users-sending-mail.service';
-import { UsersGeneralService } from '../users-general.service';
+import { StationsWorkersCheckBeforeCreateService } from '../../stations-workers/services';
+import { UsersSendingMailService } from './users-sending-mail.service';
+import { UsersGeneralService } from './users-general.service';
 import { groupedByRoles } from '@app/helpers/grouped.helpers';
+import { EngineersRepository } from '../../engineers/repositories';
+import { EngineersCheckBeforeCreateService } from '../../engineers/services';
+import { DistrictsLeadersCheckBeforeCreateService } from '../../districts-leaders/services';
 
 @Injectable()
 export class UsersCreateService {
   constructor(
     private readonly usersRepository: UsersRepository,
     private readonly usersGeneralService: UsersGeneralService,
-    private readonly usersCheckBeforeCreateService: UsersCheckBeforeCreateService,
+    private readonly engineersCheckBeforeCreateService: EngineersCheckBeforeCreateService,
+    private readonly districtsLeadersCheckBeforeCreateService: DistrictsLeadersCheckBeforeCreateService,
     private readonly stationsWorkersCheckBeforeCreateService: StationsWorkersCheckBeforeCreateService,
     private readonly usersSendingMailService: UsersSendingMailService,
     private readonly connection: Connection,
@@ -65,11 +65,10 @@ export class UsersCreateService {
         this.getRequestsToCreationUsers(indexedUsers);
       await Promise.all(requestsToCreationUsers.map((cb) => cb(manager)));
 
-      const records = await this.createRecordsOfConfirmationEmails(
+      await this.usersSendingMailService.sendingEmailsCreatedUsers(
         users,
-        manager,
+        manager.getCustomRepository(UsersEmailConfirmedRepository),
       );
-      await this.sendingEmailsCreatedUsers(users, records);
     });
   }
 
@@ -87,7 +86,7 @@ export class UsersCreateService {
 
     if (isNonEmptyArray(fullMembers.districtLeaders)) {
       requestsToCheckingMembers.push(
-        this.usersCheckBeforeCreateService.checkDistrictLeadersOrFail(
+        this.districtsLeadersCheckBeforeCreateService.executeOrFail(
           fullMembers.districtLeaders,
         ),
       );
@@ -103,7 +102,7 @@ export class UsersCreateService {
 
     if (isNonEmptyArray(fullMembers.engineers)) {
       requestsToCheckingMembers.push(
-        this.usersCheckBeforeCreateService.checkEngineersOrFail(
+        this.engineersCheckBeforeCreateService.executeOrFail(
           fullMembers.engineers,
         ),
       );
@@ -242,41 +241,5 @@ export class UsersCreateService {
     createdUsers = usersRepository.serializeMany(createdUsers);
 
     return toObjectByField(ENTITIES_FIELDS.EMAIL, createdUsers);
-  }
-
-  private async createRecordsOfConfirmationEmails(
-    users: { email: string }[],
-    manager: EntityManager,
-  ): Promise<EmailConfirmedEntity[]> {
-    const records = await Promise.all(
-      users.map(async ({ email }) => ({
-        token: await generateRandomToken(),
-        email,
-      })),
-    );
-
-    const usersEmailConfirmedRepository = manager.getCustomRepository(
-      UsersEmailConfirmedRepository,
-    );
-
-    return usersEmailConfirmedRepository.saveEntities(records);
-  }
-
-  private async sendingEmailsCreatedUsers(
-    users: { email: string }[],
-    recordsOfConfirmationEmails: EmailConfirmedEntity[],
-  ): Promise<void> {
-    const dataToSendingEmails = recordsOfConfirmationEmails.map((record) => {
-      const user = users.find(
-        ({ email: userEmail }) => userEmail === record.email,
-      ) as UsersCreateGeneralUserDTO;
-      return { user, token: record.token };
-    });
-
-    await Promise.all(
-      dataToSendingEmails.map(async ({ token, user }) =>
-        this.usersSendingMailService.sendEmailAfterCreatedUser(user, token),
-      ),
-    );
   }
 }

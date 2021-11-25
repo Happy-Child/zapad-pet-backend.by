@@ -1,15 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { UsersRepository } from '../repositories';
-import {
-  ExceptionsUnprocessableEntity,
-  ExceptionsNotFound,
-} from '@app/exceptions/errors';
+import { ExceptionsUnprocessableEntity } from '@app/exceptions/errors';
 import { AUTH_ERRORS } from '../../auth/constants';
 import { ENTITIES_FIELDS } from '@app/constants';
 import { getPreparedChildrenErrors } from '@app/helpers/prepared-errors.helpers';
 import { NonEmptyArray } from '@app/types';
-import { TUserDTO } from '../types';
-import { USERS_ERRORS } from '../constants';
 
 @Injectable()
 export class UsersGeneralService {
@@ -37,27 +32,5 @@ export class UsersGeneralService {
       messages: [AUTH_ERRORS.EMAIL_IS_EXIST],
     });
     throw new ExceptionsUnprocessableEntity(preparedErrors);
-  }
-
-  public async allUsersExistingOrFail(
-    users: NonEmptyArray<{ id: number; index: number }>,
-  ): Promise<TUserDTO[]> {
-    const ids = users.map(({ id }) => id) as NonEmptyArray<number>;
-    const foundUsers = await this.usersRepository.getUsersByIds(ids);
-
-    const foundUsersIds = foundUsers.map(({ id }) => id);
-    if (foundUsersIds.length === ids.length) {
-      return foundUsers;
-    }
-
-    const usersForException = users.filter(
-      ({ id }) => !foundUsersIds.includes(id),
-    );
-
-    const preparedErrors = getPreparedChildrenErrors(usersForException, {
-      field: 'id',
-      messages: [USERS_ERRORS.USER_NOT_EXISTS],
-    });
-    throw new ExceptionsNotFound(preparedErrors);
   }
 }

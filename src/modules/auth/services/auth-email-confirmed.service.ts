@@ -8,13 +8,13 @@ import {
 } from '@app/exceptions/errors';
 import { AUTH_ERRORS } from '../constants';
 import { UsersRepository } from '../../users/repositories';
-import { UsersGettingService } from '../../users/services';
+import { EntityFinderGeneralService } from '../../entity-finder/services';
 
 @Injectable()
 export class AuthEmailConfirmedService {
   constructor(
     private readonly authEmailConfirmedRepository: AuthEmailConfirmedRepository,
-    private readonly usersGettingService: UsersGettingService,
+    private readonly entityFinderGeneralService: EntityFinderGeneralService,
     private readonly connection: Connection,
   ) {}
 
@@ -36,7 +36,7 @@ export class AuthEmailConfirmedService {
       },
     );
 
-    const user = await this.usersGettingService.getFullUserOrFail({
+    const user = await this.entityFinderGeneralService.getFullUserOrFail({
       email: record.email,
     });
     if (user.emailConfirmed) {

@@ -1,29 +1,29 @@
 import { Injectable } from '@nestjs/common';
 import { NonEmptyArray } from '@app/types';
-import { UsersUpdateDistrictLeaderDTO } from '../../dtos/users-update.dtos';
-import { DistrictLeaderMemberDTO } from '../../dtos';
+import { UsersUpdateDistrictLeaderDTO } from '../../users/dtos/users-update.dtos';
 import {
   groupedByChangedFields,
   groupedByValueOfObjectKeyWillBe,
 } from '@app/helpers/grouped.helpers';
 import { isNonEmptyArray } from '@app/helpers';
-import { DistrictsGeneralService } from '../../../districts/services';
-import { DistrictsLeadersRepository } from '../../../districts-leaders/repositories';
+import { DistrictsLeadersRepository } from '../repositories';
 import { BidEntity, StationEntity } from '@app/entities';
 import { getPreparedChildrenErrors } from '@app/helpers/prepared-errors.helpers';
 import { ExceptionsUnprocessableEntity } from '@app/exceptions/errors';
 import {
   BID_STATUTES_BLOCKING_CHANGE_LEADER_ON_DISTRICT,
   DISTRICTS_ERRORS,
-} from '../../../districts/constants';
-import { DistrictsLeadersGeneralService } from '../../../districts-leaders/services';
+} from '../../districts/constants';
+import { DistrictsLeadersGeneralService } from './index';
+import { DistrictLeaderMemberDTO } from '../dtos';
+import { EntityFinderGeneralService } from '../../entity-finder/services';
 
 @Injectable()
 export class DistrictsLeadersCheckBeforeUpdateService {
   constructor(
-    private readonly districtsGeneralService: DistrictsGeneralService,
     private readonly districtsLeadersRepository: DistrictsLeadersRepository,
     private readonly districtsLeadersGeneralService: DistrictsLeadersGeneralService,
+    private readonly entityFinderGeneralService: EntityFinderGeneralService,
   ) {}
 
   public async executeOrFail(
@@ -72,7 +72,7 @@ export class DistrictsLeadersCheckBeforeUpdateService {
         }),
       ) as NonEmptyArray<{ districtId: number; index: number }>;
 
-      await this.districtsGeneralService.allDistrictsExistsOrFail(
+      await this.entityFinderGeneralService.allDistrictsExistsOrFail(
         preparedRecords,
       );
     }
@@ -95,6 +95,7 @@ export class DistrictsLeadersCheckBeforeUpdateService {
     }
   }
 
+  // TODO repo
   private async allLeadersCanBeChangeDistrictsOrFail(
     items: NonEmptyArray<{ id: number; index: number }>,
   ): Promise<void> {

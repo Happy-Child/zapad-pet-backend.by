@@ -10,7 +10,6 @@ import {
   groupedByChangedFields,
   isNonEmptyArray,
 } from '@app/helpers';
-import { StationsGeneralService } from '../general';
 import { StationsRepository } from '../../repositories';
 import { Connection, EntityManager } from 'typeorm';
 import { IRepositoryUpdateEntitiesItem } from '@app/repositories/interfaces';
@@ -19,12 +18,13 @@ import { StationsCheckBeforeUpdateService } from './stations-check-before-update
 import { StationsWorkersRepository } from '../../../stations-workers/repositories';
 import { GROUPED_UPDATING_STATIONS_FIELDS } from '../../constants';
 import { NonEmptyArray } from '@app/types';
+import { EntityFinderGeneralService } from '../../../entity-finder/services';
 
 @Injectable()
 export class StationsUpdateService {
   constructor(
     private readonly stationsRepository: StationsRepository,
-    private readonly stationsGeneralService: StationsGeneralService,
+    private readonly entityFinderGeneralService: EntityFinderGeneralService,
     private readonly stationsCheckBeforeUpdateService: StationsCheckBeforeUpdateService,
     private readonly connection: Connection,
   ) {}
@@ -35,7 +35,7 @@ export class StationsUpdateService {
     const indexedStations = getIndexedArray(data.stations);
 
     const foundStations =
-      await this.stationsGeneralService.allStationsExistsOrFail(
+      await this.entityFinderGeneralService.allStationsExistsOrFail(
         indexedStations,
       );
 

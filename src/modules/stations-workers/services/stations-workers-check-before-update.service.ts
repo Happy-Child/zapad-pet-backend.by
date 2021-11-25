@@ -1,33 +1,29 @@
 import { Injectable } from '@nestjs/common';
 import { NonEmptyArray } from '@app/types';
-import { UsersUpdateStationWorkerDTO } from '../../dtos/users-update.dtos';
-import { StationWorkerMemberDTO } from '../../dtos';
+import { UsersUpdateStationWorkerDTO } from '../../users/dtos/users-update.dtos';
 import {
   groupedByChangedFields,
   groupedByNull,
   groupedByValueOfObjectKeyWillBe,
 } from '@app/helpers/grouped.helpers';
-import {
-  GROUPED_UPDATING_STATIONS_WORKERS_FIELDS,
-  USERS_ERRORS,
-} from '../../constants';
+import { USERS_ERRORS } from '../../users/constants';
 import { uniqBy } from 'lodash';
 import { isNonEmptyArray } from '@app/helpers';
-import { ClientsGeneralService } from '../../../clients/services';
-import { StationsWorkersRepository } from '../../../stations-workers/repositories';
+import { StationsWorkersRepository } from '../repositories';
 import {
   BID_STATUTES_BLOCKING_CHANGE_WORKER_ON_STATION,
   BID_STATUTES_BLOCKING_UPDATE_STATION,
-} from '../../../stations/constants';
+} from '../../stations/constants';
 import { BidEntity } from '@app/entities';
 import {
   getPreparedChildrenErrors,
   IGetPreparedChildrenErrorsParams,
 } from '@app/helpers/prepared-errors.helpers';
 import { ExceptionsUnprocessableEntity } from '@app/exceptions/errors';
-import { StationsWorkersGeneralService } from '../../../stations-workers/services';
-import { StationsGeneralService } from '../../../stations/services';
-import { BID_STATUS } from '../../../bids/constants';
+import { StationsWorkersGeneralService } from './index';
+import { BID_STATUS } from '../../bids/constants';
+import { StationWorkerMemberDTO } from '../dtos';
+import { EntityFinderGeneralService } from '../../entity-finder/services';
 
 type TIndexedUsersUpdateStationWorkerDTO = UsersUpdateStationWorkerDTO & {
   index: number;
@@ -44,10 +40,9 @@ const prepareWorkersToFetchStations = (
 @Injectable()
 export class StationsWorkersCheckBeforeUpdateService {
   constructor(
-    private readonly clientsGeneralService: ClientsGeneralService,
     private readonly stationsWorkersRepository: StationsWorkersRepository,
     private readonly stationsWorkersGeneralService: StationsWorkersGeneralService,
-    private readonly stationsGeneralService: StationsGeneralService,
+    private readonly entityFinderGeneralService: EntityFinderGeneralService,
   ) {}
 
   public async executeOrFail(
@@ -55,11 +50,7 @@ export class StationsWorkersCheckBeforeUpdateService {
     foundWorkers: StationWorkerMemberDTO[],
   ): Promise<void> {
     const { clientId: groupedByClientId, stationId: groupedByStationId } =
-      groupedByChangedFields(
-        workers,
-        foundWorkers,
-        GROUPED_UPDATING_STATIONS_WORKERS_FIELDS,
-      );
+      groupedByChangedFields(workers, foundWorkers, ['clientId', 'stationId']);
 
     await this.canBeUpdateClientsOrFail(groupedByClientId);
 
@@ -104,7 +95,7 @@ export class StationsWorkersCheckBeforeUpdateService {
       );
 
       requestsToCheck.push(
-        this.stationsGeneralService.allStationsExistsOrFail(
+        this.entityFinderGeneralService.allStationsExistsOrFail(
           preparedStationsToCheckExisting,
         ),
       );
@@ -112,7 +103,7 @@ export class StationsWorkersCheckBeforeUpdateService {
 
     if (isNonEmptyArray(workersToCheckExistingClients)) {
       requestsToCheck.push(
-        this.clientsGeneralService.allClientsExistsOrFail(
+        this.entityFinderGeneralService.allClientsExistsOrFail(
           workersToCheckExistingClients,
         ),
       );
@@ -140,7 +131,7 @@ export class StationsWorkersCheckBeforeUpdateService {
         workersToCheckMatchingStationsWithClients,
       );
       const foundStations =
-        await this.stationsGeneralService.allStationsExistsOrFail(
+        await this.entityFinderGeneralService.allStationsExistsOrFail(
           preparedStationsToCheckExisting,
         );
       const preparedStations = foundStations.map(
@@ -163,7 +154,7 @@ export class StationsWorkersCheckBeforeUpdateService {
         const filteredStations = preparedStations.filter(({ stationId }) =>
           stationsIds.includes(stationId),
         );
-        this.stationsWorkersGeneralService.allStationsWithoutWorkersExistingOrFail(
+        this.stationsWorkersGeneralService.allStationsWithoutWorkersOrFail(
           filteredStations,
           workersToCheckEmptyStations,
         );

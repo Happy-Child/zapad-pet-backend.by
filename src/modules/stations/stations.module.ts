@@ -13,18 +13,17 @@ import {
 } from './services';
 import { ClientsModule } from '../clients';
 import { DistrictsModule } from '../districts';
-import { StationsWorkersModule } from '../stations-workers';
 import { StationsCheckBeforeUpdateService } from './services/update';
-import { StationsWorkersRepository } from '../stations-workers/repositories';
+import { EntityFinderModule } from '../entity-finder';
+import { StationsUpdateHelpersService } from './services/update/stations-update-helpers.service';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([
       StationsRepository,
-      StationsWorkersRepository,
       AggrStationBidStatusCountRepository,
     ]),
-    StationsWorkersModule,
+    EntityFinderModule,
     ClientsModule,
     DistrictsModule,
   ],
@@ -33,6 +32,7 @@ import { StationsWorkersRepository } from '../stations-workers/repositories';
     StationsGeneralService,
     StationsCreateService,
     StationsCheckBeforeUpdateService,
+    StationsUpdateHelpersService,
     StationsUpdateService,
     StationsGettingService,
   ],

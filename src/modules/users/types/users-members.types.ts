@@ -1,8 +1,6 @@
-import {
-  DistrictLeaderMemberDTO,
-  EngineerMemberDTO,
-  StationWorkerMemberDTO,
-} from '../dtos';
+import { DistrictLeaderMemberDTO } from '../../districts-leaders/dtos';
+import { EngineerMemberDTO } from '../../engineers/dtos';
+import { StationWorkerMemberDTO } from '../../stations-workers/dtos';
 
 export type TMemberDTO =
   | DistrictLeaderMemberDTO

@@ -6,7 +6,8 @@ import {
   UsersUpdateRequestBodyDTO,
   UsersUpdateStationWorkerDTO,
 } from '../../dtos/users-update.dtos';
-import { EngineersRepository, UsersRepository } from '../../repositories';
+import { EngineersRepository } from '../../../engineers/repositories';
+import { UsersRepository } from '../../repositories';
 import {
   getIndexedArray,
   groupedByValueOfObjectKeyWillBe,
@@ -27,12 +28,15 @@ import {
 import { DistrictsLeadersRepository } from '../../../districts-leaders/repositories';
 import { TUserDTO } from '../../types';
 import { NonEmptyArray } from '@app/types';
-import { DistrictLeaderMemberDTO, StationWorkerMemberDTO } from '../../dtos';
 import { USER_ROLES } from '@app/constants';
+import { StationWorkerMemberDTO } from '../../../stations-workers/dtos';
+import { DistrictLeaderMemberDTO } from '../../../districts-leaders/dtos';
+import { EntityFinderGeneralService } from '../../../entity-finder/services';
 
 @Injectable()
 export class UsersUpdateService {
   constructor(
+    private readonly entityFinderGeneralService: EntityFinderGeneralService,
     private readonly usersRepository: UsersRepository,
     private readonly usersGeneralService: UsersGeneralService,
     private readonly usersCheckBeforeUpdateService: UsersCheckBeforeUpdateService,
@@ -44,9 +48,10 @@ export class UsersUpdateService {
   }: UsersUpdateRequestBodyDTO): Promise<TUserDTO[]> {
     const indexedUsers = getIndexedArray(users);
 
-    const foundUsers = await this.usersGeneralService.allUsersExistingOrFail(
-      indexedUsers,
-    );
+    const foundUsers =
+      await this.entityFinderGeneralService.allUsersExistingOrFail(
+        indexedUsers,
+      );
 
     await this.connection.transaction(async (manager) => {
       await this.usersCheckBeforeUpdateService.executeOrFail(

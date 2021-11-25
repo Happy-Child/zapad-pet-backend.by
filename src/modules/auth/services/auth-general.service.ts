@@ -1,17 +1,19 @@
 import { Injectable } from '@nestjs/common';
 import { TFullMemberDTO, TMemberDTO, TUserDTO } from '../../users/types';
-import { UsersGettingService } from '../../users/services';
 import { isFullMember } from '../../users/helpers';
 import { ExceptionsForbidden } from '@app/exceptions/errors';
 import { ENTITIES_FIELDS } from '@app/constants';
 import { AUTH_ERRORS } from '../constants';
+import { EntityFinderGeneralService } from '../../entity-finder/services';
 
 @Injectable()
 export class AuthGeneralService {
-  constructor(private readonly usersGettingService: UsersGettingService) {}
+  constructor(
+    private readonly entityFinderGeneralService: EntityFinderGeneralService,
+  ) {}
 
   public async me(id: number): Promise<TUserDTO> {
-    return this.usersGettingService.getFullUserOrFail({ id });
+    return this.entityFinderGeneralService.getFullUserOrFail({ id });
   }
 
   public static isFullMemberOrFail(

@@ -1,17 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { NonEmptyArray, NonNullableObject } from '@app/types';
 import { isNonEmptyArray } from '@app/helpers';
-import { ClientsGeneralService } from '../../../clients/services';
-import { StationsGeneralService } from '../../../stations/services';
-import { UsersCreateFullStationWorkerDTO } from '../../dtos';
+import { UsersCreateFullStationWorkerDTO } from '../../users/dtos';
 import { groupedByNull } from '@app/helpers/grouped.helpers';
-import { StationsWorkersGeneralService } from '../../../stations-workers/services';
+import { StationsWorkersGeneralService } from './index';
+import { EntityFinderGeneralService } from '../../entity-finder/services';
 
 @Injectable()
 export class StationsWorkersCheckBeforeCreateService {
   constructor(
-    private readonly clientsGeneralService: ClientsGeneralService,
-    private readonly stationsGeneralService: StationsGeneralService,
+    private readonly entityFinderGeneralService: EntityFinderGeneralService,
     private readonly stationsWorkersGeneralService: StationsWorkersGeneralService,
   ) {}
 
@@ -28,18 +26,18 @@ export class StationsWorkersCheckBeforeCreateService {
 
     if (isNonEmptyArray(workersWithStations)) {
       // Check existing clients and stations
-      await this.allStationsWithoutWorkersExistingOrFail(workersWithStations);
+      await this.allStationsMatchAndWithoutWorkersOrFail(workersWithStations);
     }
 
     if (isNonEmptyArray(workersWithoutStations)) {
       // Check existing only clients
-      await this.clientsGeneralService.allClientsExistsOrFail(
+      await this.entityFinderGeneralService.allClientsExistsOrFail(
         workersWithoutStations,
       );
     }
   }
 
-  private async allStationsWithoutWorkersExistingOrFail(
+  private async allStationsMatchAndWithoutWorkersOrFail(
     workersWithStations: NonEmptyArray<{
       stationId: number;
       clientId: number;
@@ -53,7 +51,7 @@ export class StationsWorkersCheckBeforeCreateService {
       }),
     ) as NonEmptyArray<{ id: number; index: number }>;
     const foundStations =
-      await this.stationsGeneralService.allStationsExistsOrFail(
+      await this.entityFinderGeneralService.allStationsExistsOrFail(
         preparedStations,
         'stationId',
       );
@@ -71,7 +69,7 @@ export class StationsWorkersCheckBeforeCreateService {
       workersWithStations,
     );
 
-    this.stationsWorkersGeneralService.allStationsWithoutWorkersExistingOrFail(
+    this.stationsWorkersGeneralService.allStationsWithoutWorkersOrFail(
       preparedFoundStations,
       workersWithStations,
     );

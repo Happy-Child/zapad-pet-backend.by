@@ -9,7 +9,6 @@ import {
   ExceptionsUnprocessableEntity,
 } from '@app/exceptions/errors';
 import { StationsRepository } from '../../repositories';
-import { StationExtendedDTO } from '../../dtos';
 import {
   BID_STATUTES_BLOCKING_UPDATE_STATION,
   STATIONS_ERRORS,
@@ -37,30 +36,6 @@ export class StationsGeneralService {
         },
       },
     );
-  }
-
-  public async allStationsExistsOrFail(
-    items: NonEmptyArray<{ id: number; index: number }>,
-    exceptionByField = 'id',
-  ): Promise<NonEmptyArray<StationExtendedDTO>> {
-    const ids = items.map(({ id }) => id) as NonEmptyArray<number>;
-
-    const foundRecords = await this.stationsRepository.getStationsByIds(ids);
-
-    const allIdsExisting = ids.length === foundRecords.length;
-
-    if (allIdsExisting) {
-      return foundRecords as NonEmptyArray<StationExtendedDTO>;
-    }
-
-    const recordsIds = foundRecords.map(({ id }) => id);
-    const result = items.filter((item) => !recordsIds.includes(item.id));
-
-    const preparedErrors = getPreparedChildrenErrors(result, {
-      field: exceptionByField,
-      messages: [STATIONS_ERRORS.STATION_NOT_FOUND],
-    });
-    throw new ExceptionsNotFound(preparedErrors);
   }
 
   public async allStationsNumbersNotExistsOrFail(
