@@ -1,1 +1,1 @@
-export * from './districts-getting.dtos';
+export * from './regions-getting.dtos';
