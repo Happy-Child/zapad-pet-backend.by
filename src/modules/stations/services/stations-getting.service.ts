@@ -18,7 +18,7 @@ export class StationsGettingService {
 
   public async getById(id: number): Promise<StationWithStatisticsDTO> {
     await this.stationsGeneralService.getStationOrFail(id);
-    return this.stationsRepository.getStationWithStatistic(id);
+    return this.stationsRepository.getSingleStation(id);
   }
 
   public async getStatisticsById(id: number): Promise<StationStatisticDTO> {

@@ -3,6 +3,7 @@ import { BaseEntity } from '@app/entities/base.entity';
 import { VARCHAR_DEFAULT_LENGTH } from '@app/constants';
 import { Expose } from 'class-transformer';
 import { EngineerEntity } from '@app/entities/engineers.entity';
+import { StationEntity } from '@app/entities/station.entity';
 
 @Entity({ name: 'district' })
 export class DistrictEntity extends BaseEntity {
@@ -29,5 +30,10 @@ export class DistrictEntity extends BaseEntity {
   regionSlug!: string;
 
   @OneToMany(() => EngineerEntity, (engineer) => engineer.district)
+  @Expose()
   engineers!: EngineerEntity[];
+
+  @OneToMany(() => StationEntity, (station) => station.district)
+  @Expose()
+  stations!: StationEntity[];
 }

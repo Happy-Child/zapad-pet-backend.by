@@ -78,9 +78,7 @@ export class StationsRepository extends GeneralRepository<StationEntity> {
       .getRawMany();
   }
 
-  public async getStationWithStatistic(
-    id: number,
-  ): Promise<StationWithStatisticsDTO> {
+  public async getSingleStation(id: number): Promise<StationWithStatisticsDTO> {
     const queryBuilder = this.createQueryBuilder('st');
 
     this.mapDetailsToStations(queryBuilder);

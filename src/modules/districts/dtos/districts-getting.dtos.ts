@@ -1,7 +1,43 @@
-import { Expose, plainToClass } from 'class-transformer';
-import { Type } from 'class-transformer';
+import { Expose, plainToClass, Type } from 'class-transformer';
+import { DistrictEntity } from '@app/entities';
+import { ShortDistrictLeaderMemberDTO } from '../../districts-leaders/dtos';
 import { ClassTransformOptions } from 'class-transformer/types/interfaces';
 import { BidsCountByStatusesDTO } from '../../bids/dtos/bids-general.dtos';
+import { StationStatisticDTO } from '../../stations/dtos/stations-getting.dtos';
+
+export class DistrictDTO extends DistrictEntity {
+  @Expose()
+  @Type(() => ShortDistrictLeaderMemberDTO)
+  districtLeader!: ShortDistrictLeaderMemberDTO;
+
+  @Expose()
+  countOfEngineers!: number;
+
+  @Expose()
+  countOfStations!: number;
+}
+
+export class DistrictsGetAllResponseBodyDTO {
+  @Expose()
+  @Type(() => DistrictDTO)
+  items!: DistrictDTO[];
+
+  @Expose()
+  totalItemsCount!: number;
+
+  constructor(
+    data: DistrictsGetAllResponseBodyDTO,
+    serializeOptions?: ClassTransformOptions,
+  ) {
+    Object.assign(
+      this,
+      plainToClass(DistrictsGetAllResponseBodyDTO, data, {
+        ...serializeOptions,
+        excludeExtraneousValues: true,
+      }),
+    );
+  }
+}
 
 export class DistrictStatisticDTO {
   @Expose()
@@ -15,6 +51,26 @@ export class DistrictStatisticDTO {
     Object.assign(
       this,
       plainToClass(DistrictStatisticDTO, data, {
+        ...serializeOptions,
+        excludeExtraneousValues: true,
+      }),
+    );
+  }
+}
+
+export class DistrictWithStatisticsDTO extends DistrictDTO {
+  @Expose()
+  @Type(() => StationStatisticDTO)
+  statistics!: StationStatisticDTO;
+
+  constructor(
+    data: Partial<DistrictWithStatisticsDTO>,
+    serializeOptions?: ClassTransformOptions,
+  ) {
+    super();
+    Object.assign(
+      this,
+      plainToClass(DistrictWithStatisticsDTO, data, {
         ...serializeOptions,
         excludeExtraneousValues: true,
       }),

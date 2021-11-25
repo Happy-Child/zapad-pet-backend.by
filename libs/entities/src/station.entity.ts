@@ -11,6 +11,7 @@ import { STATION_NUMBER_LENGTH } from '../../../src/modules/stations/constants';
 import { BidEntity } from '@app/entities/bid.entity';
 import { ClientEntity } from '@app/entities/client.entity';
 import { Expose } from 'class-transformer';
+import { DistrictEntity } from '@app/entities/district.entity';
 
 @Entity({ name: 'station' })
 export class StationEntity extends BaseEntity {
@@ -38,6 +39,10 @@ export class StationEntity extends BaseEntity {
   @Expose()
   @Column({ nullable: false })
   districtId!: number;
+
+  @ManyToOne(() => DistrictEntity, (district) => district.stations)
+  @Expose()
+  district!: DistrictEntity[];
 
   @OneToMany(() => BidEntity, (bid) => bid.station)
   @Expose()
