@@ -3,12 +3,11 @@ import { DistrictEntity } from '@app/entities';
 import { ShortDistrictLeaderMemberDTO } from '../../districts-leaders/dtos';
 import { ClassTransformOptions } from 'class-transformer/types/interfaces';
 import { BidsCountByStatusesDTO } from '../../bids/dtos/bids-general.dtos';
-import { StationStatisticDTO } from '../../stations/dtos/stations-getting.dtos';
 
 export class DistrictDTO extends DistrictEntity {
   @Expose()
   @Type(() => ShortDistrictLeaderMemberDTO)
-  districtLeader!: ShortDistrictLeaderMemberDTO;
+  districtLeader!: ShortDistrictLeaderMemberDTO | null;
 
   @Expose()
   countOfEngineers!: number;
@@ -60,8 +59,8 @@ export class DistrictStatisticDTO {
 
 export class DistrictWithStatisticsDTO extends DistrictDTO {
   @Expose()
-  @Type(() => StationStatisticDTO)
-  statistics!: StationStatisticDTO;
+  @Type(() => DistrictStatisticDTO)
+  statistics!: DistrictStatisticDTO;
 
   constructor(
     data: Partial<DistrictWithStatisticsDTO>,

@@ -38,7 +38,7 @@ export class StationDTO {
 
   @Expose()
   @Type(() => ShortStationWorkerMemberDTO)
-  stationWorker!: ShortStationWorkerMemberDTO;
+  stationWorker!: ShortStationWorkerMemberDTO | null;
 
   constructor(
     data: Partial<StationDTO>,

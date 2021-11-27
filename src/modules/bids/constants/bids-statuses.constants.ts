@@ -30,3 +30,5 @@ export enum BID_EDITABLE_STATUS {
   EDITABLE = 'editable',
   UNEDITABLE = 'uneditable',
 }
+
+export enum BID_REVIEW_STATUS {}

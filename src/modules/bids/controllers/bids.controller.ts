@@ -1,12 +1,13 @@
 import {
+  Get,
   Body,
   Controller,
   HttpCode,
   HttpStatus,
   Param,
   ParseIntPipe,
-  Put,
   Post,
+  Put,
   Request,
 } from '@nestjs/common';
 import {
@@ -43,6 +44,30 @@ export class BidsController {
     return true;
   }
 
+  @HttpCode(HttpStatus.OK)
+  @AuthRoles(
+    USER_ROLES.MASTER,
+    USER_ROLES.STATION_WORKER,
+    USER_ROLES.ENGINEER,
+    USER_ROLES.DISTRICT_LEADER,
+  )
+  @Get()
+  async getList(): Promise<any> {
+    // TODO strategy for every role?
+  }
+
+  @HttpCode(HttpStatus.OK)
+  @AuthRoles(
+    USER_ROLES.MASTER,
+    USER_ROLES.STATION_WORKER,
+    USER_ROLES.ENGINEER,
+    USER_ROLES.DISTRICT_LEADER,
+  )
+  @Get('/:id')
+  async getById(): Promise<any> {
+    //
+  }
+
   @HttpCode(HttpStatus.CREATED)
   @AuthRoles(USER_ROLES.STATION_WORKER)
   @Put('/:id')
@@ -53,6 +78,54 @@ export class BidsController {
   ): Promise<true> {
     await this.bidsUpdateService.update(id, user.stationId, body);
     return true;
+  }
+
+  // TODO change todo list for engineer
+
+  @HttpCode(HttpStatus.OK)
+  @AuthRoles(USER_ROLES.ENGINEER)
+  @Post('/:id/start-work')
+  async startWork(): Promise<any> {
+    //
+  }
+
+  @HttpCode(HttpStatus.OK)
+  @AuthRoles(USER_ROLES.ENGINEER)
+  @Post('/:id/end-work')
+  async endWork(): Promise<any> {
+    //
+  }
+
+  @HttpCode(HttpStatus.OK)
+  @AuthRoles(USER_ROLES.DISTRICT_LEADER)
+  @Post('/:id/assignment-engineer/:userId')
+  async assignmentToEngineer(): Promise<any> {
+    //
+  }
+
+  @HttpCode(HttpStatus.OK)
+  @AuthRoles(
+    USER_ROLES.MASTER,
+    USER_ROLES.STATION_WORKER,
+    USER_ROLES.DISTRICT_LEADER,
+  )
+  @Post('/:id/change-status/:status')
+  async changeStatus(): Promise<any> {
+    // TODO strategy for every role?
+  }
+
+  @HttpCode(HttpStatus.OK)
+  @AuthRoles(USER_ROLES.STATION_WORKER)
+  @Post('/:id/worker-review/:reviewStatus')
+  async setReviewStatusFromWorker(): Promise<any> {
+    // + необязат коммент если отклонение
+  }
+
+  @HttpCode(HttpStatus.OK)
+  @AuthRoles(USER_ROLES.DISTRICT_LEADER)
+  @Post('/:id/leader-review/:reviewStatus')
+  async setReviewStatusFromLeader(): Promise<any> {
+    // + необязат коммент если отклонение
   }
 
   @HttpCode(HttpStatus.OK)

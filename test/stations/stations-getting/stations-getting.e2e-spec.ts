@@ -50,6 +50,7 @@ describe('StationsModule (e2e)', () => {
       TEST_TIMEOUT,
     );
 
+    // TODO impl tests
     it.skip(
       'should be bad request',
       () => {
