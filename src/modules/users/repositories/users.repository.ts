@@ -54,7 +54,7 @@ export class UsersRepository extends GeneralRepository<UserEntity> {
 
     if (data.search) {
       queryBuilder.andWhere(
-        `name LIKE '%${data.search}%' OR email LIKE '%${data.search}%'`,
+        `(name LIKE '%${data.search}%' OR email LIKE '%${data.search}%')`,
       );
     }
 

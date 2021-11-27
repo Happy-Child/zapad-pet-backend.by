@@ -19,18 +19,22 @@ export class DistrictsGettingService {
     return this.districtsRepository.getAll();
   }
 
-  public async getEngineersById(id: number): Promise<ShortEngineerMemberDTO[]> {
-    await this.districtsGeneralService.getDistrictOrFail(id);
-    return this.districtsRepository.getEngineersById(id);
+  public async getEngineersById(
+    districtId: number,
+  ): Promise<ShortEngineerMemberDTO[]> {
+    await this.districtsGeneralService.getDistrictOrFail(districtId);
+    return this.districtsRepository.getEngineersById(districtId);
   }
 
-  public async getById(id: number): Promise<DistrictWithStatisticsDTO> {
-    await this.districtsGeneralService.getDistrictOrFail(id);
-    return this.districtsRepository.getSingleDistrict(id);
+  public async getById(districtId: number): Promise<DistrictWithStatisticsDTO> {
+    await this.districtsGeneralService.getDistrictOrFail(districtId);
+    return this.districtsRepository.getSingleDistrict(districtId);
   }
 
-  public async getStatisticsById(id: number): Promise<DistrictStatisticDTO> {
-    await this.districtsGeneralService.getDistrictOrFail(id);
-    return this.districtsRepository.getDistrictStatisticById(id);
+  public async getStatisticsById(
+    districtId: number,
+  ): Promise<DistrictStatisticDTO> {
+    await this.districtsGeneralService.getDistrictOrFail(districtId);
+    return this.districtsRepository.getDistrictStatisticById(districtId);
   }
 }

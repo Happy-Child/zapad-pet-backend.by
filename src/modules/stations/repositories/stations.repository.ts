@@ -147,15 +147,10 @@ export class StationsRepository extends GeneralRepository<StationEntity> {
       districtsAndClientsParams.districtIds?.length &&
       districtsAndClientsParams.clientIds?.length
     ) {
-      queryBuilder
-        .andWhere(
-          '"st"."clientId" IN (:...clientIds) OR "st"."districtId" IN (:...districtIds)',
-          districtsAndClientsParams,
-        )
-        .orWhere(
-          '"st"."districtId" IN (:...districtIds) OR "st"."clientId" IN (:...clientIds)',
-          districtsAndClientsParams,
-        );
+      queryBuilder.andWhere(
+        '("st"."clientId" IN (:...clientIds) OR "st"."districtId" IN (:...districtIds))',
+        districtsAndClientsParams,
+      );
     } else {
       if (districtsAndClientsParams.districtIds?.length) {
         queryBuilder.andWhere(`"st"."districtId" IN (:...ids)`, {

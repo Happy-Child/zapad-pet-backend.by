@@ -7,6 +7,7 @@ import { USER_ROLES } from '@app/constants';
 import { EngineerMemberDTO } from '../../engineers/dtos';
 import { DistrictLeaderMemberDTO } from '../../districts-leaders/dtos';
 import { StationWorkerMemberDTO } from '../../stations-workers/dtos';
+import { UserEntity } from '@app/entities';
 
 export const isMember = (member: TUserDTO): member is TMemberDTO =>
   MEMBERS_ROLES.includes(member.role);
@@ -41,3 +42,9 @@ export const getSerializedMemberUser = (
       return new MasterDTO(rawUser, serializeOptions);
   }
 };
+
+export const isDistrictLeader = (
+  user: UserEntity,
+): user is DistrictLeaderMemberDTO =>
+  user.role === USER_ROLES.DISTRICT_LEADER &&
+  user instanceof DistrictLeaderMemberDTO;

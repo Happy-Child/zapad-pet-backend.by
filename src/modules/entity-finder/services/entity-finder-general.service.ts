@@ -6,7 +6,10 @@ import { getItemsByUniqueField } from '@app/helpers';
 import { getPreparedChildrenErrors } from '@app/helpers/prepared-errors.helpers';
 import { ENTITIES_FIELDS } from '@app/constants';
 import { AUTH_ERRORS } from '../../auth/constants';
-import { ExceptionsNotFound } from '@app/exceptions/errors';
+import {
+  ExceptionsNotFound,
+  ExceptionsUnprocessableEntity,
+} from '@app/exceptions/errors';
 import { ClientsRepository } from '../../clients/repositories';
 import { StationExtendedDTO } from '../../stations/dtos';
 import { STATIONS_ERRORS } from '../../stations/constants';
@@ -17,7 +20,8 @@ import { USERS_ERRORS, USERS_MEMBER_RAW_SELECT } from '../../users/constants';
 import { UsersRepository } from '../../users/repositories';
 import { RepositoryFindConditions } from '@app/repositories/types';
 import { ClassTransformOptions } from 'class-transformer/types/interfaces';
-import { getSerializedMemberUser } from '../../users/helpers';
+import { getSerializedMemberUser, isDistrictLeader } from '../../users/helpers';
+import { DistrictLeaderMemberDTO } from '../../districts-leaders/dtos';
 
 @Injectable()
 export class EntityFinderGeneralService {
@@ -182,5 +186,23 @@ export class EntityFinderGeneralService {
     }
 
     return getSerializedMemberUser(rawUser, serializeOptions);
+  }
+
+  public async getDistrictLeaderOrFail(
+    userId: number,
+    exceptionField = 'userId',
+  ): Promise<DistrictLeaderMemberDTO> {
+    const user = await this.getFullUserOrFail({ id: userId });
+
+    if (!isDistrictLeader(user)) {
+      throw new ExceptionsUnprocessableEntity([
+        {
+          field: exceptionField,
+          messages: [USERS_ERRORS.SHOULD_BE_DISTRICT_LEADER],
+        },
+      ]);
+    }
+
+    return user;
   }
 }

@@ -25,6 +25,11 @@ export class AuthJwtStrategy extends PassportStrategy(Strategy) {
             if (req.cookies && req.cookies[COOKIE.ACCESS_TOKEN]) {
               return req.cookies[COOKIE.ACCESS_TOKEN];
             }
+
+            const tokenHeaderRaw = req.header(COOKIE.ACCESS_TOKEN);
+            if (tokenHeaderRaw) {
+              return tokenHeaderRaw.replace('Bearer ', '');
+            }
           }
           return null;
         },

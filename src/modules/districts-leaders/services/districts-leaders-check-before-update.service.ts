@@ -95,7 +95,6 @@ export class DistrictsLeadersCheckBeforeUpdateService {
     }
   }
 
-  // TODO repo
   private async allLeadersCanBeChangeDistrictsOrFail(
     items: NonEmptyArray<{ id: number; index: number }>,
   ): Promise<void> {
