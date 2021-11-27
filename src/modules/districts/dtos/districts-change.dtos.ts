@@ -1,5 +1,6 @@
 import { Expose, Type } from 'class-transformer';
 import { ArrayNotEmpty, ArrayUnique } from 'class-validator';
+import { NonEmptyArray } from '@app/types';
 
 export class DistrictChangeLeaderRequestBodyDTO {
   @Type(() => Number)
@@ -12,7 +13,7 @@ class DistrictEngineersRequestDTO {
   @ArrayUnique()
   @Type(() => Number)
   @Expose()
-  ids!: number[];
+  ids!: NonEmptyArray<number>;
 }
 
 export class DistrictAddEngineersRequestBodyDTO extends DistrictEngineersRequestDTO {}

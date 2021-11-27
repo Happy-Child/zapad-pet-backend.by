@@ -9,10 +9,12 @@ import {
 } from './services';
 import { DistrictsController } from './controllers/districts.controller';
 import { EntityFinderModule } from '../entity-finder';
+import { EngineersModule } from '../engineers';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([DistrictsRepository]),
+    EngineersModule,
     EntityFinderModule,
   ],
   providers: [

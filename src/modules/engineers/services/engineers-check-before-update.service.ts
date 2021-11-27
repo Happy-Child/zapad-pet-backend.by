@@ -6,20 +6,15 @@ import {
   groupedByValueOfObjectKeyWillBe,
 } from '@app/helpers/grouped.helpers';
 import { isNonEmptyArray } from '@app/helpers';
-import { BidEntity } from '@app/entities';
-import { getPreparedChildrenErrors } from '@app/helpers/prepared-errors.helpers';
-import { ExceptionsUnprocessableEntity } from '@app/exceptions/errors';
-import { USERS_ERRORS } from '../../users/constants';
-import { EngineersRepository } from '../repositories';
-import { BID_STATUTES_BLOCKING_CHANGE_ENGINEER_ON_DISTRICT } from '../constants';
 import { EngineerMemberDTO } from '../dtos';
 import { EntityFinderGeneralService } from '../../entity-finder/services';
+import { EngineersGeneralService } from './engineers-general.service';
 
 @Injectable()
 export class EngineersCheckBeforeUpdateService {
   constructor(
     private readonly entityFinderGeneralService: EntityFinderGeneralService,
-    private readonly engineersRepository: EngineersRepository,
+    private readonly engineersGeneralService: EngineersGeneralService,
   ) {}
 
   public async executeOrFail(
@@ -78,38 +73,9 @@ export class EngineersCheckBeforeUpdateService {
     );
 
     if (isNonEmptyArray(deleted)) {
-      await this.allEngineersCanBeChangeDistrictsOrFail(deleted);
-    }
-  }
-
-  private async allEngineersCanBeChangeDistrictsOrFail(
-    items: NonEmptyArray<{ id: number; index: number }>,
-  ): Promise<void> {
-    const ids = items.map(({ id }) => id) as NonEmptyArray<number>;
-
-    const records = await this.engineersRepository
-      .createQueryBuilder('e')
-      .select('e.userId as id, COUNT(b.id)::int AS count')
-      .where('e.userId IN (:...ids)', { ids })
-      .leftJoin(
-        BidEntity,
-        'b',
-        'b.engineerId = e.userId AND b.status IN (:...statuses)',
-        { statuses: BID_STATUTES_BLOCKING_CHANGE_ENGINEER_ON_DISTRICT },
-      )
-      .groupBy('e.id')
-      .getRawMany();
-
-    const engineersForException = items.filter((item) =>
-      records.find(({ id, count }) => id === item.id && count > 0),
-    );
-
-    if (engineersForException.length) {
-      const preparedErrors = getPreparedChildrenErrors(engineersForException, {
-        field: 'engineerDistrictId',
-        messages: [USERS_ERRORS.IMPOSSIBLE_REMOVE_ENGINEER_FROM_DISTRICT],
-      });
-      throw new ExceptionsUnprocessableEntity(preparedErrors);
+      await this.engineersGeneralService.allEngineersCanBeChangeDistrictsOrFail(
+        deleted,
+      );
     }
   }
 }

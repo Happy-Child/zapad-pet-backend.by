@@ -13,6 +13,7 @@ import {
 import { DistrictsRepository } from '../../repositories';
 import { isUndefined } from '@app/helpers';
 import { DistrictsLeadersRepository } from '../../../districts-leaders/repositories';
+import { isDistrictLeader } from '../../../users/helpers';
 
 @Injectable()
 export class DistrictsChangeLeadersService {
@@ -39,10 +40,20 @@ export class DistrictsChangeLeadersService {
   private async canBeAddLeaderToDistrictOrFail(
     userId: number,
   ): Promise<DistrictLeaderMemberDTO> {
-    const leader =
-      await this.entityFinderGeneralService.getDistrictLeaderOrFail(userId);
+    const user = await this.entityFinderGeneralService.getFullUserOrFail({
+      id: userId,
+    });
 
-    if (leader.leaderDistrictId) {
+    if (!isDistrictLeader(user)) {
+      throw new ExceptionsUnprocessableEntity([
+        {
+          field: 'userId',
+          messages: [USERS_ERRORS.SHOULD_BE_DISTRICT_LEADER],
+        },
+      ]);
+    }
+
+    if (user.leaderDistrictId) {
       throw new ExceptionsUnprocessableEntity([
         {
           field: 'userId',
@@ -51,7 +62,7 @@ export class DistrictsChangeLeadersService {
       ]);
     }
 
-    return leader;
+    return user;
   }
 
   private async canBeRemoveLeaderFromDistrictOrFail(
