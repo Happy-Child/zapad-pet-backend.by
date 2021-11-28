@@ -6,8 +6,8 @@ import {
   StationsWorkersCheckBeforeUpdateService,
   StationsWorkersCheckBeforeCreateService,
 } from './services';
-import { ClientsModule } from '../clients';
 import { EntityFinderModule } from '../entity-finder';
+import { ClientsModule } from '../clients';
 
 @Module({
   imports: [

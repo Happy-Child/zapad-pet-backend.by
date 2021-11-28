@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { NonEmptyArray } from '@app/types';
 import { getPreparedChildrenErrors } from '@app/helpers/prepared-errors.helpers';
-import { AUTH_ERRORS } from '../../auth/constants';
+import { AUTH_ERRORS } from '@app/constants';
 import { ExceptionsUnprocessableEntity } from '@app/exceptions/errors';
 import { DistrictsLeadersRepository } from '../repositories';
 

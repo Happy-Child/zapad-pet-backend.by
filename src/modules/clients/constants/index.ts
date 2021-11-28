@@ -1,2 +1,2 @@
 export * from './clients-general.constants';
-export * from './clients-errors.constants';
+export * from './clients-relations.constants';

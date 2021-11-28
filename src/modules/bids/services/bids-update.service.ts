@@ -2,14 +2,11 @@ import { Injectable } from '@nestjs/common';
 import { BidsRepository, BidsTodosRepository } from '../repositories';
 import { BidsUpdateBodyDTO, BidsUpdateTodoDTO } from '../dtos';
 import { Connection } from 'typeorm';
-import {
-  BID_STATUS,
-  BID_STATUS_ALLOWING_UPDATES,
-  BIDS_ERRORS,
-} from '../constants';
+import { BID_STATUS, BID_STATUS_ALLOWING_UPDATES } from '../constants';
 import { isUndefined } from '@app/helpers';
 import { ExceptionsForbidden } from '@app/exceptions/errors';
 import { BidEntity } from '@app/entities';
+import { BIDS_ERRORS } from '@app/constants';
 import { BidsGeneralService } from './bids-general.service';
 
 @Injectable()

@@ -8,12 +8,10 @@ import {
 import { isNonEmptyArray } from '@app/helpers';
 import { DistrictsLeadersRepository } from '../repositories';
 import { BidEntity, StationEntity } from '@app/entities';
+import { DISTRICTS_ERRORS } from '@app/constants';
 import { getPreparedChildrenErrors } from '@app/helpers/prepared-errors.helpers';
 import { ExceptionsUnprocessableEntity } from '@app/exceptions/errors';
-import {
-  BID_STATUTES_BLOCKING_CHANGE_LEADER_ON_DISTRICT,
-  DISTRICTS_ERRORS,
-} from '../../districts/constants';
+import { BID_STATUTES_BLOCKING_CHANGE_LEADER_ON_DISTRICT } from '../../districts/constants';
 import { DistrictsLeadersGeneralService } from './index';
 import { DistrictLeaderMemberDTO } from '../dtos';
 import { EntityFinderGeneralService } from '../../entity-finder/services';

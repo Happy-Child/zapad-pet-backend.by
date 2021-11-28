@@ -3,7 +3,7 @@ import { RegionEntity } from '@app/entities';
 import { ExceptionsNotFound } from '@app/exceptions/errors';
 import { ENTITIES_FIELDS } from '@app/constants';
 import { RegionsRepository } from '../repositories';
-import { REGIONS_ERRORS } from '../constants';
+import { REGIONS_ERRORS } from '@app/constants';
 
 @Injectable()
 export class RegionsGeneralService {

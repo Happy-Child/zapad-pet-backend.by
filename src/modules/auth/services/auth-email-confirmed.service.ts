@@ -6,7 +6,7 @@ import {
   ExceptionsUnprocessableEntity,
   ExceptionsNotFound,
 } from '@app/exceptions/errors';
-import { AUTH_ERRORS } from '../constants';
+import { AUTH_ERRORS } from '@app/constants';
 import { UsersRepository } from '../../users/repositories';
 import { EntityFinderGeneralService } from '../../entity-finder/services';
 

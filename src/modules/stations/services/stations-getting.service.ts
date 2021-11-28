@@ -7,7 +7,7 @@ import {
   StationWithStatisticsDTO,
 } from '../dtos/stations-getting.dtos';
 import { StationsGeneralService } from './general';
-import { BidsGeneralService } from '../../bids/services';
+import { getAggrBidsCountByStatuses } from '@app/helpers';
 
 @Injectable()
 export class StationsGettingService {
@@ -24,9 +24,7 @@ export class StationsGettingService {
   public async getStatisticsById(id: number): Promise<StationStatisticDTO> {
     const station = await this.stationsGeneralService.getStationOrFail(id);
     return new StationStatisticDTO({
-      bidsCountByStatuses: BidsGeneralService.getAggrBidsCountByStatuses(
-        station.bids,
-      ),
+      bidsCountByStatuses: getAggrBidsCountByStatuses(station.bids),
     });
   }
 

@@ -1,28 +1,22 @@
 import { Module } from '@nestjs/common';
 import { StationsController } from './controllers/stations.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import {
-  AggrStationBidStatusCountRepository,
-  StationsRepository,
-} from './repositories';
+import { StationsRepository } from './repositories';
 import {
   StationsUpdateService,
   StationsGeneralService,
   StationsCreateService,
   StationsGettingService,
 } from './services';
-import { ClientsModule } from '../clients';
 import { DistrictsModule } from '../districts';
 import { StationsCheckBeforeUpdateService } from './services/update';
 import { EntityFinderModule } from '../entity-finder';
 import { StationsUpdateHelpersService } from './services/update/stations-update-helpers.service';
+import { ClientsModule } from '../clients';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([
-      StationsRepository,
-      AggrStationBidStatusCountRepository,
-    ]),
+    TypeOrmModule.forFeature([StationsRepository]),
     EntityFinderModule,
     ClientsModule,
     DistrictsModule,

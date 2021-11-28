@@ -9,9 +9,9 @@ import { IAuthJWTTokenPayload } from '../interfaces';
 import { getJwtPayloadByMember } from '../helpers';
 import { SimpleUserJWTPayloadDTO } from '../dtos';
 import { TMemberJWTPayloadDTO } from '../types';
-import { isMember } from '../../users/helpers';
 import { TFullMemberDTO, TUserDTO } from '../../users/types';
 import { EntityFinderGeneralService } from '../../entity-finder/services';
+import { isMember } from '../../users/helpers';
 
 @Injectable()
 export class AuthJwtStrategy extends PassportStrategy(Strategy) {

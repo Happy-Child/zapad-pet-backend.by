@@ -94,6 +94,12 @@
       ],
       "@app/types/*": [
         "libs/types/src/*"
+      ],
+      "@app/file-storage": [
+        "libs/file-storage/src"
+      ],
+      "@app/file-storage/*": [
+        "libs/file-storage/src/*"
       ]
     }
   }

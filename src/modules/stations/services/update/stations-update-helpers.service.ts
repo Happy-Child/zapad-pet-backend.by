@@ -1,7 +1,7 @@
 import { NonEmptyArray } from '@app/types';
 import { StationWorkerEntity } from '@app/entities';
 import { getPreparedChildrenErrors } from '@app/helpers/prepared-errors.helpers';
-import { STATIONS_ERRORS } from '../../constants';
+import { STATIONS_ERRORS } from '@app/constants';
 import { ExceptionsUnprocessableEntity } from '@app/exceptions/errors';
 import { isNull } from '@app/helpers';
 import { Injectable } from '@nestjs/common';

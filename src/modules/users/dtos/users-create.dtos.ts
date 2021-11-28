@@ -10,8 +10,8 @@ import {
   ValidateNested,
 } from 'class-validator';
 import { Type } from 'class-transformer';
-import { USERS_CREATE_ALLOWED_ROLES, USERS_ERRORS } from '../constants';
-import { AUTH_ERRORS } from '../../auth/constants';
+import { USERS_CREATE_ALLOWED_ROLES } from '../constants';
+import { AUTH_ERRORS, USERS_ERRORS } from '@app/constants';
 import {
   PASSWORD_LENGTH,
   PASSWORD_REGEX,

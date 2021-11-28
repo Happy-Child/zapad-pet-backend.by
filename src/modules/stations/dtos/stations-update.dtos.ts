@@ -14,7 +14,7 @@ import {
   UniqueArrayByExistField,
 } from '@app/decorators';
 import { GENERAL_ERRORS } from '@app/constants';
-import { STATIONS_ERRORS } from '../constants/stations-errors.constants';
+import { STATIONS_ERRORS } from '@app/constants/errors/stations-errors.constants';
 import { STATION_NUMBER_LENGTH } from '../constants';
 
 export class StationsUpdateItemDTO {

@@ -40,5 +40,5 @@ export class BidsCountByStatusesDTO {
 
   @Expose()
   @Transform(({ value }) => value || 0)
-  [BID_STATUS.REJECTED]!: number;
+  [BID_STATUS.CANCEL]!: number;
 }

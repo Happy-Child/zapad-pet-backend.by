@@ -1,8 +1,8 @@
+import { ClassTransformOptions } from 'class-transformer/types/interfaces';
 import { TFullMemberDTO, TMemberDTO, TUserDTO } from '../types';
 import { MEMBERS_ROLES } from '../constants';
 import { isNull } from '@app/helpers';
 import { AccountantDTO, MasterDTO } from '../dtos';
-import { ClassTransformOptions } from 'class-transformer/types/interfaces';
 import { USER_ROLES } from '@app/constants';
 import { EngineerMemberDTO } from '../../engineers/dtos';
 import { DistrictLeaderMemberDTO } from '../../districts-leaders/dtos';
@@ -42,6 +42,9 @@ export const getSerializedMemberUser = (
       return new MasterDTO(rawUser, serializeOptions);
   }
 };
+
+export const isEngineer = (user: UserEntity): user is EngineerMemberDTO =>
+  user.role === USER_ROLES.ENGINEER && user instanceof EngineerMemberDTO;
 
 export const isDistrictLeader = (
   user: UserEntity,

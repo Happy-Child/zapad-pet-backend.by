@@ -15,11 +15,11 @@ import {
   UniqueArrayByExistField,
 } from '@app/decorators';
 import { NonEmptyArray } from '@app/types';
+import { BIDS_ERRORS } from '@app/constants';
 import {
   GET_BID_MIN_DATE_START_OF_DEADLINE,
   BID_PRIORITY,
   BID_TODO_MAX_LENGTH,
-  BIDS_ERRORS,
 } from '../constants';
 import moment from 'moment';
 

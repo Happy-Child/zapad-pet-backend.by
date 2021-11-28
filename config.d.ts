@@ -50,4 +50,8 @@ declare module 'config' {
     readonly PRIVATE_KEY_PATH: string;
     readonly PUBLIC_KEY_PATH: string;
   };
+
+  export const FILE_STORAGE: {
+    LOCAL_STORAGE_PATH: string;
+  };
 }

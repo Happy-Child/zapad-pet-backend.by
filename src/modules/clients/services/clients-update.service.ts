@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { ClientsRepository } from '../repositories';
 import { ExceptionsNotFound } from '@app/exceptions/errors';
 import { ClientsUpdateBodyDTO } from '../dtos';
-import { AUTH_ERRORS } from '../../auth/constants';
+import { AUTH_ERRORS } from '@app/constants';
 import { ENTITIES_FIELDS } from '@app/constants';
 import { ClientsGeneralService } from './general';
 

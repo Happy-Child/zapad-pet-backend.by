@@ -11,7 +11,7 @@ import { AuthSendingMailService } from './auth-sending-mail.service';
 import { PasswordRecoveryEntity } from '@app/entities';
 import { UsersRepository } from '../../users/repositories';
 import { ExceptionsNotFound } from '@app/exceptions/errors';
-import { AUTH_ERRORS } from '../constants';
+import { AUTH_ERRORS } from '@app/constants';
 import { EntityFinderGeneralService } from '../../entity-finder/services';
 
 @Injectable()

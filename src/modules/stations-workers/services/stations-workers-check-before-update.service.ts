@@ -6,7 +6,7 @@ import {
   groupedByNull,
   groupedByValueOfObjectKeyWillBe,
 } from '@app/helpers/grouped.helpers';
-import { USERS_ERRORS } from '../../users/constants';
+import { USERS_ERRORS } from '@app/constants';
 import { uniqBy } from 'lodash';
 import { isNonEmptyArray } from '@app/helpers';
 import { StationsWorkersRepository } from '../repositories';

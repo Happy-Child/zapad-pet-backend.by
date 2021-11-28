@@ -4,20 +4,19 @@ import { StationsWorkersRepository } from '../../stations-workers/repositories';
 import { NonEmptyArray } from '@app/types';
 import { getItemsByUniqueField } from '@app/helpers';
 import { getPreparedChildrenErrors } from '@app/helpers/prepared-errors.helpers';
-import { ENTITIES_FIELDS } from '@app/constants';
-import { AUTH_ERRORS } from '../../auth/constants';
+import { ENTITIES_FIELDS, USERS_ERRORS } from '@app/constants';
+import { AUTH_ERRORS, STATIONS_ERRORS } from '@app/constants';
 import { ExceptionsNotFound } from '@app/exceptions/errors';
 import { ClientsRepository } from '../../clients/repositories';
 import { StationExtendedDTO } from '../../stations/dtos';
-import { STATIONS_ERRORS } from '../../stations/constants';
 import { StationWorkerEntity, UserEntity } from '@app/entities';
 import { DistrictsRepository } from '../../districts/repositories';
 import { TUserDTO } from '../../users/types';
-import { USERS_ERRORS, USERS_MEMBER_RAW_SELECT } from '../../users/constants';
+import { getSerializedMemberUser } from '../../users/helpers';
+import { USERS_MEMBER_RAW_SELECT } from '../../users/constants';
 import { UsersRepository } from '../../users/repositories';
 import { RepositoryFindConditions } from '@app/repositories/types';
 import { ClassTransformOptions } from 'class-transformer/types/interfaces';
-import { getSerializedMemberUser } from '../../users/helpers';
 
 @Injectable()
 export class EntityFinderGeneralService {

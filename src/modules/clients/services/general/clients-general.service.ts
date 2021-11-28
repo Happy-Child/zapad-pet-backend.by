@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { ENTITIES_FIELDS } from '@app/constants';
 import { ExceptionsUnprocessableEntity } from '@app/exceptions/errors';
 import { ClientsRepository } from '../../repositories';
-import { CLIENTS_ERRORS } from '../../constants';
+import { CLIENTS_ERRORS } from '@app/constants';
 
 @Injectable()
 export class ClientsGeneralService {

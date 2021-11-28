@@ -11,8 +11,8 @@ import { Transform } from 'class-transformer';
 import { ENTITIES_FIELDS, SORT_DURATION, USER_ROLES } from '@app/constants';
 import { ALLOWED_ROLES } from '../constants';
 import { TUserDTO } from '../types';
-import { getSerializedMemberUser } from '../helpers';
 import { Type } from 'class-transformer';
+import { getSerializedMemberUser } from '../helpers';
 
 export class UsersGetListRequestQueryDTO extends PaginationRequestDTO {
   @IsOptional()

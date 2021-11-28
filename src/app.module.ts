@@ -11,7 +11,6 @@ import { AuthModule } from './modules/auth';
 import { StationsWorkersModule } from './modules/stations-workers';
 import { DistrictsLeadersModule } from './modules/districts-leaders';
 import { EngineersModule } from './modules/engineers';
-import { EntityFinderModule } from './modules/entity-finder';
 import ormConfig from '../ormconfig';
 
 @Module({
@@ -28,7 +27,6 @@ import ormConfig from '../ormconfig';
     RegionsModule,
     BidsModule,
     EngineersModule,
-    EntityFinderModule,
   ],
 })
 export class AppModule {}

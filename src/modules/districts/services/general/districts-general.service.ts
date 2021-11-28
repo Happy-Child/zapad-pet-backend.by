@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { ExceptionsNotFound } from '@app/exceptions/errors';
 import { DistrictsRepository } from '../../repositories';
 import { ENTITIES_FIELDS } from '@app/constants';
-import { DISTRICTS_ERRORS } from '../../constants';
+import { DISTRICTS_ERRORS } from '@app/constants';
 import { DistrictEntity } from '@app/entities';
 
 @Injectable()

@@ -11,6 +11,7 @@ import {
   RepositoryDeleteByIdsConditions,
 } from '@app/repositories/types';
 import {
+  IRepositoryGetManyOptions,
   IRepositoryGetOneOptions,
   IRepositoryGetOneOrFailOptions,
   IRepositoryUpdateEntitiesItem,
@@ -33,6 +34,14 @@ export class GeneralRepository<E extends BaseEntity> extends Repository<E> {
   ): Promise<E | undefined> {
     const item = await this.findOne(conditions, repository);
     return item ? this.serialize(item, serialize) : undefined;
+  }
+
+  public async getMany(
+    conditions: RepositoryFindConditions<E>,
+    { serialize }: IRepositoryGetManyOptions = {},
+  ): Promise<E[]> {
+    const items = await this.find(conditions);
+    return this.serializeMany(items, serialize);
   }
 
   public async getOneOrFail(

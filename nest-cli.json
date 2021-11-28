@@ -74,15 +74,6 @@
         "tsConfigPath": "libs/validators/tsconfig.lib.json"
       }
     },
-    "files": {
-      "type": "library",
-      "root": "libs/files",
-      "entryFile": "index",
-      "sourceRoot": "libs/files/src",
-      "compilerOptions": {
-        "tsConfigPath": "libs/files/tsconfig.lib.json"
-      }
-    },
     "decorators": {
       "type": "library",
       "root": "libs/decorators",
@@ -117,6 +108,15 @@
       "sourceRoot": "libs/types/src",
       "compilerOptions": {
         "tsConfigPath": "libs/types/tsconfig.lib.json"
+      }
+    },
+    "file-storage": {
+      "type": "library",
+      "root": "libs/file-storage",
+      "entryFile": "index",
+      "sourceRoot": "libs/file-storage/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/file-storage/tsconfig.lib.json"
       }
     }
   },

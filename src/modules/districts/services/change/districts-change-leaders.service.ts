@@ -3,13 +3,10 @@ import { Connection } from 'typeorm';
 import { DistrictsGeneralService } from '../general';
 import { EntityFinderGeneralService } from '../../../entity-finder/services';
 import { ExceptionsUnprocessableEntity } from '@app/exceptions/errors';
-import { USERS_ERRORS } from '../../../users/constants';
+import { USERS_ERRORS, DISTRICTS_ERRORS } from '@app/constants';
 import { DistrictLeaderMemberDTO } from '../../../districts-leaders/dtos';
 import { BidEntity, StationEntity } from '@app/entities';
-import {
-  BID_STATUTES_BLOCKING_CHANGE_LEADER_ON_DISTRICT,
-  DISTRICTS_ERRORS,
-} from '../../constants';
+import { BID_STATUTES_BLOCKING_CHANGE_LEADER_ON_DISTRICT } from '../../constants';
 import { DistrictsRepository } from '../../repositories';
 import { isUndefined } from '@app/helpers';
 import { DistrictsLeadersRepository } from '../../../districts-leaders/repositories';

@@ -9,7 +9,6 @@ import {
   UserEntity,
 } from '@app/entities';
 import { StationStatisticDTO } from '../../stations/dtos/stations-getting.dtos';
-import { BidsGeneralService } from '../../bids/services';
 import {
   DistrictsGetAllResponseBodyDTO,
   DistrictStatisticDTO,
@@ -17,6 +16,7 @@ import {
   DistrictWithStatisticsDTO,
 } from '../dtos/districts-getting.dtos';
 import { ShortEngineerMemberDTO } from '../../engineers/dtos';
+import { getAggrBidsCountByStatuses } from '@app/helpers';
 
 @EntityRepository(DistrictEntity)
 export class DistrictsRepository extends GeneralRepository<DistrictEntity> {
@@ -59,9 +59,7 @@ export class DistrictsRepository extends GeneralRepository<DistrictEntity> {
       .getOne()) as unknown as DistrictEntity & { bids: BidEntity[] };
 
     return new DistrictStatisticDTO({
-      bidsCountByStatuses: BidsGeneralService.getAggrBidsCountByStatuses(
-        district.bids,
-      ),
+      bidsCountByStatuses: getAggrBidsCountByStatuses(district.bids),
     });
   }
 
@@ -79,9 +77,7 @@ export class DistrictsRepository extends GeneralRepository<DistrictEntity> {
       bids: BidEntity[];
     };
 
-    const bidsCountByStatuses = BidsGeneralService.getAggrBidsCountByStatuses(
-      district.bids,
-    );
+    const bidsCountByStatuses = getAggrBidsCountByStatuses(district.bids);
 
     return new DistrictWithStatisticsDTO({
       ...district,

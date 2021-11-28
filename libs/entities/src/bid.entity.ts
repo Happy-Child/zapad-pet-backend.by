@@ -16,7 +16,7 @@ import { StationEntity } from '@app/entities/station.entity';
 import { EngineerEntity } from '@app/entities/engineers.entity';
 import { UserEntity } from '@app/entities/user.entity';
 import { StationWorkerEntity } from '@app/entities/stations-workers.entity';
-import { FileEntity } from '@app/entities/file.entity';
+import { FileStorageEntity } from '@app/entities/files/file-storage.entity';
 
 @Entity({ name: 'bid' })
 export class BidEntity extends BaseEntity {
@@ -93,13 +93,13 @@ export class BidEntity extends BaseEntity {
   @Column({ nullable: true })
   finalPhotoId!: number | null;
 
-  @OneToOne(() => FileEntity)
+  @OneToOne(() => FileStorageEntity)
   @JoinColumn({
     name: 'finalPhotoId',
     referencedColumnName: 'id',
   })
   @Expose()
-  finalPhoto!: FileEntity | null;
+  finalPhoto!: FileStorageEntity | null;
 
   @OneToMany(() => BidTodoEntity, (todo) => todo.bid)
   @Expose()

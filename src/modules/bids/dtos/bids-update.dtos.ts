@@ -18,11 +18,11 @@ import {
   GET_BID_MIN_DATE_START_OF_DEADLINE,
   BID_PRIORITY,
   BID_TODO_MAX_LENGTH,
-  BIDS_ERRORS,
   BID_EDITABLE_STATUS,
 } from '../constants';
 import moment from 'moment';
 import { IdParamDTO } from '@app/dtos';
+import { BIDS_ERRORS } from '@app/constants';
 
 export class BidsUpdateTodoDTO {
   @IsString()

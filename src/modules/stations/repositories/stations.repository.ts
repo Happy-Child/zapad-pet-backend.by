@@ -22,8 +22,7 @@ import {
   STATIONS_LIST_DEFAULT_SORT_DURATION,
   STATIONS_SORT_BY,
 } from '../constants';
-import { isUndefined } from '@app/helpers';
-import { BidsGeneralService } from '../../bids/services';
+import { getAggrBidsCountByStatuses, isUndefined } from '@app/helpers';
 
 const getTotalStationsListSortBy = (type: STATIONS_SORT_BY): string => {
   switch (type) {
@@ -92,9 +91,7 @@ export class StationsRepository extends GeneralRepository<StationEntity> {
     const station = (await queryBuilder.getOne()) as unknown as StationDTO & {
       bids: BidEntity[];
     };
-    const bidsCountByStatuses = BidsGeneralService.getAggrBidsCountByStatuses(
-      station.bids,
-    );
+    const bidsCountByStatuses = getAggrBidsCountByStatuses(station.bids);
 
     return new StationWithStatisticsDTO({
       ...station,

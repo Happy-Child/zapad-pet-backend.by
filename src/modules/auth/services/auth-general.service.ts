@@ -1,10 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { TFullMemberDTO, TMemberDTO, TUserDTO } from '../../users/types';
-import { isFullMember } from '../../users/helpers';
 import { ExceptionsForbidden } from '@app/exceptions/errors';
-import { ENTITIES_FIELDS } from '@app/constants';
-import { AUTH_ERRORS } from '../constants';
+import { ENTITIES_FIELDS, AUTH_ERRORS } from '@app/constants';
 import { EntityFinderGeneralService } from '../../entity-finder/services';
+import { isFullMember } from '../../users/helpers';
 
 @Injectable()
 export class AuthGeneralService {

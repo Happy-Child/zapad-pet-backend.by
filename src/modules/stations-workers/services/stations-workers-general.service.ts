@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { getPreparedChildrenErrors } from '@app/helpers/prepared-errors.helpers';
-import { STATIONS_ERRORS } from '../../stations/constants';
+import { STATIONS_ERRORS } from '@app/constants';
 import { ExceptionsUnprocessableEntity } from '@app/exceptions/errors';
 import { isNull } from '@app/helpers';
 

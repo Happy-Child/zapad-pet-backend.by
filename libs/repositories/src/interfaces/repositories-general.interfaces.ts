@@ -18,6 +18,10 @@ export interface IRepositoryGetOneOptions<E extends BaseEntity> {
   serialize?: RepositorySerializeOptions;
 }
 
+export interface IRepositoryGetManyOptions {
+  serialize?: RepositorySerializeOptions;
+}
+
 export interface IRepositoryGetOneOrFailOptions<E extends BaseEntity>
   extends IRepositoryGetOneOptions<E> {
   exception?: IRepositoryException;

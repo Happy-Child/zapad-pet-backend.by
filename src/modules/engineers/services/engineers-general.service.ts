@@ -5,7 +5,7 @@ import { EntityFinderGeneralService } from '../../entity-finder/services';
 import { USER_ROLES } from '@app/constants';
 import { isNonEmptyArray, isNull, toObjectByField } from '@app/helpers';
 import { getPreparedChildrenErrors } from '@app/helpers/prepared-errors.helpers';
-import { USERS_ERRORS } from '../../users/constants';
+import { USERS_ERRORS } from '@app/constants';
 import {
   ExceptionsNotFound,
   ExceptionsUnprocessableEntity,

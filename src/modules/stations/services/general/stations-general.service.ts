@@ -9,12 +9,9 @@ import {
   ExceptionsUnprocessableEntity,
 } from '@app/exceptions/errors';
 import { StationsRepository } from '../../repositories';
-import {
-  BID_STATUTES_BLOCKING_UPDATE_STATION,
-  STATIONS_ERRORS,
-} from '../../constants';
+import { BID_STATUTES_BLOCKING_UPDATE_STATION } from '../../constants';
 import { StationEntity } from '@app/entities';
-import { ENTITIES_FIELDS } from '@app/constants';
+import { ENTITIES_FIELDS, STATIONS_ERRORS } from '@app/constants';
 
 @Injectable()
 export class StationsGeneralService {

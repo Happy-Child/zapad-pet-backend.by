@@ -6,8 +6,8 @@ import { NonEmptyArray } from '@app/types';
 import {
   BID_STATUTES_BLOCKING_CHANGE_WORKER_ON_STATION,
   GROUPED_UPDATING_STATIONS_FIELDS,
-  STATIONS_ERRORS,
 } from '../../constants';
+import { STATIONS_ERRORS } from '@app/constants';
 import { getPreparedChildrenErrors } from '@app/helpers/prepared-errors.helpers';
 import { ExceptionsUnprocessableEntity } from '@app/exceptions/errors';
 import { StationsRepository } from '../../repositories';

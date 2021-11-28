@@ -6,7 +6,7 @@ import {
 } from '../dtos';
 import { ClientsRepository } from '../repositories';
 import { ExceptionsNotFound } from '@app/exceptions/errors';
-import { AUTH_ERRORS } from '../../auth/constants';
+import { AUTH_ERRORS } from '@app/constants';
 import { ENTITIES_FIELDS } from '@app/constants';
 
 @Injectable()
