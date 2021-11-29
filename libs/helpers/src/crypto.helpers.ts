@@ -8,3 +8,5 @@ export const generateRandomToken = (
     randomBytes(bytes, (_, result) => resolve(result.toString('hex')));
   });
 };
+
+export const getHashForSaveFile = async () => generateRandomToken(8);

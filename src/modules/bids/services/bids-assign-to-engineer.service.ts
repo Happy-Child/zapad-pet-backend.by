@@ -35,7 +35,10 @@ export class BidsAssignToEngineerService {
     }
 
     await this.engineerIsValidOrFail(userId, leaderDistrictId);
-    await this.addEngineerToBid(bidId, userId);
+    await this.bidsRepository.updateEntity(
+      { id: bidId },
+      { engineerId: userId },
+    );
   }
 
   private async engineerIsValidOrFail(
@@ -63,12 +66,5 @@ export class BidsAssignToEngineerService {
         },
       ]);
     }
-  }
-
-  private async addEngineerToBid(
-    id: number,
-    engineerId: number,
-  ): Promise<void> {
-    await this.bidsRepository.updateEntity({ id }, { engineerId });
   }
 }

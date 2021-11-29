@@ -9,8 +9,6 @@ import {
   Post,
   Put,
   Request,
-  UseInterceptors,
-  UploadedFiles,
 } from '@nestjs/common';
 import {
   BidsChangeEditableStatusParamsDTO,
@@ -32,9 +30,6 @@ import {
   BidsCreateService,
   BidsStartEndWorksService,
 } from '../services';
-import { FilesInterceptor } from '@nestjs/platform-express';
-import { IRawFile } from '@app/file-storage/interfaces';
-import { FileStorageGeneralService } from '@app/file-storage/services';
 
 @Controller('bids')
 export class BidsController {
@@ -44,7 +39,6 @@ export class BidsController {
     private readonly bidsUpdateService: BidsUpdateService,
     private readonly bidsAssignToEngineerService: BidsAssignToEngineerService,
     private readonly bidsStartEndWorksService: BidsStartEndWorksService,
-    private readonly fileStorageGeneralService: FileStorageGeneralService,
   ) {}
 
   @HttpCode(HttpStatus.CREATED)
@@ -119,14 +113,6 @@ export class BidsController {
   ): Promise<true> {
     await this.bidsStartEndWorksService.startWorkOrFail(bidId, user.userId);
     return true;
-  }
-
-  @HttpCode(HttpStatus.OK)
-  @Post('/upload')
-  @UseInterceptors(FilesInterceptor('file'))
-  async upload(@UploadedFiles() files: Array<IRawFile>): Promise<void> {
-    const file = await this.fileStorageGeneralService.uploadFile(files[0]);
-    console.log('AAAAAAAAAA', file);
   }
 
   @HttpCode(HttpStatus.OK)

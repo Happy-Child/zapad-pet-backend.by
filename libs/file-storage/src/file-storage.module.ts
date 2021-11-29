@@ -7,6 +7,7 @@ import {
 import { DropboxStorageModule } from './strategies/dropbox-storage';
 import { LocalStorageModule } from './strategies/local-storage';
 import { FileStorageGeneralService } from '@app/file-storage/services';
+import { FileStorageController } from '@app/file-storage/controllers/file-storage.controller';
 
 @Module({})
 export class FileStorageModule {
@@ -14,6 +15,7 @@ export class FileStorageModule {
     strategyType: FILE_STORAGE_STRATEGY = DEFAULT_FILE_STORAGE_STRATEGY,
   ): DynamicModule {
     const providers: Provider[] = [FileStorageGeneralService];
+    const controllers: any[] = [FileStorageController];
     const imports: DynamicModule[] = [];
 
     switch (strategyType) {
@@ -27,6 +29,7 @@ export class FileStorageModule {
     return {
       module: FileStorageModule,
       providers,
+      controllers,
       exports: providers,
       imports,
     };

@@ -11,12 +11,14 @@ import { AuthModule } from './modules/auth';
 import { StationsWorkersModule } from './modules/stations-workers';
 import { DistrictsLeadersModule } from './modules/districts-leaders';
 import { EngineersModule } from './modules/engineers';
+import { FileStorageModule } from '@app/file-storage';
 import ormConfig from '../ormconfig';
 
 @Module({
   imports: [
     TypeOrmModule.forRoot(ormConfig),
     ExceptionsModule.forRoot(),
+    FileStorageModule.forRoot(),
     AuthModule,
     UsersModule,
     StationsWorkersModule,

@@ -13,13 +13,11 @@ import {
   BidsChangeEditableStatusService,
   BidsStartEndWorksService,
 } from './services';
-import { FileStorageModule } from '@app/file-storage';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([BidsRepository, BidsTodosRepository]),
     EntityFinderModule,
-    FileStorageModule.forRoot(),
   ],
   providers: [
     BidsGeneralService,

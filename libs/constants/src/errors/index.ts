@@ -6,3 +6,4 @@ export * from './districts-errors.constants';
 export * from './regions-errors.constants';
 export * from './stations-errors.constants';
 export * from './users-errors.constants';
+export * from './file-errros.constants';
