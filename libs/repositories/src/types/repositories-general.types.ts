@@ -6,7 +6,8 @@ import { DeepPartial } from 'typeorm/common/DeepPartial';
 import { FindManyOptions } from 'typeorm/find-options/FindManyOptions';
 import { BaseEntity } from '@app/entities/base.entity';
 
-export type RepositoryFindConditions<E extends BaseEntity> = FindConditions<E>;
+export type RepositoryFindConditions<E extends BaseEntity> = FindConditions<E> &
+  FindManyOptions<E>;
 
 export type RepositoryFindOneOptions<E extends BaseEntity> = FindOneOptions<E>;
 

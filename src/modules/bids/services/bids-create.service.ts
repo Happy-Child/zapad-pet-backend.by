@@ -3,6 +3,8 @@ import { BidsRepository } from '../repositories';
 import { BidsCreateBodyDTO } from '../dtos';
 import { Connection } from 'typeorm';
 import { BidsTodosRepository } from '../repositories';
+import { BID_TODO_STATUS } from '../constants';
+import { getBidTodosToFirstSave } from '../helpers/bids-todos.helpers';
 
 @Injectable()
 export class BidsCreateService {
@@ -18,8 +20,9 @@ export class BidsCreateService {
 
       const bidsTodosRepository =
         manager.getCustomRepository(BidsTodosRepository);
+
       await bidsTodosRepository.saveEntities(
-        body.todos.map((todo) => ({
+        getBidTodosToFirstSave(body.todos).map((todo) => ({
           ...todo,
           bidId: createdBid.id,
         })),

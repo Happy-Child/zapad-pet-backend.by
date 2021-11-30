@@ -27,6 +27,7 @@ export class BidTodoEntity extends BaseEntity {
   status!: BID_TODO_STATUS;
 
   @Column({ nullable: false })
+  @Expose()
   bidId!: number;
 
   @ManyToOne(() => BidEntity)
@@ -34,6 +35,5 @@ export class BidTodoEntity extends BaseEntity {
     name: 'bidId',
     referencedColumnName: 'id',
   })
-  @Expose()
   bid?: BidEntity;
 }

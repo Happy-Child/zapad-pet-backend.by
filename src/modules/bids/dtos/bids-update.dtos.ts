@@ -1,4 +1,5 @@
 import {
+  ArrayNotEmpty,
   IsArray,
   IsBoolean,
   IsDateString,
@@ -48,6 +49,7 @@ export class BidsUpdateBodyDTO {
 
   @IsOptional()
   @IsArray()
+  @ArrayNotEmpty()
   @ArrayWithObjects()
   @UniqueArrayByExistField<BidsUpdateTodoDTO>(
     'text',

@@ -13,6 +13,8 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { IRawFile } from '@app/file-storage/interfaces';
 import { FileStorageGeneralService } from '@app/file-storage/services';
 import { UploadFileValidationPipe } from '@app/file-storage/pipes';
+import { USER_ROLES } from '@app/constants';
+import { AuthRoles } from '../../../../src/modules/auth/decorators/auth-roles.decorators';
 
 @Controller('file-storage')
 export class FileStorageController {
@@ -21,6 +23,7 @@ export class FileStorageController {
   ) {}
 
   @HttpCode(HttpStatus.OK)
+  @AuthRoles(USER_ROLES.STATION_WORKER, USER_ROLES.ENGINEER)
   @UseInterceptors(FileInterceptor('file'))
   @UsePipes(new UploadFileValidationPipe())
   @Post('/upload')

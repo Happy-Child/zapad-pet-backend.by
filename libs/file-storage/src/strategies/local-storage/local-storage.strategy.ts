@@ -17,10 +17,6 @@ export class LocalStorageStrategy implements IFileStorageStrategy {
   }: IRawFile): Promise<FileStorageEntity> {
     const filename = getFileNameForSave(originalname);
 
-    // TODO COMMON FN VALIDATION FIZE SIZE AND EXTENTION - OR FAIL
-    // одна функция на size
-    // другая на ext
-
     return await this.connection.transaction(async (manager) => {
       const localStorageRepository = manager.getCustomRepository(
         LocalStorageRepository,

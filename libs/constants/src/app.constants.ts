@@ -30,3 +30,9 @@ export enum ENVIRONMENTS {
   PROD = 'production',
   DEVELOP = 'develop',
 }
+
+export enum SIDE {
+  LEFT = 'LEFT',
+  RIGHT = 'RIGHT',
+  MIDDLE = 'MIDDLE',
+}

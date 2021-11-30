@@ -3,11 +3,12 @@ import { BidsRepository, BidsTodosRepository } from '../repositories';
 import { BidsUpdateBodyDTO, BidsUpdateTodoDTO } from '../dtos';
 import { Connection } from 'typeorm';
 import { BID_STATUS, BID_STATUS_ALLOWING_UPDATES } from '../constants';
-import { isUndefined } from '@app/helpers';
+import { isNonEmptyArray, isUndefined } from '@app/helpers';
 import { ExceptionsForbidden } from '@app/exceptions/errors';
 import { BidEntity } from '@app/entities';
 import { BIDS_ERRORS } from '@app/constants';
 import { BidsGeneralService } from './bids-general.service';
+import { getBidTodosToFirstSave } from '../helpers/bids-todos.helpers';
 
 @Injectable()
 export class BidsUpdateService {
@@ -69,11 +70,12 @@ export class BidsUpdateService {
     repository: BidsTodosRepository,
   ): Promise<void> {
     await repository.deleteEntity({ bidId });
-    await repository.saveEntities(
-      newTodos.map((todo) => ({
-        ...todo,
-        bidId,
-      })),
-    );
+    const records = isNonEmptyArray(newTodos)
+      ? getBidTodosToFirstSave(newTodos).map((todo) => ({
+          ...todo,
+          bidId,
+        }))
+      : [];
+    await repository.saveEntities(records);
   }
 }

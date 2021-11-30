@@ -12,6 +12,8 @@ import {
   BidsUpdateService,
   BidsChangeEditableStatusService,
   BidsStartEndWorksService,
+  BidsTodosChangeStatusService,
+  BidsTodosUpdateService,
 } from './services';
 
 @Module({
@@ -26,7 +28,10 @@ import {
     BidsAssignToEngineerService,
     BidsStartEndWorksService,
     BidsChangeEditableStatusService,
+    BidsTodosChangeStatusService,
+    BidsTodosUpdateService,
   ],
   controllers: [BidsController, BidsTodosController],
+  exports: [BidsGeneralService],
 })
 export class BidsModule {}

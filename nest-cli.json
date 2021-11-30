@@ -118,6 +118,15 @@
       "compilerOptions": {
         "tsConfigPath": "libs/file-storage/tsconfig.lib.json"
       }
+    },
+    "guards": {
+      "type": "library",
+      "root": "libs/guards",
+      "entryFile": "index",
+      "sourceRoot": "libs/guards/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/guards/tsconfig.lib.json"
+      }
     }
   },
   "compilerOptions": {

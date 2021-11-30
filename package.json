@@ -124,7 +124,8 @@
       "^@app/repositories(|/.*)$": "<rootDir>/libs/repositories/src/$1",
       "^@app/interfaces(|/.*)$": "<rootDir>/libs/interfaces/src/$1",
       "^@app/types(|/.*)$": "<rootDir>/libs/types/src/$1",
-      "^@app/file-storage(|/.*)$": "<rootDir>/libs/file-storage/src/$1"
+      "^@app/file-storage(|/.*)$": "<rootDir>/libs/file-storage/src/$1",
+      "^@app/guards(|/.*)$": "<rootDir>/libs/guards/src/$1"
     }
   }
 }
