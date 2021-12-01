@@ -3,7 +3,7 @@ import { TIME_SECONDS } from '@app/constants';
 import { COUNT_ATTEMPTS_TO_SEND_MESSAGE } from '../constants';
 
 interface CheckTimeAllowedSendMail {
-  time: Date;
+  time: Date | string;
   attemptCount: number;
 }
 export const checkTimeAllowedSendMail = ({

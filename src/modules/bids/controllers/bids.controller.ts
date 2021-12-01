@@ -13,6 +13,7 @@ import {
 import {
   BidsChangeEditableStatusParamsDTO,
   BidsCreateBodyDTO,
+  BidsEndWorkRequestBodyDTO,
   BidsUpdateBodyDTO,
 } from '../dtos';
 import { AuthRoles } from '../../auth/decorators/auth-roles.decorators';
@@ -120,13 +121,13 @@ export class BidsController {
   @Post('/:bidId/end-work')
   async endWork(
     @Param('bidId', ParseIntPipe) bidId: number,
-    @Body() { photo }: any,
+    @Body() { imageFileId }: BidsEndWorkRequestBodyDTO,
     @Request() { user }: { user: EngineerMemberJWTPayloadDTO },
   ): Promise<true> {
     await this.bidsStartEndWorksService.endWorkOrFail(
       bidId,
       user.userId,
-      photo,
+      imageFileId,
     );
     return true;
   }

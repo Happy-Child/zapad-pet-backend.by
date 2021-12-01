@@ -12,9 +12,9 @@ export class BaseEntity {
 
   @CreateDateColumn({ type: 'timestamptz' })
   @Expose()
-  createdAt!: Date;
+  createdAt!: string;
 
   @UpdateDateColumn({ type: 'timestamptz' })
   @Expose()
-  updatedAt!: Date;
+  updatedAt!: string;
 }

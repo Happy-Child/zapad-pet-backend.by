@@ -19,7 +19,7 @@ export class PasswordRecoveryResponseBodyDTO {
   attemptCount!: number;
 
   @Expose()
-  updatedAt!: Date;
+  updatedAt!: string;
 
   constructor(data: PasswordRecoveryResponseBodyDTO) {
     Object.assign(this, data);

@@ -4,10 +4,7 @@ import bids from '../static/mock-data/bids';
 
 export class FillBids1637568148396 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.manager.save(
-      BidEntity,
-      bids.map(({ stationId }) => ({ stationId })),
-    );
+    await queryRunner.manager.save(BidEntity, bids);
     const requests = bids
       .map((bid) =>
         bid.todos.map(async ({ text }) =>

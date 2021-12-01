@@ -12,13 +12,26 @@ export class BidsTodosUpdateService {
   public async updateBidTodoBySide(
     side: SIDE.LEFT | SIDE.MIDDLE,
     todoId: number,
+    nextStatus: BID_TODO_STATUS,
     todos: { id: number }[],
   ): Promise<void> {
+    if (todos.length === 1) {
+      await this.updateSingleTodo(todoId, nextStatus);
+      return;
+    }
+
     if (side === SIDE.LEFT) {
       await this.updatePrevBidTodo(todoId, todos);
     } else {
       await this.updateCurTodoInWork(todoId, todos);
     }
+  }
+
+  public async updateSingleTodo(
+    id: number,
+    status: BID_TODO_STATUS,
+  ): Promise<void> {
+    await this.bidsTodosRepository.updateEntity({ id }, { status });
   }
 
   public async updatePrevBidTodo(

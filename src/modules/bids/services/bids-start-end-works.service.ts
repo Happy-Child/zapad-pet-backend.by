@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Connection } from 'typeorm';
+import moment from 'moment';
 import { BidsRepository, BidsTodosRepository } from '../repositories';
 import { BidsGeneralService } from './bids-general.service';
 import { BID_STATUS, BID_TODO_STATUS } from '../constants';
@@ -12,7 +12,6 @@ export class BidsStartEndWorksService {
     private readonly bidsRepository: BidsRepository,
     private readonly bidsTodosRepository: BidsTodosRepository,
     private readonly bidsGeneralService: BidsGeneralService,
-    private readonly connection: Connection,
   ) {}
 
   public async startWorkOrFail(bidId: number, userId: number): Promise<void> {
@@ -32,14 +31,14 @@ export class BidsStartEndWorksService {
 
     await this.bidsRepository.updateEntity(
       { id: bidId },
-      { status: BID_STATUS.IN_WORK },
+      { status: BID_STATUS.IN_WORK, startWorkAt: moment().toISOString() },
     );
   }
 
   public async endWorkOrFail(
     bidId: number,
     userId: number,
-    photo: any,
+    finalPhotoId: number,
   ): Promise<void> {
     const bid = await this.bidsGeneralService.bidExistByEngineerOrFail(
       bidId,
@@ -56,7 +55,15 @@ export class BidsStartEndWorksService {
     }
 
     await this.allBidTodosCompletedOrFail(bidId);
-    await this.updateBidAfterEndWork(bidId, photo);
+
+    await this.bidsRepository.updateEntity(
+      { id: bidId },
+      {
+        status: BID_STATUS.PENDING_REVIEW_FROM_DISTRICT_LEADER,
+        endWorkAt: moment().toISOString(),
+        finalPhotoId,
+      },
+    );
   }
 
   private async allBidTodosCompletedOrFail(bidId: number): Promise<void> {
@@ -74,14 +81,5 @@ export class BidsStartEndWorksService {
         },
       ]);
     }
-  }
-
-  private async updateBidAfterEndWork(
-    bidId: number,
-    photo: any,
-  ): Promise<void> {
-    await this.connection.transaction(async (manager) => {
-      //
-    });
   }
 }

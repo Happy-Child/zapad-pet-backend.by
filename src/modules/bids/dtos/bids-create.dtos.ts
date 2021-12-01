@@ -3,7 +3,6 @@ import {
   IsArray,
   IsDateString,
   IsEnum,
-  IsOptional,
   IsString,
   Length,
   ValidateNested,
@@ -12,6 +11,7 @@ import { Type } from 'class-transformer';
 import {
   ArrayWithObjects,
   MinDateWithFormatter,
+  NullOrNumber,
   UniqueArrayByExistField,
 } from '@app/decorators';
 import { NonEmptyArray } from '@app/types';
@@ -22,6 +22,7 @@ import {
   BID_TODO_MAX_LENGTH,
 } from '../constants';
 import moment from 'moment';
+import { NullOrString } from '@app/decorators/null-or-string.decorators';
 
 export class BidsCreateTodoDTO {
   @IsString()
@@ -33,15 +34,17 @@ export class BidsCreateBodyDTO {
   @IsEnum(BID_PRIORITY)
   priority!: BID_PRIORITY;
 
-  @IsOptional()
-  @IsString()
-  description?: string | null;
+  @NullOrString()
+  description!: string | null;
+
+  @NullOrNumber()
+  imageFileId!: number | null;
 
   @IsDateString()
   @MinDateWithFormatter(GET_BID_MIN_DATE_START_OF_DEADLINE, (unknownDate) =>
     moment(unknownDate).toDate(),
   )
-  deadlineAt!: Date;
+  deadlineAt!: string;
 
   @IsArray()
   @ArrayNotEmpty()

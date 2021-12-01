@@ -28,28 +28,28 @@ export class BidsTodosChangeStatusService {
   public async executeOrFail(
     bidId: number,
     todoId: number,
-    status: BID_TODO_STATUS.IN_WORK | BID_TODO_STATUS.COMPLETED,
+    nextStatus: BID_TODO_STATUS.IN_WORK | BID_TODO_STATUS.COMPLETED,
     engineerUserId: number,
   ): Promise<void> {
     await this.checkBidStatusOrFail(bidId, engineerUserId);
     const todos = await this.bidTodoExistingOrFail(bidId, todoId);
 
-    const curTodoInWork = await this.bidsTodosRepository.getOne({
+    let curTodoInWork = await this.bidsTodosRepository.getOne({
       bidId,
       status: BID_TODO_STATUS.IN_WORK,
     });
 
-    // if not found => all todos complete
-    if (!curTodoInWork) {
-      this.checkNextTodoStatusBySideOrFail(status, SIDE.LEFT);
-      await this.bidsTodosUpdateService.updatePrevBidTodo(todoId, todos);
-      return;
-    }
+    curTodoInWork = curTodoInWork || todos[0];
 
     const side = this.getUpdatedTodoSideOrFail(todoId, curTodoInWork.id, todos);
 
-    this.checkNextTodoStatusBySideOrFail(status, side);
-    await this.bidsTodosUpdateService.updateBidTodoBySide(side, todoId, todos);
+    this.checkNextTodoStatusBySideOrFail(curTodoInWork, nextStatus, side);
+    await this.bidsTodosUpdateService.updateBidTodoBySide(
+      side,
+      todoId,
+      nextStatus,
+      todos,
+    );
   }
 
   private async checkBidStatusOrFail(
@@ -117,9 +117,14 @@ export class BidsTodosChangeStatusService {
   }
 
   private checkNextTodoStatusBySideOrFail(
+    curTodoInWork: BidTodoEntity,
     nextStatus: BID_TODO_STATUS,
     side: SIDE.LEFT | SIDE.MIDDLE,
   ): void {
+    if (curTodoInWork.status === nextStatus) {
+      throwInvalidBidTodoStatus();
+    }
+
     if (side === SIDE.LEFT && nextStatus !== BID_TODO_STATUS.IN_WORK) {
       throwInvalidBidTodoStatus();
     }

@@ -4,7 +4,6 @@ import {
   ManyToOne,
   JoinColumn,
   OneToOne,
-  CreateDateColumn,
   OneToMany,
 } from 'typeorm';
 import { Expose } from 'class-transformer';
@@ -91,6 +90,17 @@ export class BidEntity extends BaseEntity {
   confirmedStationWorker!: StationWorkerEntity | null;
 
   @Column({ nullable: true })
+  imageFileId!: number | null;
+
+  @OneToOne(() => FileStorageEntity)
+  @JoinColumn({
+    name: 'imageFileId',
+    referencedColumnName: 'id',
+  })
+  @Expose()
+  imageFile!: FileStorageEntity | null;
+
+  @Column({ nullable: true })
   finalPhotoId!: number | null;
 
   @OneToOne(() => FileStorageEntity)
@@ -105,19 +115,19 @@ export class BidEntity extends BaseEntity {
   @Expose()
   todos!: BidTodoEntity[];
 
-  @CreateDateColumn({ type: 'timestamptz', nullable: false })
+  @Column({ type: 'timestamptz', nullable: false })
   @Expose()
-  deadlineAt!: Date;
+  deadlineAt!: string;
 
-  @CreateDateColumn({ type: 'timestamptz', nullable: true })
+  @Column({ type: 'timestamptz', nullable: true })
   @Expose()
-  startWorkAt!: Date | null;
+  startWorkAt!: string | null;
 
-  @CreateDateColumn({ type: 'timestamptz', nullable: true })
+  @Column({ type: 'timestamptz', nullable: true })
   @Expose()
-  endWorkAt!: Date | null;
+  endWorkAt!: string | null;
 
-  @CreateDateColumn({ type: 'timestamptz', nullable: true })
+  @Column({ type: 'timestamptz', nullable: true })
   @Expose()
-  confirmSuccessAt!: Date | null;
+  confirmSuccessAt!: string | null;
 }

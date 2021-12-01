@@ -13,6 +13,7 @@ import { Transform, Type } from 'class-transformer';
 import {
   ArrayWithObjects,
   MinDateWithFormatter,
+  NullOrNumber,
   UniqueArrayByExistField,
 } from '@app/decorators';
 import {
@@ -24,6 +25,7 @@ import {
 import moment from 'moment';
 import { IdParamDTO } from '@app/dtos';
 import { BIDS_ERRORS } from '@app/constants';
+import { NullOrString } from '@app/decorators/null-or-string.decorators';
 
 export class BidsUpdateTodoDTO {
   @IsString()
@@ -33,11 +35,15 @@ export class BidsUpdateTodoDTO {
 
 export class BidsUpdateBodyDTO {
   @IsOptional()
+  @NullOrNumber()
+  imageFileId?: number | null;
+
+  @IsOptional()
   @IsEnum(BID_PRIORITY)
   priority?: BID_PRIORITY;
 
   @IsOptional()
-  @IsString()
+  @NullOrString()
   description?: string | null;
 
   @IsOptional()
@@ -45,7 +51,7 @@ export class BidsUpdateBodyDTO {
   @MinDateWithFormatter(GET_BID_MIN_DATE_START_OF_DEADLINE, (unknownDate) =>
     moment(unknownDate).toDate(),
   )
-  deadlineAt?: Date;
+  deadlineAt?: string;
 
   @IsOptional()
   @IsArray()
@@ -67,4 +73,9 @@ export class BidsChangeEditableStatusParamsDTO extends IdParamDTO {
       value === true || String(value) === BID_EDITABLE_STATUS.EDITABLE,
   )
   isEditable!: boolean;
+}
+
+export class BidsEndWorkRequestBodyDTO {
+  @NullOrNumber()
+  imageFileId!: number;
 }
