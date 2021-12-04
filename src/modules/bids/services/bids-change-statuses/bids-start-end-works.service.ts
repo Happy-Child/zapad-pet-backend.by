@@ -1,10 +1,17 @@
 import { Injectable } from '@nestjs/common';
 import moment from 'moment';
-import { BidsRepository, BidsTodosRepository } from '../repositories';
-import { BidsGeneralService } from './bids-general.service';
-import { BID_STATUS, BID_TODO_STATUS } from '../constants';
+import { BidsRepository, BidsTodosRepository } from '../../repositories';
+import { BidsGeneralService } from '../bids-general.service';
+import {
+  BID_STATUS,
+  BID_STATUSES_ALLOWING_START_WORK,
+  BID_TODO_STATUS,
+  MAX_COUNT_BIDS_IN_WORK_ENGINEER,
+} from '../../constants';
 import { ExceptionsForbidden } from '@app/exceptions/errors';
 import { BIDS_ERRORS } from '@app/constants';
+import { EngineerMemberJWTPayloadDTO } from '../../../auth/dtos';
+import { EntityFinderGeneralService } from '../../../entity-finder/services';
 
 @Injectable()
 export class BidsStartEndWorksService {
@@ -12,15 +19,21 @@ export class BidsStartEndWorksService {
     private readonly bidsRepository: BidsRepository,
     private readonly bidsTodosRepository: BidsTodosRepository,
     private readonly bidsGeneralService: BidsGeneralService,
+    private readonly finderGeneralService: EntityFinderGeneralService,
   ) {}
 
-  public async startWorkOrFail(bidId: number, userId: number): Promise<void> {
-    const bid = await this.bidsGeneralService.bidExistByEngineerOrFail(
+  public async startWorkOrFail(
+    bidId: number,
+    engineer: EngineerMemberJWTPayloadDTO,
+  ): Promise<void> {
+    await this.checkInWorkBidsCountOrFail(bidId);
+
+    const bid = await this.bidsGeneralService.getBidByRoleOrFail(
       bidId,
-      userId,
+      engineer,
     );
 
-    if (bid.status !== BID_STATUS.PENDING_START_WORK_FROM_ENGINEER) {
+    if (!BID_STATUSES_ALLOWING_START_WORK.includes(bid.status)) {
       throw new ExceptionsForbidden([
         {
           field: 'id',
@@ -29,20 +42,49 @@ export class BidsStartEndWorksService {
       ]);
     }
 
+    await this.resetBidData(bidId);
+
     await this.bidsRepository.updateEntity(
       { id: bidId },
       { status: BID_STATUS.IN_WORK, startWorkAt: moment().toISOString() },
     );
   }
 
+  private async checkInWorkBidsCountOrFail(bidId: number): Promise<void> {
+    const bidsInWork = await this.bidsRepository.getMany({
+      id: bidId,
+      status: BID_STATUS.IN_WORK,
+    });
+
+    if (bidsInWork.length >= MAX_COUNT_BIDS_IN_WORK_ENGINEER) {
+      throw new ExceptionsForbidden([
+        {
+          field: 'id',
+          messages: [BIDS_ERRORS.MAX_COUNT_BIDS_IN_WORK],
+        },
+      ]);
+    }
+  }
+
+  private async resetBidData(bidId: number): Promise<void> {
+    const todos = await this.bidsGeneralService.getBidTodos(bidId);
+
+    await this.bidsTodosRepository.saveEntities(
+      todos.map((item, index) => ({
+        ...item,
+        status: index === 0 ? BID_TODO_STATUS.IN_WORK : BID_TODO_STATUS.PENDING,
+      })),
+    );
+  }
+
   public async endWorkOrFail(
     bidId: number,
-    userId: number,
+    engineer: EngineerMemberJWTPayloadDTO,
     finalPhotoId: number,
   ): Promise<void> {
-    const bid = await this.bidsGeneralService.bidExistByEngineerOrFail(
+    const bid = await this.bidsGeneralService.getBidByRoleOrFail(
       bidId,
-      userId,
+      engineer,
     );
 
     if (bid.status !== BID_STATUS.IN_WORK) {
@@ -53,6 +95,11 @@ export class BidsStartEndWorksService {
         },
       ]);
     }
+
+    await this.finderGeneralService.getFileStorageOrFail(
+      finalPhotoId,
+      'imageFileId',
+    );
 
     await this.allBidTodosCompletedOrFail(bidId);
 

@@ -4,12 +4,21 @@ import { StationsWorkersRepository } from '../../stations-workers/repositories';
 import { NonEmptyArray } from '@app/types';
 import { getItemsByUniqueField } from '@app/helpers';
 import { getPreparedChildrenErrors } from '@app/helpers/prepared-errors.helpers';
-import { ENTITIES_FIELDS, USERS_ERRORS } from '@app/constants';
-import { AUTH_ERRORS, STATIONS_ERRORS } from '@app/constants';
+import {
+  AUTH_ERRORS,
+  ENTITIES_FIELDS,
+  FILE_ERRORS,
+  STATIONS_ERRORS,
+  USERS_ERRORS,
+} from '@app/constants';
 import { ExceptionsNotFound } from '@app/exceptions/errors';
 import { ClientsRepository } from '../../clients/repositories';
 import { StationExtendedDTO } from '../../stations/dtos';
-import { StationWorkerEntity, UserEntity } from '@app/entities';
+import {
+  FileStorageEntity,
+  StationWorkerEntity,
+  UserEntity,
+} from '@app/entities';
 import { DistrictsRepository } from '../../districts/repositories';
 import { TUserDTO } from '../../users/types';
 import { getSerializedMemberUser } from '../../users/helpers';
@@ -17,6 +26,7 @@ import { USERS_MEMBER_RAW_SELECT } from '../../users/constants';
 import { UsersRepository } from '../../users/repositories';
 import { RepositoryFindConditions } from '@app/repositories/types';
 import { ClassTransformOptions } from 'class-transformer/types/interfaces';
+import { FileStorageRepository } from '@app/file-storage/repositories';
 
 @Injectable()
 export class EntityFinderGeneralService {
@@ -26,6 +36,7 @@ export class EntityFinderGeneralService {
     private readonly stationsRepository: StationsRepository,
     private readonly stationsWorkersRepository: StationsWorkersRepository,
     private readonly usersRepository: UsersRepository,
+    private readonly fileStorageRepository: FileStorageRepository,
   ) {}
 
   public async allClientsExistsOrFail(
@@ -181,5 +192,25 @@ export class EntityFinderGeneralService {
     }
 
     return getSerializedMemberUser(rawUser, serializeOptions);
+  }
+
+  public async getFileStorageOrFail(
+    fileId: number,
+    exceptionField = 'id',
+  ): Promise<FileStorageEntity> {
+    return this.fileStorageRepository.getOneOrFail(
+      { id: fileId },
+      {
+        exception: {
+          type: ExceptionsNotFound,
+          messages: [
+            {
+              field: exceptionField,
+              messages: [FILE_ERRORS.FILE_NOT_FOUND],
+            },
+          ],
+        },
+      },
+    );
   }
 }

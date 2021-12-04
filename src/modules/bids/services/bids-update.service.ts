@@ -9,6 +9,7 @@ import { BidEntity } from '@app/entities';
 import { BIDS_ERRORS } from '@app/constants';
 import { BidsGeneralService } from './bids-general.service';
 import { getBidTodosToFirstSave } from '../helpers/bids-todos.helpers';
+import { StationWorkerMemberJWTPayloadDTO } from '../../auth/dtos';
 
 @Injectable()
 export class BidsUpdateService {
@@ -18,15 +19,12 @@ export class BidsUpdateService {
     private readonly bidsGeneralService: BidsGeneralService,
   ) {}
 
-  async update(
+  async executeOrFail(
     bidId: number,
-    stationId: number,
+    worker: StationWorkerMemberJWTPayloadDTO,
     body: BidsUpdateBodyDTO,
   ): Promise<void> {
-    const bid = await this.bidsGeneralService.getBidByStationIdOrFail(
-      bidId,
-      stationId,
-    );
+    const bid = await this.bidsGeneralService.getBidByRoleOrFail(bidId, worker);
 
     if (bid.status !== BID_STATUS.EDITING) {
       throw new ExceptionsForbidden([

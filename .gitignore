@@ -38,3 +38,4 @@ config/local*
 .env
 .example.env
 config/keys
+uploads/files

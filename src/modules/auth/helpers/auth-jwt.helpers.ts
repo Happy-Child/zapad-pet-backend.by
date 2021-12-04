@@ -1,10 +1,10 @@
 import { TFullMemberDTO } from '../../users/types';
-import { TMemberJWTPayloadDTO } from '../types';
+import { TMemberJwtPayloadDTO } from '../types';
 import { USER_ROLES } from '@app/constants';
 
 export const getJwtPayloadByMember = (
   member: TFullMemberDTO,
-): TMemberJWTPayloadDTO => {
+): TMemberJwtPayloadDTO => {
   const result = { userId: member.id };
 
   switch (member.role) {

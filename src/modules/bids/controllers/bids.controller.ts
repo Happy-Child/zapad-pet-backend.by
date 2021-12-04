@@ -1,7 +1,7 @@
 import {
-  Get,
   Body,
   Controller,
+  Get,
   HttpCode,
   HttpStatus,
   Param,
@@ -10,36 +10,28 @@ import {
   Put,
   Request,
 } from '@nestjs/common';
-import {
-  BidsChangeEditableStatusParamsDTO,
-  BidsCreateBodyDTO,
-  BidsEndWorkRequestBodyDTO,
-  BidsUpdateBodyDTO,
-} from '../dtos';
+import { BidsCreateBodyDTO, BidsUpdateBodyDTO } from '../dtos';
 import { AuthRoles } from '../../auth/decorators/auth-roles.decorators';
 import {
   DistrictLeaderMemberJWTPayloadDTO,
-  EngineerMemberJWTPayloadDTO,
   StationWorkerMemberJWTPayloadDTO,
 } from '../../auth/dtos';
-import { BID_EDITABLE_STATUS } from '../constants';
 import { USER_ROLES } from '@app/constants';
 import {
   BidsAssignToEngineerService,
-  BidsChangeEditableStatusService,
-  BidsUpdateService,
   BidsCreateService,
-  BidsStartEndWorksService,
+  BidsGettingService,
+  BidsUpdateService,
 } from '../services';
+import { TJwtPayloadDTO } from '../../auth/types';
 
 @Controller('bids')
 export class BidsController {
   constructor(
-    private readonly bidsChangeEditableStatusService: BidsChangeEditableStatusService,
     private readonly bidsCreateService: BidsCreateService,
     private readonly bidsUpdateService: BidsUpdateService,
     private readonly bidsAssignToEngineerService: BidsAssignToEngineerService,
-    private readonly bidsStartEndWorksService: BidsStartEndWorksService,
+    private readonly bidsGettingService: BidsGettingService,
   ) {}
 
   @HttpCode(HttpStatus.CREATED)
@@ -61,8 +53,8 @@ export class BidsController {
     USER_ROLES.DISTRICT_LEADER,
   )
   @Get()
-  async getList(): Promise<any> {
-    // TODO strategy for every role?
+  async getList(@Request() { user }: { user: TJwtPayloadDTO }): Promise<any> {
+    return this.bidsGettingService.getListWithPagination(user);
   }
 
   @HttpCode(HttpStatus.OK)
@@ -72,9 +64,12 @@ export class BidsController {
     USER_ROLES.ENGINEER,
     USER_ROLES.DISTRICT_LEADER,
   )
-  @Get('/:id')
-  async getById(): Promise<any> {
-    //
+  @Get('/:bidId')
+  async getById(
+    @Param('bidId', ParseIntPipe) bidId: number,
+    @Request() { user }: { user: TJwtPayloadDTO },
+  ): Promise<any> {
+    return this.bidsGettingService.getByIdOrFail(bidId, user);
   }
 
   @HttpCode(HttpStatus.CREATED)
@@ -85,92 +80,23 @@ export class BidsController {
     @Param('bidId', ParseIntPipe) bidId: number,
     @Body() body: BidsUpdateBodyDTO,
   ): Promise<true> {
-    await this.bidsUpdateService.update(bidId, user.stationId, body);
+    await this.bidsUpdateService.executeOrFail(bidId, user, body);
     return true;
   }
 
   @HttpCode(HttpStatus.OK)
   @AuthRoles(USER_ROLES.DISTRICT_LEADER)
-  @Post('/:bidId/assignment-engineer/:userId')
+  @Post('/:bidId/assignment-engineer/:engineerId')
   async assignmentToEngineer(
     @Param('bidId', ParseIntPipe) bidId: number,
-    @Param('userId', ParseIntPipe) userId: number,
+    @Param('engineerId', ParseIntPipe) engineerId: number,
     @Request() { user }: { user: DistrictLeaderMemberJWTPayloadDTO },
   ): Promise<true> {
     await this.bidsAssignToEngineerService.executeOrFail(
       bidId,
-      userId,
-      user.leaderDistrictId,
+      engineerId,
+      user,
     );
     return true;
-  }
-
-  @HttpCode(HttpStatus.OK)
-  @AuthRoles(USER_ROLES.ENGINEER)
-  @Post('/:bidId/start-work')
-  async startWork(
-    @Param('bidId', ParseIntPipe) bidId: number,
-    @Request() { user }: { user: EngineerMemberJWTPayloadDTO },
-  ): Promise<true> {
-    await this.bidsStartEndWorksService.startWorkOrFail(bidId, user.userId);
-    return true;
-  }
-
-  @HttpCode(HttpStatus.OK)
-  @AuthRoles(USER_ROLES.ENGINEER)
-  @Post('/:bidId/end-work')
-  async endWork(
-    @Param('bidId', ParseIntPipe) bidId: number,
-    @Body() { imageFileId }: BidsEndWorkRequestBodyDTO,
-    @Request() { user }: { user: EngineerMemberJWTPayloadDTO },
-  ): Promise<true> {
-    await this.bidsStartEndWorksService.endWorkOrFail(
-      bidId,
-      user.userId,
-      imageFileId,
-    );
-    return true;
-  }
-
-  @HttpCode(HttpStatus.OK)
-  @AuthRoles(USER_ROLES.DISTRICT_LEADER)
-  @Post('/:id/leader-review/:reviewStatus')
-  async setReviewStatusFromLeader(): Promise<any> {
-    // + необязат коммент если отклонение
-  }
-
-  @HttpCode(HttpStatus.OK)
-  @AuthRoles(USER_ROLES.STATION_WORKER)
-  @Post('/:id/worker-review/:reviewStatus')
-  async setReviewStatusFromWorker(): Promise<any> {
-    // + необязат коммент если отклонение
-  }
-
-  @HttpCode(HttpStatus.OK)
-  @AuthRoles(USER_ROLES.STATION_WORKER)
-  @Post(
-    `/:id/:isEditable(${BID_EDITABLE_STATUS.EDITABLE}|${BID_EDITABLE_STATUS.UNEDITABLE})`,
-  )
-  async changeEditableStatus(
-    @Request() { user }: { user: StationWorkerMemberJWTPayloadDTO },
-    @Param() { id, isEditable }: BidsChangeEditableStatusParamsDTO,
-  ): Promise<true> {
-    await this.bidsChangeEditableStatusService.executeOrFail(
-      id,
-      user.stationId,
-      isEditable,
-    );
-    return true;
-  }
-
-  @HttpCode(HttpStatus.OK)
-  @AuthRoles(
-    USER_ROLES.MASTER,
-    USER_ROLES.STATION_WORKER,
-    USER_ROLES.DISTRICT_LEADER,
-  )
-  @Post('/:bidId/cancel')
-  async cancelBid(): Promise<any> {
-    // TODO strategy for every role?
   }
 }

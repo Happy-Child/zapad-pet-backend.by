@@ -1,11 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { BidsRepository } from '../repositories';
 import { ExceptionsForbidden } from '@app/exceptions/errors';
-import { BID_STATUS } from '../constants';
+import {
+  BID_STATUS,
+  BID_STATUSES_ALLOWING_ASSIGNMENT_TO_ENGINEER,
+} from '../constants';
 import { USERS_ERRORS, BIDS_ERRORS } from '@app/constants';
 import { EntityFinderGeneralService } from '../../entity-finder/services';
 import { BidsGeneralService } from './bids-general.service';
 import { isEngineer } from '../../users/helpers';
+import { DistrictLeaderMemberJWTPayloadDTO } from '../../auth/dtos';
 
 @Injectable()
 export class BidsAssignToEngineerService {
@@ -17,15 +21,12 @@ export class BidsAssignToEngineerService {
 
   public async executeOrFail(
     bidId: number,
-    userId: number,
-    leaderDistrictId: number,
+    engineerId: number,
+    leader: DistrictLeaderMemberJWTPayloadDTO,
   ): Promise<void> {
-    const bid = await this.bidsGeneralService.bidExistOnDistrictOrFail(
-      bidId,
-      leaderDistrictId,
-    );
+    const bid = await this.bidsGeneralService.getBidByRoleOrFail(bidId, leader);
 
-    if (bid.status !== BID_STATUS.PENDING_ASSIGNMENT_TO_ENGINEER) {
+    if (!BID_STATUSES_ALLOWING_ASSIGNMENT_TO_ENGINEER.includes(bid.status)) {
       throw new ExceptionsForbidden([
         {
           field: 'id',
@@ -34,19 +35,19 @@ export class BidsAssignToEngineerService {
       ]);
     }
 
-    await this.engineerIsValidOrFail(userId, leaderDistrictId);
+    await this.engineerIsValidOrFail(engineerId, leader.leaderDistrictId);
     await this.bidsRepository.updateEntity(
       { id: bidId },
-      { engineerId: userId },
+      { engineerId, status: BID_STATUS.PENDING_START_WORK_FROM_ENGINEER },
     );
   }
 
   private async engineerIsValidOrFail(
-    userId: number,
-    leaderDistrictId: number,
+    engineerId: number,
+    districtId: number,
   ): Promise<void> {
     const user = await this.entityFinderGeneralService.getFullUserOrFail({
-      id: userId,
+      id: engineerId,
     });
 
     if (!isEngineer(user)) {
@@ -58,7 +59,7 @@ export class BidsAssignToEngineerService {
       ]);
     }
 
-    if (user.engineerDistrictId !== leaderDistrictId) {
+    if (user.engineerDistrictId !== districtId) {
       throw new ExceptionsForbidden([
         {
           field: 'id',

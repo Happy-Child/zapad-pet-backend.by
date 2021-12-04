@@ -14,3 +14,4 @@ export * from './bid-todo.entity';
 export * from './files/file-storage.entity';
 export * from './files/dropbox-storage.entity';
 export * from './files/local-storage.entity';
+export * from './bid-reject-review.entity';

@@ -16,6 +16,7 @@ import { EngineerEntity } from '@app/entities/engineers.entity';
 import { UserEntity } from '@app/entities/user.entity';
 import { StationWorkerEntity } from '@app/entities/stations-workers.entity';
 import { FileStorageEntity } from '@app/entities/files/file-storage.entity';
+import { BidRejectReviewEntity } from '@app/entities/bid-reject-review.entity';
 
 @Entity({ name: 'bid' })
 export class BidEntity extends BaseEntity {
@@ -46,6 +47,7 @@ export class BidEntity extends BaseEntity {
   description!: string | null;
 
   @Column({ nullable: false })
+  @Expose()
   stationId!: number;
 
   @ManyToOne(() => StationEntity, (station) => station.bids)
@@ -57,6 +59,7 @@ export class BidEntity extends BaseEntity {
   station?: StationEntity;
 
   @Column({ nullable: true })
+  @Expose()
   engineerId!: number | null;
 
   @ManyToOne(() => EngineerEntity)
@@ -68,6 +71,7 @@ export class BidEntity extends BaseEntity {
   engineer!: EngineerEntity | null;
 
   @Column({ nullable: true })
+  @Expose()
   rejectedUserId!: number | null;
 
   @ManyToOne(() => UserEntity)
@@ -79,6 +83,7 @@ export class BidEntity extends BaseEntity {
   rejectedUser!: UserEntity | null;
 
   @Column({ nullable: true })
+  @Expose()
   confirmedStationWorkerId!: number | null;
 
   @ManyToOne(() => StationWorkerEntity)
@@ -90,6 +95,7 @@ export class BidEntity extends BaseEntity {
   confirmedStationWorker!: StationWorkerEntity | null;
 
   @Column({ nullable: true })
+  @Expose()
   imageFileId!: number | null;
 
   @OneToOne(() => FileStorageEntity)
@@ -110,6 +116,10 @@ export class BidEntity extends BaseEntity {
   })
   @Expose()
   finalPhoto!: FileStorageEntity | null;
+
+  @OneToMany(() => BidRejectReviewEntity, (data) => data.bid)
+  @Expose()
+  lastRejectReview!: null;
 
   @OneToMany(() => BidTodoEntity, (todo) => todo.bid)
   @Expose()

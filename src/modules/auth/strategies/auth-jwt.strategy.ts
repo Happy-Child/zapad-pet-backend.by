@@ -8,7 +8,7 @@ import { AuthGeneralService, AuthSignInService } from '../services';
 import { IAuthJWTTokenPayload } from '../interfaces';
 import { getJwtPayloadByMember } from '../helpers';
 import { SimpleUserJWTPayloadDTO } from '../dtos';
-import { TMemberJWTPayloadDTO } from '../types';
+import { TJwtPayloadDTO } from '../types';
 import { TFullMemberDTO, TUserDTO } from '../../users/types';
 import { EntityFinderGeneralService } from '../../entity-finder/services';
 import { isMember } from '../../users/helpers';
@@ -42,7 +42,7 @@ export class AuthJwtStrategy extends PassportStrategy(Strategy) {
 
   public async validate(
     payload: IAuthJWTTokenPayload,
-  ): Promise<TMemberJWTPayloadDTO | SimpleUserJWTPayloadDTO> {
+  ): Promise<TJwtPayloadDTO | SimpleUserJWTPayloadDTO> {
     const user = await this.entityFinderGeneralService.getFullUserOrFail({
       id: payload.sub,
     });
@@ -50,9 +50,7 @@ export class AuthJwtStrategy extends PassportStrategy(Strategy) {
     return this.getFinalPayloadOrFail(user);
   }
 
-  private getFinalPayloadOrFail(
-    user: TUserDTO,
-  ): TMemberJWTPayloadDTO | SimpleUserJWTPayloadDTO {
+  private getFinalPayloadOrFail(user: TUserDTO): TJwtPayloadDTO {
     AuthSignInService.checkEmailConfirmedOrFail(user.emailConfirmed);
 
     if (isMember(user)) {

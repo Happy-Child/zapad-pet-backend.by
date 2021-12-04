@@ -7,6 +7,7 @@ import { getSideRelativeItemInList } from '@app/helpers';
 import { BidTodoEntity } from '@app/entities';
 import { BidsGeneralService } from '../bids-general.service';
 import { BidsTodosUpdateService } from './bids-todos-update.service';
+import { EngineerMemberJWTPayloadDTO } from '../../../auth/dtos';
 
 const throwInvalidBidTodoStatus = () => {
   throw new ExceptionsForbidden([
@@ -28,10 +29,10 @@ export class BidsTodosChangeStatusService {
   public async executeOrFail(
     bidId: number,
     todoId: number,
+    engineer: EngineerMemberJWTPayloadDTO,
     nextStatus: BID_TODO_STATUS.IN_WORK | BID_TODO_STATUS.COMPLETED,
-    engineerUserId: number,
   ): Promise<void> {
-    await this.checkBidStatusOrFail(bidId, engineerUserId);
+    await this.checkBidStatusOrFail(bidId, engineer);
     const todos = await this.bidTodoExistingOrFail(bidId, todoId);
 
     let curTodoInWork = await this.bidsTodosRepository.getOne({
@@ -54,11 +55,11 @@ export class BidsTodosChangeStatusService {
 
   private async checkBidStatusOrFail(
     bidId: number,
-    engineerUserId: number,
+    engineer: EngineerMemberJWTPayloadDTO,
   ): Promise<void> {
-    const bid = await this.bidsGeneralService.bidExistByEngineerOrFail(
+    const bid = await this.bidsGeneralService.getBidByRoleOrFail(
       bidId,
-      engineerUserId,
+      engineer,
     );
 
     if (bid.status !== BID_STATUS.IN_WORK) {
@@ -75,10 +76,7 @@ export class BidsTodosChangeStatusService {
     bidId: number,
     todoId: number,
   ): Promise<BidTodoEntity[]> {
-    const todos = await this.bidsTodosRepository.getMany({
-      bidId,
-    });
-    todos.sort((a, b) => a.id - b.id);
+    const todos = await this.bidsGeneralService.getBidTodos(bidId);
 
     const todoExists = todos.find(({ id }) => id === todoId);
     if (!todoExists) {

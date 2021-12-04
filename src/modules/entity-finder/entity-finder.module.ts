@@ -6,6 +6,7 @@ import { EntityFinderGeneralService } from './services';
 import { ClientsRepository } from '../clients/repositories';
 import { DistrictsRepository } from '../districts/repositories';
 import { UsersRepository } from '../users/repositories';
+import { FileStorageRepository } from '@app/file-storage/repositories';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { UsersRepository } from '../users/repositories';
       ClientsRepository,
       DistrictsRepository,
       UsersRepository,
+      FileStorageRepository,
     ]),
   ],
   providers: [EntityFinderGeneralService],

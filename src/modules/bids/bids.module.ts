@@ -1,10 +1,13 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { BidsRepository } from './repositories';
-import { BidsController } from './controllers/bids.controller';
+import { BidRejectReviewRepository, BidsRepository } from './repositories';
 import { BidsTodosRepository } from './repositories';
 import { EntityFinderModule } from '../entity-finder';
-import { BidsTodosController } from './controllers/bids-todos.controller';
+import {
+  BidsController,
+  BidsTodosController,
+  BidsChangeStatusesController,
+} from './controllers';
 import {
   BidsAssignToEngineerService,
   BidsGeneralService,
@@ -14,11 +17,18 @@ import {
   BidsStartEndWorksService,
   BidsTodosChangeStatusService,
   BidsTodosUpdateService,
+  BidsGettingService,
+  BidsCancelService,
+  BidsSetReviewStatusService,
 } from './services';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([BidsRepository, BidsTodosRepository]),
+    TypeOrmModule.forFeature([
+      BidsRepository,
+      BidsTodosRepository,
+      BidRejectReviewRepository,
+    ]),
     EntityFinderModule,
   ],
   providers: [
@@ -30,8 +40,15 @@ import {
     BidsChangeEditableStatusService,
     BidsTodosChangeStatusService,
     BidsTodosUpdateService,
+    BidsGettingService,
+    BidsCancelService,
+    BidsSetReviewStatusService,
   ],
-  controllers: [BidsController, BidsTodosController],
+  controllers: [
+    BidsController,
+    BidsTodosController,
+    BidsChangeStatusesController,
+  ],
   exports: [BidsGeneralService],
 })
 export class BidsModule {}

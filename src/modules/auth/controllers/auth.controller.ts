@@ -22,11 +22,10 @@ import {
   PasswordRecoveryRequestBodyDTO,
   PasswordRecoveryResponseBodyDTO,
   SignInRequestBodyDTO,
-  SimpleUserJWTPayloadDTO,
 } from '../dtos';
 import { COOKIE } from '../constants';
 import { TUserDTO } from '../../users/types';
-import { TMemberJWTPayloadDTO } from '../types';
+import { TJwtPayloadDTO } from '../types';
 import { AuthRoles } from '../decorators/auth-roles.decorators';
 
 @Controller('auth')
@@ -43,7 +42,7 @@ export class AuthController {
   @Get('/me')
   async me(
     @Request()
-    { user }: { user: TMemberJWTPayloadDTO | SimpleUserJWTPayloadDTO },
+    { user }: { user: TJwtPayloadDTO },
   ): Promise<TUserDTO> {
     return this.authGeneralService.me(user.userId);
   }

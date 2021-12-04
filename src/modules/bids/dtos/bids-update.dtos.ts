@@ -4,9 +4,12 @@ import {
   IsBoolean,
   IsDateString,
   IsEnum,
+  IsInt,
   IsOptional,
   IsString,
   Length,
+  Max,
+  Min,
   ValidateNested,
 } from 'class-validator';
 import { Transform, Type } from 'class-transformer';
@@ -23,8 +26,7 @@ import {
   BID_EDITABLE_STATUS,
 } from '../constants';
 import moment from 'moment';
-import { IdParamDTO } from '@app/dtos';
-import { BIDS_ERRORS } from '@app/constants';
+import { BIDS_ERRORS, MAX_INTEGER } from '@app/constants';
 import { NullOrString } from '@app/decorators/null-or-string.decorators';
 
 export class BidsUpdateTodoDTO {
@@ -66,7 +68,13 @@ export class BidsUpdateBodyDTO {
   todos?: BidsUpdateTodoDTO[];
 }
 
-export class BidsChangeEditableStatusParamsDTO extends IdParamDTO {
+export class BidsChangeEditableStatusParamsDTO {
+  @IsInt()
+  @Min(1)
+  @Max(MAX_INTEGER)
+  @Type(() => Number)
+  bidId!: number;
+
   @IsBoolean()
   @Transform(
     ({ value }) =>

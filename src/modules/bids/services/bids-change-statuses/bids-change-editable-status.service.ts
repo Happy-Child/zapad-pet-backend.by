@@ -1,13 +1,14 @@
 import { Injectable } from '@nestjs/common';
-import { BidsRepository } from '../repositories';
+import { BidsRepository } from '../../repositories';
 import { Connection } from 'typeorm';
 import {
   BID_STATUS,
   BID_STATUSES_ALLOWING_CHANGE_EDIT_STATUS,
-} from '../constants';
+} from '../../constants';
 import { ExceptionsForbidden } from '@app/exceptions/errors';
 import { BIDS_ERRORS } from '@app/constants';
-import { BidsGeneralService } from './bids-general.service';
+import { BidsGeneralService } from '../bids-general.service';
+import { StationWorkerMemberJWTPayloadDTO } from '../../../auth/dtos';
 
 const getNextBidStatusByEditable = (isEditable: boolean) =>
   isEditable ? BID_STATUS.EDITING : BID_STATUS.PENDING_ASSIGNMENT_TO_ENGINEER;
@@ -22,13 +23,10 @@ export class BidsChangeEditableStatusService {
 
   async executeOrFail(
     bidId: number,
-    stationId: number,
+    worker: StationWorkerMemberJWTPayloadDTO,
     isEditable: boolean,
   ): Promise<void> {
-    const bid = await this.bidsGeneralService.getBidByStationIdOrFail(
-      bidId,
-      stationId,
-    );
+    const bid = await this.bidsGeneralService.getBidByRoleOrFail(bidId, worker);
     const nextStatus = getNextBidStatusByEditable(isEditable);
 
     this.isAllowEditBidOrFail(bid.status, nextStatus);

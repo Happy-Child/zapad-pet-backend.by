@@ -11,7 +11,7 @@ import { USER_ROLES } from '@app/constants';
 import { BID_TODO_STATUS } from '../constants';
 import { BidsTodosChangeStatusService } from '../services';
 import { EngineerMemberJWTPayloadDTO } from '../../auth/dtos';
-import { BidsTodosChangeStatusParamsDTO } from '../dtos/bids-todos-update.dtos';
+import { BidsTodosChangeStatusParamsDTO } from '../dtos';
 
 @Controller('bids/:bidId/todos')
 export class BidsTodosController {
@@ -31,8 +31,8 @@ export class BidsTodosController {
     await this.bidsTodosChangeStatusService.executeOrFail(
       bidId,
       todoId,
+      user,
       status,
-      user.userId,
     );
     return true;
   }
