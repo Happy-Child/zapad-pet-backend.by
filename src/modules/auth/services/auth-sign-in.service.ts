@@ -52,16 +52,20 @@ export class AuthSignInService {
     }
   }
 
-  private static async checkComparePasswordsOrFail(
-    password: string,
-    curPassword: string,
+  public static async checkComparePasswordsOrFail(
+    passwordToCheck: string,
+    originalPassword: string,
+    exceptionField: string = ENTITIES_FIELDS.PASSWORD,
   ): Promise<void> {
-    const passwordIsCompare = await comparePasswords(password, curPassword);
+    const passwordIsCompare = await comparePasswords(
+      passwordToCheck,
+      originalPassword,
+    );
     if (passwordIsCompare) return;
 
     throw new ExceptionsUnprocessableEntity([
       {
-        field: ENTITIES_FIELDS.PASSWORD,
+        field: exceptionField,
         messages: [AUTH_ERRORS.INVALID_PASSWORD],
       },
     ]);

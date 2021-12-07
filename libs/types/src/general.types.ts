@@ -1,8 +1,5 @@
-export type RequiredOne<T, K extends keyof T> = {
-  [X in Exclude<keyof T, K>]: T[X];
-} & {
-  [P in K]-?: T[P];
-};
+export type RequiredField<T, K extends keyof T> = Omit<T, K> &
+  Pick<Required<T>, K>;
 
 export type NonEmptyArray<T> = [T, ...T[]];
 

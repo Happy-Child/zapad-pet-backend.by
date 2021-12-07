@@ -23,7 +23,7 @@
     "PASS": "password"
   },
   "FRONT_URLS": {
-    "CONFIRMED_REGISTRATION": "http://localhost:3000/confirmed-registration",
+    "CONFIRM_EMAIL": "http://localhost:3000/confirm-email",
     "CREATE_NEW_PASSWORD": "http://localhost:3000/create-new-password"
   },
   "COOKIES_OPTIONS": {

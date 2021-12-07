@@ -10,12 +10,14 @@ import {
   HttpStatus,
   Param,
   ParseIntPipe,
+  Request,
 } from '@nestjs/common';
 import { UsersCreateRequestBodyDTO, UsersDeleteRequestQueryDTO } from '../dtos';
 import {
   UsersUpdateService,
   UsersGettingService,
   UsersCreateService,
+  UsersUpdateSingleService,
 } from '../services';
 import {
   UsersGetListRequestQueryDTO,
@@ -25,14 +27,27 @@ import { UsersUpdateRequestBodyDTO } from '../dtos/users-update.dtos';
 import { USER_ROLES } from '@app/constants';
 import { AuthRoles } from '../../auth/decorators/auth-roles.decorators';
 import { TUserDTO } from '../types';
+import { UsersUpdateSingleRequestBodyDTO } from '../dtos/users-update-single.dtos';
+import { TJwtPayloadDTO } from '../../auth/types';
 
 @Controller('users')
 export class UsersController {
   constructor(
     private readonly usersCreateService: UsersCreateService,
     private readonly usersUpdateService: UsersUpdateService,
+    private readonly usersUpdateSingleService: UsersUpdateSingleService,
     private readonly usersGettingService: UsersGettingService,
   ) {}
+
+  @HttpCode(HttpStatus.OK)
+  @AuthRoles()
+  @Put('/user')
+  async updateById(
+    @Request() { user }: { user: TJwtPayloadDTO },
+    @Body() body: UsersUpdateSingleRequestBodyDTO,
+  ): Promise<TUserDTO> {
+    return this.usersUpdateSingleService.executeOrFail(user.userId, body);
+  }
 
   @HttpCode(HttpStatus.OK)
   @AuthRoles(USER_ROLES.MASTER)

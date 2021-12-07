@@ -45,15 +45,27 @@ export class UsersSendingMailService {
     );
   }
 
-  private async sendEmailAfterCreatedUser(
+  public async sendEmailAfterCreatedUser(
     user: Pick<Required<UserEntity>, 'email' | 'name' | 'password'>,
     token: string,
   ): Promise<void> {
-    const href = `${config.FRONT_URLS.CONFIRMED_REGISTRATION}?token=${token}`;
+    const href = `${config.FRONT_URLS.CONFIRM_EMAIL}?token=${token}`;
     const html = this.pugGeneralService.compileFile(
       PUG_TEMPLATES_NAMES.AFTER_CREATED_USER,
       { name: user.name, password: user.password, href },
     );
     await this.mailSenderGeneralService.sendMail({ to: user.email, html });
+  }
+
+  public async sendMailToConfirmEmail(
+    email: string,
+    token: string,
+  ): Promise<void> {
+    const href = `${config.FRONT_URLS.CONFIRM_EMAIL}?token=${token}`;
+    const html = this.pugGeneralService.compileFile(
+      PUG_TEMPLATES_NAMES.CONFIRM_EMAIL,
+      { href },
+    );
+    await this.mailSenderGeneralService.sendMail({ to: email, html });
   }
 }

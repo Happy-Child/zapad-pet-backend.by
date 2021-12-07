@@ -31,7 +31,7 @@ declare module 'config' {
   };
 
   export const FRONT_URLS: {
-    CONFIRMED_REGISTRATION: string;
+    CONFIRM_EMAIL: string;
     CREATE_NEW_PASSWORD: string;
   };
 
