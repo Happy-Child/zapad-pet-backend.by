@@ -1,7 +1,8 @@
 import {
+  AccountantJWTPayloadDTO,
   DistrictLeaderMemberJWTPayloadDTO,
   EngineerMemberJWTPayloadDTO,
-  SimpleUserJWTPayloadDTO,
+  MasterJWTPayloadDTO,
   StationWorkerMemberJWTPayloadDTO,
 } from '../dtos';
 
@@ -10,4 +11,7 @@ export type TMemberJwtPayloadDTO =
   | EngineerMemberJWTPayloadDTO
   | StationWorkerMemberJWTPayloadDTO;
 
-export type TJwtPayloadDTO = TMemberJwtPayloadDTO | SimpleUserJWTPayloadDTO;
+export type TJwtPayloadDTO =
+  | TMemberJwtPayloadDTO
+  | MasterJWTPayloadDTO
+  | AccountantJWTPayloadDTO;

@@ -7,7 +7,6 @@ import { COOKIE } from '../constants';
 import { AuthGeneralService, AuthSignInService } from '../services';
 import { IAuthJWTTokenPayload } from '../interfaces';
 import { getJwtPayloadByMember } from '../helpers';
-import { SimpleUserJWTPayloadDTO } from '../dtos';
 import { TJwtPayloadDTO } from '../types';
 import { TFullMemberDTO, TUserDTO } from '../../users/types';
 import { EntityFinderGeneralService } from '../../entity-finder/services';
@@ -42,7 +41,7 @@ export class AuthJwtStrategy extends PassportStrategy(Strategy) {
 
   public async validate(
     payload: IAuthJWTTokenPayload,
-  ): Promise<TJwtPayloadDTO | SimpleUserJWTPayloadDTO> {
+  ): Promise<TJwtPayloadDTO> {
     const user = await this.entityFinderGeneralService.getFullUserOrFail({
       id: payload.sub,
     });

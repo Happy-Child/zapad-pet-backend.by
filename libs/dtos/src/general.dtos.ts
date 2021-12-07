@@ -31,3 +31,15 @@ export class ShortUserDTO {
     );
   }
 }
+
+export class ShortUserWithEmailDTO extends ShortUserDTO {
+  @Expose()
+  email!: string;
+
+  constructor(
+    data: Partial<ShortUserWithEmailDTO>,
+    serializeOptions?: ClassTransformOptions,
+  ) {
+    super(data, serializeOptions);
+  }
+}

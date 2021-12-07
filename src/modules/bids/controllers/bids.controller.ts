@@ -10,10 +10,15 @@ import {
   Put,
   Request,
 } from '@nestjs/common';
-import { BidsCreateBodyDTO, BidsUpdateBodyDTO } from '../dtos';
+import {
+  BidLastReviewResponseDTO,
+  BidsCreateBodyDTO,
+  BidsUpdateBodyDTO,
+} from '../dtos';
 import { AuthRoles } from '../../auth/decorators/auth-roles.decorators';
 import {
   DistrictLeaderMemberJWTPayloadDTO,
+  MasterJWTPayloadDTO,
   StationWorkerMemberJWTPayloadDTO,
 } from '../../auth/dtos';
 import { USER_ROLES } from '@app/constants';
@@ -70,6 +75,28 @@ export class BidsController {
     @Request() { user }: { user: TJwtPayloadDTO },
   ): Promise<any> {
     return this.bidsGettingService.getByIdOrFail(bidId, user);
+  }
+
+  @HttpCode(HttpStatus.OK)
+  @AuthRoles(
+    USER_ROLES.MASTER,
+    USER_ROLES.STATION_WORKER,
+    USER_ROLES.DISTRICT_LEADER,
+  )
+  @Get('/:bidId/last-review')
+  async getLastReview(
+    @Param('bidId', ParseIntPipe) bidId: number,
+    @Request()
+    {
+      user,
+    }: {
+      user:
+        | DistrictLeaderMemberJWTPayloadDTO
+        | StationWorkerMemberJWTPayloadDTO
+        | MasterJWTPayloadDTO;
+    },
+  ): Promise<BidLastReviewResponseDTO> {
+    return this.bidsGettingService.getLastReviewOrFail(bidId, user);
   }
 
   @HttpCode(HttpStatus.CREATED)

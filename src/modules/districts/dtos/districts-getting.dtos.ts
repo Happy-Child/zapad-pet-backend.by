@@ -2,7 +2,7 @@ import { Expose, plainToClass, Type } from 'class-transformer';
 import { DistrictEntity } from '@app/entities';
 import { ShortDistrictLeaderMemberDTO } from '../../districts-leaders/dtos';
 import { ClassTransformOptions } from 'class-transformer/types/interfaces';
-import { BidsCountByStatusesDTO } from '../../bids/dtos/bids-general.dtos';
+import { BidsCountByStatusesDTO } from '../../bids/dtos';
 
 export class DistrictDTO extends DistrictEntity {
   @Expose()

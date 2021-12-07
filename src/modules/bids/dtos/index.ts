@@ -4,3 +4,4 @@ export * from './bids-general.dtos';
 export * from './bids-review.dtos';
 export * from './bids-todos-update.dtos';
 export * from './bids-getting';
+export * from './bids-last-review.dtos';

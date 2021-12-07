@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { Connection } from 'typeorm';
 import { BidRejectReviewRepository, BidsRepository } from '../../repositories';
 import { BidsGeneralService } from '../bids-general.service';
-import { BID_STATUS } from '../../constants';
+import { BID_REVIEW_TYPE, BID_STATUS } from '../../constants';
 import { ExceptionsForbidden } from '@app/exceptions/errors';
 import { BIDS_ERRORS, USER_ROLES } from '@app/constants';
 import {
@@ -100,6 +100,11 @@ export class BidsSetReviewStatusService {
         ? BID_STATUS.FAIL_REVIEW_FROM_STATION_WORKER
         : BID_STATUS.FAIL_REVIEW_FROM_DISTRICT_LEADER;
 
+    const finalReviewType =
+      user.role === USER_ROLES.STATION_WORKER
+        ? BID_REVIEW_TYPE.STATION_WORKER
+        : BID_REVIEW_TYPE.DISTRICT_LEADER;
+
     await this.connection.transaction(async (manager) => {
       const bidsRepository = manager.getCustomRepository(BidsRepository);
       const bidRejectReviewRepository = manager.getCustomRepository(
@@ -110,6 +115,7 @@ export class BidsSetReviewStatusService {
 
       await bidRejectReviewRepository.saveEntity({
         userId: user.userId,
+        type: finalReviewType,
         bidId,
         text,
       });

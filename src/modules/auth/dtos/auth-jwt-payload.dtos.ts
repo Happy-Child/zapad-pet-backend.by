@@ -1,10 +1,15 @@
-import { MembersRoles } from '../../users/types';
 import { USER_ROLES } from '@app/constants';
 
-export class SimpleUserJWTPayloadDTO {
+export class MasterJWTPayloadDTO {
   userId!: number;
 
-  role!: Exclude<USER_ROLES, MembersRoles>;
+  role!: USER_ROLES.MASTER;
+}
+
+export class AccountantJWTPayloadDTO {
+  userId!: number;
+
+  role!: USER_ROLES.ACCOUNTANT;
 }
 
 export class DistrictLeaderMemberJWTPayloadDTO {

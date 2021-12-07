@@ -1,5 +1,6 @@
 import { Expose, Transform } from 'class-transformer';
-import { BID_STATUS } from '../constants';
+import { BID_PRIORITY, BID_STATUS, BID_TODO_STATUS } from '../constants';
+import { IStorageFile } from '@app/file-storage/interfaces';
 
 export class BidsCountByStatusesDTO {
   @Expose()
@@ -41,4 +42,35 @@ export class BidsCountByStatusesDTO {
   @Expose()
   @Transform(({ value }) => value || 0)
   [BID_STATUS.CANCEL]!: number;
+}
+
+export class BidDTO {
+  @Expose()
+  id!: number;
+
+  @Expose()
+  status!: BID_STATUS;
+
+  @Expose()
+  priority!: BID_PRIORITY;
+
+  @Expose()
+  description!: string | null;
+
+  @Expose()
+  deadlineAt!: string;
+
+  @Expose()
+  image!: IStorageFile;
+}
+
+export class BidTodoDTO {
+  @Expose()
+  id!: number;
+
+  @Expose()
+  text!: string;
+
+  @Expose()
+  status!: BID_TODO_STATUS;
 }
