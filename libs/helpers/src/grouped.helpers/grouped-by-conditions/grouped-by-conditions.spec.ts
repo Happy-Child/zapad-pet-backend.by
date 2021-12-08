@@ -1,4 +1,5 @@
-import { groupedByConditions, groupedByNull, isNull } from '@app/helpers';
+import { groupedByConditions, groupedByNull } from './index';
+import { isNull } from '../../types-checking.helpers/index';
 
 type TMockItem = { id: number; name: string | null; age: number | null };
 

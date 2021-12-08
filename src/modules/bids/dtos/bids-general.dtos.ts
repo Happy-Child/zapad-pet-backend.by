@@ -1,6 +1,9 @@
-import { Expose, Transform } from 'class-transformer';
+import { Expose, plainToClass, Transform, Type } from 'class-transformer';
 import { BID_PRIORITY, BID_STATUS, BID_TODO_STATUS } from '../constants';
-import { IStorageFile } from '@app/file-storage/interfaces';
+import { ClassTransformOptions } from 'class-transformer/types/interfaces';
+import { DropboxStorageEntity, LocalStorageEntity } from '@app/entities';
+import { StorageFileDTO } from '@app/dtos';
+import { getStorageFile } from '@app/file-storage/helpers/file-storage-general.helpers';
 
 export class BidsCountByStatusesDTO {
   @Expose()
@@ -60,8 +63,26 @@ export class BidDTO {
   @Expose()
   deadlineAt!: string;
 
+  @Transform(({ value, obj }) =>
+    !value ? getStorageFile(obj?.imageLocal, obj?.imageDropbox) : value,
+  )
+  @Type(() => StorageFileDTO)
   @Expose()
-  image!: IStorageFile;
+  image!: StorageFileDTO | null;
+
+  imageLocal!: LocalStorageEntity | null;
+
+  imageDropbox!: DropboxStorageEntity | null;
+
+  constructor(data: Partial<BidDTO>, serializeOptions?: ClassTransformOptions) {
+    Object.assign(
+      this,
+      plainToClass(BidDTO, data, {
+        ...serializeOptions,
+        excludeExtraneousValues: true,
+      }),
+    );
+  }
 }
 
 export class BidTodoDTO {

@@ -1,4 +1,4 @@
-import { isNull } from '@app/helpers';
+import { isNull } from '../../types-checking.helpers';
 
 export const groupedByConditions = <T>(
   arr: T[],

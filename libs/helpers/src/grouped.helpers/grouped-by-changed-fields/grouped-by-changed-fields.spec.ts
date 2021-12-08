@@ -1,4 +1,4 @@
-import { groupedByChangedFields } from '@app/helpers';
+import { groupedByChangedFields } from './index';
 
 type TMockItem = { id: number; name: string | null; age: number | null };
 

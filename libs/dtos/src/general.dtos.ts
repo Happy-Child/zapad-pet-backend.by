@@ -43,3 +43,11 @@ export class ShortUserWithEmailDTO extends ShortUserDTO {
     super(data, serializeOptions);
   }
 }
+
+export class StorageFileDTO {
+  @Expose()
+  id!: number;
+
+  @Expose()
+  url!: string;
+}

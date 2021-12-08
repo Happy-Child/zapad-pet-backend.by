@@ -25,7 +25,9 @@ import { USER_ROLES } from '@app/constants';
 import {
   BidsAssignToEngineerService,
   BidsCreateService,
-  BidsGettingService,
+  BidsGettingGeneralService,
+  BidsGettingListService,
+  BidsGettingSingleService,
   BidsUpdateService,
 } from '../services';
 import { TJwtPayloadDTO } from '../../auth/types';
@@ -36,7 +38,9 @@ export class BidsController {
     private readonly bidsCreateService: BidsCreateService,
     private readonly bidsUpdateService: BidsUpdateService,
     private readonly bidsAssignToEngineerService: BidsAssignToEngineerService,
-    private readonly bidsGettingService: BidsGettingService,
+    private readonly bidsGettingGeneralService: BidsGettingGeneralService,
+    private readonly bidsGettingSingleService: BidsGettingSingleService,
+    private readonly bidsGettingListService: BidsGettingListService,
   ) {}
 
   @HttpCode(HttpStatus.CREATED)
@@ -59,7 +63,7 @@ export class BidsController {
   )
   @Get()
   async getList(@Request() { user }: { user: TJwtPayloadDTO }): Promise<any> {
-    return this.bidsGettingService.getListWithPagination(user);
+    return this.bidsGettingListService.getListByPagination(user);
   }
 
   @HttpCode(HttpStatus.OK)
@@ -74,7 +78,7 @@ export class BidsController {
     @Param('bidId', ParseIntPipe) bidId: number,
     @Request() { user }: { user: TJwtPayloadDTO },
   ): Promise<any> {
-    return this.bidsGettingService.getByIdOrFail(bidId, user);
+    return this.bidsGettingSingleService.getByIdOrFail(bidId, user);
   }
 
   @HttpCode(HttpStatus.OK)
@@ -96,7 +100,7 @@ export class BidsController {
         | MasterJWTPayloadDTO;
     },
   ): Promise<BidLastReviewResponseDTO> {
-    return this.bidsGettingService.getLastReviewOrFail(bidId, user);
+    return this.bidsGettingGeneralService.getLastReviewOrFail(bidId, user);
   }
 
   @HttpCode(HttpStatus.CREATED)

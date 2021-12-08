@@ -1,4 +1,4 @@
-import { getItemsByUniqueField } from '@app/helpers';
+import { getItemsByUniqueField } from './index';
 import { NonEmptyArray } from '@app/types';
 
 type TMockItem = { field: string; id: number };

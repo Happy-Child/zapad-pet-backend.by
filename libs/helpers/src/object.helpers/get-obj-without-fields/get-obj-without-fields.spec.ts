@@ -1,4 +1,4 @@
-import { getObjWithoutFields } from '@app/helpers';
+import { getObjWithoutFields } from './index';
 
 type TMockItem = { id: number; name: string; age: number };
 type TMockItemNew = { age: number };

@@ -10,7 +10,7 @@ export const MOCK_BIDS_MAP: Record<
 > = {
   BID_1: {
     id: 1,
-    stationId: MOCK_STATIONS_MAP.STATION_2.id,
+    stationId: MOCK_STATIONS_MAP.STATION_1.id,
     deadlineAt: moment().add(2, 'months').toISOString(),
     engineerId: MOCK_ENGINEERS_MAP.ENGINEER_1.id,
     todos: [
@@ -22,7 +22,7 @@ export const MOCK_BIDS_MAP: Record<
   },
   BID_2: {
     id: 2,
-    stationId: MOCK_STATIONS_MAP.STATION_2.id,
+    stationId: MOCK_STATIONS_MAP.STATION_1.id,
     deadlineAt: moment().add(2, 'months').toISOString(),
     engineerId: MOCK_ENGINEERS_MAP.ENGINEER_1.id,
     todos: [

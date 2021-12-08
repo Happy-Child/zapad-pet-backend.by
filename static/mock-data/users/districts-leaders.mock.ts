@@ -18,7 +18,7 @@ export const MOCK_DISTRICTS_LEADERS_MAP: Record<
     name: 'district_leader_2',
     email: 'district_leader_2@mail.ru',
     role: USER_ROLES.DISTRICT_LEADER,
-    emailConfirmed: false,
+    emailConfirmed: true,
     leaderDistrictId: 75,
   },
   LEADER_3: {

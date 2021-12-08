@@ -1,3 +1,6 @@
+import path from 'path';
+import { FILE_STORAGE } from 'config';
+
 export enum FILE_STORAGE_STRATEGY {
   LOCAL = 'LOCAL',
   DROPBOX = 'DROPBOX',
@@ -19,3 +22,7 @@ export enum FILE_EXT {
 }
 
 export const DEFAULT_UPLOAD_FILE_EXTS = [FILE_EXT.PNG, FILE_EXT.JPG];
+
+export const PATH_TO_LOCAL_STORAGE = `${path.resolve()}/${
+  FILE_STORAGE.LOCAL_STORAGE_PATH
+}`;

@@ -1,8 +1,6 @@
-import {
-  valueOfObjectKeyWillBeAdded,
-  valueOfObjectKeyWillBeDeleted,
-  valueOfObjectKeyWillBeReplaced,
-} from '@app/helpers';
+import { valueOfObjectKeyWillBeAdded } from '../value-of-object-key-will-be-added';
+import { valueOfObjectKeyWillBeReplaced } from '../value-of-object-key-will-be-replaced';
+import { valueOfObjectKeyWillBeDeleted } from '../value-of-object-key-will-be-deleted';
 
 export const valueOfObjectKeyWillBe = <T>(
   next: T,

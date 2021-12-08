@@ -1,4 +1,4 @@
-import { groupedByValueOfObjectKeyWillBe } from '@app/helpers';
+import { groupedByValueOfObjectKeyWillBe } from './index';
 
 type TMockItem = { id: number; name: string | null; age: number | null };
 

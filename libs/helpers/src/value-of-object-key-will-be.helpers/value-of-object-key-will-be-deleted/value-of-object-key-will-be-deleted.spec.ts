@@ -1,4 +1,4 @@
-import { valueOfObjectKeyWillBeDeleted } from '@app/helpers';
+import { valueOfObjectKeyWillBeDeleted } from './index';
 
 type TItem = {
   name: string | null;

@@ -1,4 +1,4 @@
-import { isNonEmptyArray } from '@app/helpers';
+import { isNonEmptyArray } from './index';
 
 describe('isNonEmptyArray', () => {
   it('should return true if array is not empty', () => {

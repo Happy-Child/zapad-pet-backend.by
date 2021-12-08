@@ -1,4 +1,4 @@
-import { isNull, isObject, isUndefined } from '@app/helpers';
+import { isNull, isObject, isUndefined } from './index';
 
 describe('isNull', () => {
   it('should be an null', () => {

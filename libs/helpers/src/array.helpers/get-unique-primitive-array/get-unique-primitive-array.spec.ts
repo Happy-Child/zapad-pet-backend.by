@@ -1,5 +1,5 @@
 import { NonEmptyArray } from '@app/types';
-import { getUniquePrimitiveArray } from '@app/helpers';
+import { getUniquePrimitiveArray } from './index';
 
 const entryDataNumbers: NonEmptyArray<number> = [
   1, 1, 2, 2, 3, 4, 4, 4, 4, 4, 4, 5, 6, 6, 6, 6, 6,

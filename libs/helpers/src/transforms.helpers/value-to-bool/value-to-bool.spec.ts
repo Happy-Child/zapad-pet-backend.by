@@ -1,4 +1,4 @@
-import { valueToBool } from '@app/helpers';
+import { valueToBool } from './index';
 
 describe('valueToBool', () => {
   it('should be an boolead', () => {

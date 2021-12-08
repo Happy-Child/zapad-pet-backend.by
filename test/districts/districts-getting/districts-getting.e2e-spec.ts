@@ -180,7 +180,7 @@ describe('DistrictsModule (e2e)', () => {
         const validResponse: DistrictStatisticDTO = {
           bidsCountByStatuses: {
             ...plainToClass(BidsCountByStatusesDTO, {}),
-            [BID_STATUS.PENDING_ASSIGNMENT_TO_ENGINEER]: 2,
+            [BID_STATUS.PENDING_ASSIGNMENT_TO_ENGINEER]: 0,
           },
         };
 

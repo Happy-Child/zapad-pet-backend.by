@@ -1,4 +1,4 @@
-import { groupedByRoles } from '@app/helpers';
+import { groupedByRoles } from './index';
 import { USER_ROLES } from '@app/constants';
 
 const mockData = [

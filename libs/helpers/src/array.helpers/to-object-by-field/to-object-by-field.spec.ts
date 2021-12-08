@@ -1,4 +1,4 @@
-import { toObjectByField } from '@app/helpers';
+import { toObjectByField } from './index';
 
 type TMockItem = { field: string | number; id: number };
 const entryData: TMockItem[] = [

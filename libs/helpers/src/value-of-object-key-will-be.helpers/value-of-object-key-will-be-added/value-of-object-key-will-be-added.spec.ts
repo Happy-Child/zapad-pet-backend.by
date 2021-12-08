@@ -1,4 +1,4 @@
-import { valueOfObjectKeyWillBeAdded } from '@app/helpers';
+import { valueOfObjectKeyWillBeAdded } from './index';
 
 type TItem = {
   name: string | null;

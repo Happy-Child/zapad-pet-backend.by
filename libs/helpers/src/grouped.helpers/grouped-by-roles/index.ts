@@ -1,5 +1,5 @@
-import { USER_ROLES } from '@app/constants';
-import { groupedByConditions } from '@app/helpers/grouped.helpers/grouped-by-conditions';
+import { USER_ROLES } from '@app/constants/app.constants';
+import { groupedByConditions } from '../grouped-by-conditions';
 
 export const groupedByRoles = <
   S extends { role: USER_ROLES.STATION_WORKER } = {

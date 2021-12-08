@@ -292,10 +292,6 @@ describe('StationsModule (e2e)', () => {
 
         const stationsToUpdate1 = [
           {
-            ...MOCK_STATIONS_MAP.STATION_1,
-            stationWorkerId: MOCK_STATIONS_WORKERS_MAP.WORKER_4.id,
-          },
-          {
             ...MOCK_STATIONS_MAP.STATION_6,
             stationWorkerId: null,
           },
@@ -306,14 +302,6 @@ describe('StationsModule (e2e)', () => {
         ];
 
         const stationsToUpdate2 = [
-          {
-            ...MOCK_STATIONS_MAP.STATION_2,
-            stationWorkerId: MOCK_STATIONS_WORKERS_MAP.WORKER_2.id,
-          },
-          {
-            ...MOCK_STATIONS_MAP.STATION_3,
-            stationWorkerId: MOCK_STATIONS_WORKERS_MAP.WORKER_1.id,
-          },
           {
             ...MOCK_STATIONS_MAP.STATION_6,
             stationWorkerId: MOCK_STATIONS_WORKERS_MAP.WORKER_5.id,

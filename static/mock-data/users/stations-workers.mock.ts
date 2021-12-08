@@ -12,7 +12,7 @@ export const MOCK_STATIONS_WORKERS_MAP: Record<
     role: USER_ROLES.STATION_WORKER,
     emailConfirmed: true,
     clientId: 1,
-    stationId: 2,
+    stationId: 1,
   },
   WORKER_2: {
     id: 2,

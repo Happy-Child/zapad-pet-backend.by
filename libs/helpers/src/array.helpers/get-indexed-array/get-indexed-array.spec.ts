@@ -1,4 +1,4 @@
-import { getIndexedArray } from '@app/helpers';
+import { getIndexedArray } from './index';
 import { NonEmptyArray } from '@app/types';
 
 const entryData: NonEmptyArray<object> = [
