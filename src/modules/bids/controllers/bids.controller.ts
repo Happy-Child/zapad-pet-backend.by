@@ -8,14 +8,17 @@ import {
   ParseIntPipe,
   Post,
   Put,
+  Query,
   Request,
 } from '@nestjs/common';
 import {
   BidLastReviewResponseDTO,
   BidsCreateBodyDTO,
   BidsUpdateBodyDTO,
+  TGetBidSingleResponseDTO,
+  TGetListBidsQueryDTO,
 } from '../dtos';
-import { AuthRoles } from '../../auth/decorators/auth-roles.decorators';
+import { AuthRoles } from '@app/decorators/auth-roles.decorators';
 import {
   DistrictLeaderMemberJWTPayloadDTO,
   MasterJWTPayloadDTO,
@@ -30,7 +33,10 @@ import {
   BidsGettingSingleService,
   BidsUpdateService,
 } from '../services';
-import { TJwtPayloadDTO } from '../../auth/types';
+import { TMemberJwtPayloadDTO } from '../../auth/types';
+import { BidsGettingListValidationPipe } from '../pipes/bids-getting-list-validation.pipe';
+import { SetUserToRequestField } from '@app/decorators';
+import { SET_USER_METADATA_TYPE } from '@app/guards/guards.constants';
 
 @Controller('bids')
 export class BidsController {
@@ -61,9 +67,13 @@ export class BidsController {
     USER_ROLES.ENGINEER,
     USER_ROLES.DISTRICT_LEADER,
   )
+  @SetUserToRequestField(SET_USER_METADATA_TYPE.QUERY)
   @Get()
-  async getList(@Request() { user }: { user: TJwtPayloadDTO }): Promise<any> {
-    return this.bidsGettingListService.getListByPagination(user);
+  async getList(
+    @Query(BidsGettingListValidationPipe) query: TGetListBidsQueryDTO,
+    @Request() { user }: { user: TMemberJwtPayloadDTO | MasterJWTPayloadDTO },
+  ): Promise<any> {
+    return this.bidsGettingListService.getListByPagination(query, user);
   }
 
   @HttpCode(HttpStatus.OK)
@@ -76,8 +86,8 @@ export class BidsController {
   @Get('/:bidId')
   async getById(
     @Param('bidId', ParseIntPipe) bidId: number,
-    @Request() { user }: { user: TJwtPayloadDTO },
-  ): Promise<any> {
+    @Request() { user }: { user: TMemberJwtPayloadDTO | MasterJWTPayloadDTO },
+  ): Promise<TGetBidSingleResponseDTO> {
     return this.bidsGettingSingleService.getByIdOrFail(bidId, user);
   }
 

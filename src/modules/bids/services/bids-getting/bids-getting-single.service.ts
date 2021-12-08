@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { BidsRepository } from '../../repositories';
 import { BidsGeneralService } from '../bids-general.service';
-import { TJwtPayloadDTO } from '../../../auth/types';
+import { TMemberJwtPayloadDTO } from '../../../auth/types';
 import { USER_ROLES } from '@app/constants';
 import { SelectQueryBuilder } from 'typeorm';
 import {
@@ -14,11 +14,13 @@ import {
   UserEntity,
 } from '@app/entities';
 import {
-  GetBidSingleDistrictLeaderDTO,
-  GetBidSingleEngineerDTO,
-  GetBidSingleMasterDTO,
+  GetBidSingleDistrictLeaderResponseDTO,
+  GetBidSingleEngineerResponseDTO,
+  GetBidSingleMasterResponseDTO,
   GetBidStationWorkerResponseDTO,
+  TGetBidSingleResponseDTO,
 } from '../../dtos';
+import { MasterJWTPayloadDTO } from '../../../auth/dtos';
 
 @Injectable()
 export class BidsGettingSingleService {
@@ -29,8 +31,8 @@ export class BidsGettingSingleService {
 
   public async getByIdOrFail(
     bidId: number,
-    user: TJwtPayloadDTO,
-  ): Promise<any> {
+    user: TMemberJwtPayloadDTO | MasterJWTPayloadDTO,
+  ): Promise<TGetBidSingleResponseDTO> {
     await this.bidsGeneralService.getBidByRoleOrFail(bidId, user);
 
     const builder = this.bidsRepository.createQueryBuilder('b');
@@ -44,7 +46,7 @@ export class BidsGettingSingleService {
         return this.getBidForDistrictLeader(builder);
       case USER_ROLES.ENGINEER:
         return this.getBidForEngineer(builder);
-      case USER_ROLES.MASTER:
+      default:
         return this.getBidForMaster(builder);
     }
   }
@@ -109,13 +111,13 @@ export class BidsGettingSingleService {
 
   private async getBidForEngineer(
     builder: SelectQueryBuilder<BidEntity>,
-  ): Promise<GetBidSingleEngineerDTO> {
+  ): Promise<GetBidSingleEngineerResponseDTO> {
     this.mapBidForEngineer(builder);
 
     const result =
-      (await builder.getOne()) as unknown as GetBidSingleEngineerDTO;
+      (await builder.getOne()) as unknown as GetBidSingleEngineerResponseDTO;
 
-    return new GetBidSingleEngineerDTO(result);
+    return new GetBidSingleEngineerResponseDTO(result);
   }
 
   private mapBidForDistrictLeader(
@@ -139,18 +141,18 @@ export class BidsGettingSingleService {
 
   private async getBidForDistrictLeader(
     builder: SelectQueryBuilder<BidEntity>,
-  ): Promise<GetBidSingleDistrictLeaderDTO> {
+  ): Promise<GetBidSingleDistrictLeaderResponseDTO> {
     this.mapBidForDistrictLeader(builder);
 
     const result =
-      (await builder.getOne()) as unknown as GetBidSingleDistrictLeaderDTO;
+      (await builder.getOne()) as unknown as GetBidSingleDistrictLeaderResponseDTO;
 
-    return new GetBidSingleDistrictLeaderDTO(result);
+    return new GetBidSingleDistrictLeaderResponseDTO(result);
   }
 
   private async getBidForMaster(
     builder: SelectQueryBuilder<BidEntity>,
-  ): Promise<GetBidSingleMasterDTO> {
+  ): Promise<GetBidSingleMasterResponseDTO> {
     this.mapBidForDistrictLeader(builder);
 
     builder
@@ -180,10 +182,9 @@ export class BidsGettingSingleService {
         'swu2.id = "b"."confirmedStationWorkerId"',
       );
 
-    const result = (await builder.getOne()) as unknown as GetBidSingleMasterDTO;
+    const result =
+      (await builder.getOne()) as unknown as GetBidSingleMasterResponseDTO;
 
-    console.log('result', result);
-
-    return new GetBidSingleMasterDTO(result);
+    return new GetBidSingleMasterResponseDTO(result);
   }
 }

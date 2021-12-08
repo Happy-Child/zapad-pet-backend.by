@@ -6,7 +6,7 @@ import {
   Param,
   ParseIntPipe,
 } from '@nestjs/common';
-import { AuthRoles } from '../../auth/decorators/auth-roles.decorators';
+import { AuthRoles } from '@app/decorators/auth-roles.decorators';
 import { USER_ROLES } from '@app/constants';
 import { DistrictStatisticDTO } from '../../districts/dtos/districts-getting.dtos';
 import { RegionsGettingService } from '../services';

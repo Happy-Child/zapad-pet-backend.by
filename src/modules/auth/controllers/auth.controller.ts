@@ -26,7 +26,7 @@ import {
 import { COOKIE } from '../constants';
 import { TUserDTO } from '../../users/types';
 import { TJwtPayloadDTO } from '../types';
-import { AuthRoles } from '../decorators/auth-roles.decorators';
+import { AuthRoles } from '@app/decorators/auth-roles.decorators';
 
 @Controller('auth')
 export class AuthController {

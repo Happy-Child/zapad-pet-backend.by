@@ -13,7 +13,7 @@ import {
   BidsEndWorkRequestBodyDTO,
   BidsSetRejectedReviewStatusRequestBodyDTO,
 } from '../dtos';
-import { AuthRoles } from '../../auth/decorators/auth-roles.decorators';
+import { AuthRoles } from '@app/decorators/auth-roles.decorators';
 import {
   DistrictLeaderMemberJWTPayloadDTO,
   EngineerMemberJWTPayloadDTO,

@@ -14,7 +14,7 @@ import { IRawFile } from '@app/file-storage/interfaces';
 import { FileStorageGeneralService } from '@app/file-storage/services';
 import { UploadFileValidationPipe } from '@app/file-storage/pipes';
 import { USER_ROLES } from '@app/constants';
-import { AuthRoles } from '../../../../src/modules/auth/decorators/auth-roles.decorators';
+import { AuthRoles } from '@app/decorators/auth-roles.decorators';
 
 @Controller('file-storage')
 export class FileStorageController {

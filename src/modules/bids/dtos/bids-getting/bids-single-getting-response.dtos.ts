@@ -10,7 +10,7 @@ import {
 import { ClassTransformOptions } from 'class-transformer/types/interfaces';
 import { getStorageFile } from '@app/file-storage/helpers/file-storage-general.helpers';
 
-export class GetBidSingleEngineerDTO extends BidDTO {
+export class GetBidSingleEngineerResponseDTO extends BidDTO {
   @Transform(({ value, obj }) =>
     !value
       ? getStorageFile(obj?.finalPhotoLocal, obj?.finalPhotoDropbox)
@@ -29,14 +29,14 @@ export class GetBidSingleEngineerDTO extends BidDTO {
   todos!: NonEmptyArray<BidTodoDTO>;
 
   constructor(
-    data: Partial<GetBidSingleEngineerDTO>,
+    data: Partial<GetBidSingleEngineerResponseDTO>,
     serializeOptions?: ClassTransformOptions,
   ) {
     super(data);
 
     Object.assign(
       this,
-      plainToClass(GetBidSingleEngineerDTO, data, {
+      plainToClass(GetBidSingleEngineerResponseDTO, data, {
         ...serializeOptions,
         excludeExtraneousValues: true,
       }),
@@ -44,7 +44,7 @@ export class GetBidSingleEngineerDTO extends BidDTO {
   }
 }
 
-export class GetBidSingleDistrictLeaderDTO extends GetBidSingleEngineerDTO {
+export class GetBidSingleDistrictLeaderResponseDTO extends GetBidSingleEngineerResponseDTO {
   @Type(() => ShortUserWithEmailDTO)
   @Expose()
   rejectedUser!: ShortUserWithEmailDTO | null;
@@ -63,14 +63,14 @@ export class GetBidSingleDistrictLeaderDTO extends GetBidSingleEngineerDTO {
   endWorkAt!: string | null;
 
   constructor(
-    data: Partial<GetBidSingleDistrictLeaderDTO>,
+    data: Partial<GetBidSingleDistrictLeaderResponseDTO>,
     serializeOptions?: ClassTransformOptions,
   ) {
     super(data);
 
     Object.assign(
       this,
-      plainToClass(GetBidSingleDistrictLeaderDTO, data, {
+      plainToClass(GetBidSingleDistrictLeaderResponseDTO, data, {
         ...serializeOptions,
         excludeExtraneousValues: true,
       }),
@@ -109,7 +109,7 @@ export class GetBidStationWorkerResponseDTO extends BidDTO {
   }
 }
 
-export class GetBidSingleMasterDTO extends GetBidSingleDistrictLeaderDTO {
+export class GetBidSingleMasterResponseDTO extends GetBidSingleDistrictLeaderResponseDTO {
   @Type(() => StationEntity)
   @Expose()
   station!: StationEntity;
@@ -130,17 +130,23 @@ export class GetBidSingleMasterDTO extends GetBidSingleDistrictLeaderDTO {
   confirmSuccessAt!: string | null;
 
   constructor(
-    data: Partial<GetBidSingleMasterDTO>,
+    data: Partial<GetBidSingleMasterResponseDTO>,
     serializeOptions?: ClassTransformOptions,
   ) {
     super(data);
 
     Object.assign(
       this,
-      plainToClass(GetBidSingleMasterDTO, data, {
+      plainToClass(GetBidSingleMasterResponseDTO, data, {
         ...serializeOptions,
         excludeExtraneousValues: true,
       }),
     );
   }
 }
+
+export type TGetBidSingleResponseDTO =
+  | GetBidSingleEngineerResponseDTO
+  | GetBidSingleDistrictLeaderResponseDTO
+  | GetBidStationWorkerResponseDTO
+  | GetBidSingleMasterResponseDTO;

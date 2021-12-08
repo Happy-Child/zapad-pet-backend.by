@@ -7,14 +7,13 @@ import {
   IsOptional,
   IsString,
 } from 'class-validator';
-import { Expose, plainToClass, Transform } from 'class-transformer';
+import { Expose, plainToClass, Transform, Type } from 'class-transformer';
 import { SORT_DURATION } from '@app/constants';
 import { STATIONS_LIST_SORT_BY, STATIONS_SORT_BY } from '../constants';
-import { Type } from 'class-transformer';
 import { ClientEntity, DistrictEntity, RegionEntity } from '@app/entities';
 import { ClassTransformOptions } from 'class-transformer/types/interfaces';
 import { valueToBool } from '@app/helpers';
-import { BidsCountByStatusesDTO } from '../../bids/dtos/bids-general.dtos';
+import { BidsCountByStatusesDTO } from '../../bids/dtos';
 import { ShortStationWorkerMemberDTO } from '../../stations-workers/dtos';
 
 export class StationDTO {

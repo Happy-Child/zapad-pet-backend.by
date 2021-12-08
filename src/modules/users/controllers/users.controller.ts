@@ -25,7 +25,7 @@ import {
 } from '../dtos/users-getting.dtos';
 import { UsersUpdateRequestBodyDTO } from '../dtos/users-update.dtos';
 import { USER_ROLES } from '@app/constants';
-import { AuthRoles } from '../../auth/decorators/auth-roles.decorators';
+import { AuthRoles } from '@app/decorators/auth-roles.decorators';
 import { TUserDTO } from '../types';
 import { UsersUpdateSingleRequestBodyDTO } from '../dtos/users-update-single.dtos';
 import { TJwtPayloadDTO } from '../../auth/types';

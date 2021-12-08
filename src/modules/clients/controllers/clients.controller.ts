@@ -23,7 +23,7 @@ import {
 } from '../dtos';
 import { ClientEntity } from '@app/entities';
 import { USER_ROLES } from '@app/constants';
-import { AuthRoles } from '../../auth/decorators/auth-roles.decorators';
+import { AuthRoles } from '@app/decorators/auth-roles.decorators';
 
 @Controller('clients')
 export class ClientsController {

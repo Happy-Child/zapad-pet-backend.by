@@ -6,7 +6,7 @@ import {
   Post,
   Request,
 } from '@nestjs/common';
-import { AuthRoles } from '../../auth/decorators/auth-roles.decorators';
+import { AuthRoles } from '@app/decorators/auth-roles.decorators';
 import { USER_ROLES } from '@app/constants';
 import { BID_TODO_STATUS } from '../constants';
 import { BidsTodosChangeStatusService } from '../services';

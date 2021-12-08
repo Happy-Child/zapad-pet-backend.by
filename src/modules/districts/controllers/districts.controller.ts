@@ -11,7 +11,7 @@ import {
   Query,
 } from '@nestjs/common';
 import { USER_ROLES } from '@app/constants';
-import { AuthRoles } from '../../auth/decorators/auth-roles.decorators';
+import { AuthRoles } from '@app/decorators/auth-roles.decorators';
 import {
   DistrictsGetAllResponseBodyDTO,
   DistrictStatisticDTO,

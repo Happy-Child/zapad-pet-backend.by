@@ -15,19 +15,27 @@ export class ExceptionsAppValidationPipe implements PipeTransform {
     if (!metatype || !this.canValidate(metatype)) {
       return value;
     }
+    await ExceptionsAppValidationPipe.executeValidation(metatype, value);
+    return value;
+  }
 
+  public static async executeValidation(
+    metatype: any,
+    value: any,
+  ): Promise<void> {
     const obj = plainToClass(metatype, value);
     const errors = await validate(obj);
 
     if (errors.length) {
-      const details = this.getFormattedErrors(metatype, errors);
+      const details = ExceptionsAppValidationPipe.getFormattedErrors(
+        metatype,
+        errors,
+      );
       throw new ExceptionsBadRequest(details);
     }
-
-    return value;
   }
 
-  private getFormattedErrors(
+  public static getFormattedErrors(
     metatype: any,
     rawErrors: ValidationError[],
   ): IErrorDetailItem[] {
