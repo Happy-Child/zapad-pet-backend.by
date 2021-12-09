@@ -15,6 +15,7 @@ import {
   BidLastReviewResponseDTO,
   BidsCreateBodyDTO,
   BidsUpdateBodyDTO,
+  GetListBidsResponseDTO,
   TGetBidSingleResponseDTO,
   TGetListBidsQueryDTO,
 } from '../dtos';
@@ -72,7 +73,7 @@ export class BidsController {
   async getList(
     @Query(BidsGettingListValidationPipe) query: TGetListBidsQueryDTO,
     @Request() { user }: { user: TMemberJwtPayloadDTO | MasterJWTPayloadDTO },
-  ): Promise<any> {
+  ): Promise<GetListBidsResponseDTO> {
     return this.bidsGettingListService.getListByPagination(query, user);
   }
 

@@ -23,11 +23,13 @@ import {
   BidsCancelService,
   BidsSetReviewStatusService,
 } from './services';
+import { BidsGettingListRepository } from './repositories/bids-getting-list.repository';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([
       BidsRepository,
+      BidsGettingListRepository,
       BidsTodosRepository,
       BidRejectReviewRepository,
     ]),

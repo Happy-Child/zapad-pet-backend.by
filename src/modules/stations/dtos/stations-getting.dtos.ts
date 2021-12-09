@@ -9,7 +9,7 @@ import {
 } from 'class-validator';
 import { Expose, plainToClass, Transform, Type } from 'class-transformer';
 import { SORT_DURATION } from '@app/constants';
-import { STATIONS_LIST_SORT_BY, STATIONS_SORT_BY } from '../constants';
+import { STATIONS_LIST_SORT_BY } from '../constants';
 import { ClientEntity, DistrictEntity, RegionEntity } from '@app/entities';
 import { ClassTransformOptions } from 'class-transformer/types/interfaces';
 import { valueToBool } from '@app/helpers';
@@ -56,7 +56,7 @@ export class StationDTO {
 export class StationsGetListRequestQueryDTO extends PaginationRequestDTO {
   @IsOptional()
   @IsIn(STATIONS_LIST_SORT_BY)
-  sortBy?: STATIONS_SORT_BY;
+  sortBy?: typeof STATIONS_LIST_SORT_BY[number];
 
   @IsOptional()
   @IsEnum(SORT_DURATION)

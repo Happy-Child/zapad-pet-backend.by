@@ -20,22 +20,22 @@ import {
 import {
   STATIONS_LIST_DEFAULT_SORT_BY,
   STATIONS_LIST_DEFAULT_SORT_DURATION,
-  STATIONS_SORT_BY,
 } from '../constants';
 import { getAggrBidsCountByStatuses, isUndefined } from '@app/helpers';
+import { ENTITIES_FIELDS } from '@app/constants';
 
-const getTotalStationsListSortBy = (type: STATIONS_SORT_BY): string => {
+const getFinalSortBy = (type: ENTITIES_FIELDS): string => {
   switch (type) {
-    case STATIONS_SORT_BY.CLIENT_NAME:
+    case ENTITIES_FIELDS.CLIENT_NAME:
       return 'cl.name';
-    case STATIONS_SORT_BY.CREATED_AT:
-      return '"st"."createdAt"';
-    case STATIONS_SORT_BY.DISTRICT_NAME:
+    case ENTITIES_FIELDS.DISTRICT_NAME:
       return 'd.name';
-    case STATIONS_SORT_BY.NUMBER:
+    case ENTITIES_FIELDS.NUMBER:
       return 'st.number';
-    case STATIONS_SORT_BY.STATION_WORKER_NAME:
+    case ENTITIES_FIELDS.STATION_WORKER_NAME:
       return 'u.name';
+    default:
+      return '"st"."createdAt"';
   }
 };
 
@@ -103,7 +103,7 @@ export class StationsRepository extends GeneralRepository<StationEntity> {
     data: StationsGetListRequestQueryDTO,
   ): Promise<StationsGetListResponseBodyDTO> {
     const totalSkip = data.skip || 0;
-    const totalSortBy = getTotalStationsListSortBy(
+    const totalSortBy = getFinalSortBy(
       data.sortBy || STATIONS_LIST_DEFAULT_SORT_BY,
     );
     const totalSortDuration =
