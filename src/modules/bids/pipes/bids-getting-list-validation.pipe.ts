@@ -10,6 +10,7 @@ import {
   GetListBidsStationWorkerQueryDTO,
 } from '../dtos';
 import { SET_USER_METADATA_KEY } from '@app/guards/guards.constants';
+import { plainToClass } from 'class-transformer';
 
 @Injectable()
 export class BidsGettingListValidationPipe implements PipeTransform {
@@ -43,6 +44,6 @@ export class BidsGettingListValidationPipe implements PipeTransform {
 
     await ExceptionsAppValidationPipe.executeValidation(metatype, value);
 
-    return value;
+    return plainToClass(metatype, value);
   }
 }

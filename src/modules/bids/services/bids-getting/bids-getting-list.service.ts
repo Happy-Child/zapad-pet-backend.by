@@ -1,8 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { TJwtPayloadDTO } from '../../../auth/types';
-import { GetListBidsResponseDTO, TGetListBidsQueryDTO } from '../../dtos';
+import {
+  GetListBidsDistrictLeaderQueryDTO,
+  GetListBidsEngineerQueryDTO,
+  GetListBidsMasterQueryDTO,
+  GetListBidsResponseDTO,
+  GetListBidsStationWorkerQueryDTO,
+  TGetListBidsQueryDTO,
+} from '../../dtos';
 import { USER_ROLES } from '@app/constants';
-import { BidsGettingListRepository } from '../../repositories/bids-getting-list.repository';
+import { BidsGettingListRepository } from '../../repositories';
 
 @Injectable()
 export class BidsGettingListService {
@@ -20,22 +27,22 @@ export class BidsGettingListService {
       case USER_ROLES.STATION_WORKER:
         return this.bidsGettingListRepository.getBidsListForStationWorker(
           builder,
-          query,
+          query as GetListBidsStationWorkerQueryDTO,
         );
       case USER_ROLES.DISTRICT_LEADER:
         return this.bidsGettingListRepository.getBidsListForDistrictLeader(
           builder,
-          query,
+          query as GetListBidsDistrictLeaderQueryDTO,
         );
       case USER_ROLES.ENGINEER:
         return this.bidsGettingListRepository.getBidsListForEngineer(
           builder,
-          query,
+          query as GetListBidsEngineerQueryDTO,
         );
       default:
         return this.bidsGettingListRepository.getBidsListForMaster(
           builder,
-          query,
+          query as GetListBidsMasterQueryDTO,
         );
     }
   }

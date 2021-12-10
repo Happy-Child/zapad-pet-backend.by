@@ -43,6 +43,7 @@ export class StationsController {
   async getList(
     @Query() query: StationsGetListRequestQueryDTO,
   ): Promise<StationsGetListResponseBodyDTO> {
+    console.log(query);
     return this.stationsGettingService.getList(query);
   }
 

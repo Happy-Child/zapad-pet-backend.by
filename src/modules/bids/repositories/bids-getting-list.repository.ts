@@ -1,10 +1,22 @@
 import { EntityRepository, SelectQueryBuilder } from 'typeorm';
-import { BidEntity } from '@app/entities';
+import {
+  BidEntity,
+  ClientEntity,
+  DistrictEntity,
+  DistrictLeaderEntity,
+  StationWorkerEntity,
+  UserEntity,
+} from '@app/entities';
 import { GeneralRepository } from '@app/repositories';
 import {
+  GetListBidsDistrictLeaderQueryDTO,
   GetListBidsDistrictLeaderResponseDTO,
+  GetListBidsEngineerQueryDTO,
   GetListBidsEngineerResponseDTO,
+  GetListBidsMasterItemDTO,
+  GetListBidsMasterQueryDTO,
   GetListBidsMasterResponseDTO,
+  GetListBidsStationWorkerQueryDTO,
   GetListBidsStationWorkerResponseDTO,
   TGetListBidsQueryDTO,
 } from '../dtos';
@@ -39,7 +51,7 @@ export class BidsGettingListRepository extends GeneralRepository<BidEntity> {
 
   public async getBidsListForEngineer(
     builder: SelectQueryBuilder<BidEntity>,
-    data: TGetListBidsQueryDTO,
+    data: GetListBidsEngineerQueryDTO,
   ): Promise<GetListBidsEngineerResponseDTO> {
     this.bindGeneralConditions(builder, data);
     this.bindPaginationAndSort(builder, data);
@@ -54,9 +66,11 @@ export class BidsGettingListRepository extends GeneralRepository<BidEntity> {
 
   public async getBidsListForDistrictLeader(
     builder: SelectQueryBuilder<BidEntity>,
-    data: TGetListBidsQueryDTO,
+    data: GetListBidsDistrictLeaderQueryDTO,
   ): Promise<GetListBidsDistrictLeaderResponseDTO> {
+    this.mapBidsListForDistrictLeader(builder);
     this.bindGeneralConditions(builder, data);
+    this.bindDistrictLeaderFilters(builder, data);
     this.bindPaginationAndSort(builder, data);
 
     return new GetListBidsDistrictLeaderResponseDTO({
@@ -67,9 +81,31 @@ export class BidsGettingListRepository extends GeneralRepository<BidEntity> {
     });
   }
 
+  private mapBidsListForDistrictLeader(
+    builder: SelectQueryBuilder<BidEntity>,
+  ): void {
+    builder.leftJoinAndMapOne(
+      'b.engineer',
+      UserEntity,
+      'u1',
+      'u1.id = "b"."engineerId"',
+    );
+  }
+
+  private bindDistrictLeaderFilters(
+    builder: SelectQueryBuilder<BidEntity>,
+    data: { engineersIds?: number[] },
+  ): void {
+    if (data.engineersIds) {
+      builder.andWhere('"b"."engineerId" IN (:...ids)', {
+        ids: data.engineersIds,
+      });
+    }
+  }
+
   public async getBidsListForStationWorker(
     builder: SelectQueryBuilder<BidEntity>,
-    data: TGetListBidsQueryDTO,
+    data: GetListBidsStationWorkerQueryDTO,
   ): Promise<GetListBidsStationWorkerResponseDTO> {
     this.bindGeneralConditions(builder, data);
     this.bindPaginationAndSort(builder, data);
@@ -84,17 +120,100 @@ export class BidsGettingListRepository extends GeneralRepository<BidEntity> {
 
   public async getBidsListForMaster(
     builder: SelectQueryBuilder<BidEntity>,
-    data: TGetListBidsQueryDTO,
+    data: GetListBidsMasterQueryDTO,
   ): Promise<GetListBidsMasterResponseDTO> {
+    this.mapBidsListForMaster(builder);
     this.bindGeneralConditions(builder, data);
+    this.bindDistrictLeaderFilters(builder, data);
+    this.bindMasterFilters(builder, data);
     this.bindPaginationAndSort(builder, data);
 
+    const [items, totalItemsCount] =
+      (await builder.getManyAndCount()) as unknown as [
+        GetListBidsMasterItemDTO[],
+        number,
+      ];
+
     return new GetListBidsMasterResponseDTO({
-      totalItemsCount: 0,
-      items: [],
-      take: 0,
-      skip: 0,
+      totalItemsCount,
+      items,
+      take: data.take,
+      skip: data.skip || 0,
     });
+  }
+
+  private mapBidsListForMaster(builder: SelectQueryBuilder<BidEntity>): void {
+    this.mapBidsListForDistrictLeader(builder);
+    builder
+      .leftJoinAndMapOne('b.station', 'b.station', 'st')
+      .leftJoin(StationWorkerEntity, 'sw', '"sw"."stationId" = st.id')
+      .leftJoin(ClientEntity, 'cl', 'cl.id = "st"."clientId"')
+      .leftJoin(DistrictEntity, 'd', 'd.id = "st"."districtId"')
+      .leftJoin(
+        DistrictLeaderEntity,
+        'dl',
+        '"dl"."leaderDistrictId" = "st"."districtId"',
+      )
+      .leftJoinAndMapOne(
+        'b.stationWorker',
+        UserEntity,
+        'swu',
+        'swu.id = "sw"."userId"',
+      )
+      .leftJoinAndMapOne(
+        'b.districtLeader',
+        UserEntity,
+        'dlu',
+        'dlu.id = "dl"."userId"',
+      );
+  }
+
+  private bindMasterFilters(
+    builder: SelectQueryBuilder<BidEntity>,
+    {
+      clientIds,
+      districtIds,
+      stationsWorkersIds,
+      districtsLeadersIds,
+      stationsIds,
+    }: Pick<
+      GetListBidsMasterQueryDTO,
+      | 'clientIds'
+      | 'districtIds'
+      | 'stationsWorkersIds'
+      | 'districtsLeadersIds'
+      | 'stationsIds'
+    >,
+  ): void {
+    if (clientIds) {
+      builder.andWhere('cl.id IN (:...ids)', {
+        ids: clientIds,
+      });
+    }
+
+    if (districtIds) {
+      builder.andWhere('d.id IN (:...ids)', {
+        ids: districtIds,
+      });
+    }
+
+    if (stationsWorkersIds) {
+      builder.andWhere('swu.id IN (:...ids)', {
+        ids: stationsWorkersIds,
+      });
+    }
+
+    if (districtsLeadersIds) {
+      builder.andWhere('dlu.id IN (:...ids)', {
+        ids: districtsLeadersIds,
+      });
+    }
+
+    if (stationsIds) {
+      builder.andWhere('st.id IN (:...ids)', {
+        ids: stationsIds,
+      });
+    }
   }
 
   private bindGeneralConditions(

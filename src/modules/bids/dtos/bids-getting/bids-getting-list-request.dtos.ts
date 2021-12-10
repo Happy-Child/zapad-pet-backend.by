@@ -108,6 +108,12 @@ export class GetListBidsMasterQueryDTO extends GetListBidsGeneralQueryDTO {
   @ArrayUnique()
   @Transform(({ value }) => (Array.isArray(value) ? value : [value]))
   @Type(() => Number)
+  stationsIds?: number[];
+
+  @IsOptional()
+  @ArrayUnique()
+  @Transform(({ value }) => (Array.isArray(value) ? value : [value]))
+  @Type(() => Number)
   clientIds?: number[];
 
   @IsOptional()
