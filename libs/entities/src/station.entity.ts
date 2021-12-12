@@ -12,9 +12,11 @@ import { BidEntity } from '@app/entities/bid.entity';
 import { ClientEntity } from '@app/entities/client.entity';
 import { Expose } from 'class-transformer';
 import { DistrictEntity } from '@app/entities/district.entity';
+import { ApiProperty } from '@nestjs/swagger';
 
 @Entity({ name: 'station' })
 export class StationEntity extends BaseEntity {
+  @ApiProperty()
   @Column({
     type: 'varchar',
     length: STATION_NUMBER_LENGTH,
@@ -25,6 +27,7 @@ export class StationEntity extends BaseEntity {
   @Check(`length(number) = ${STATION_NUMBER_LENGTH}`)
   number!: string;
 
+  @ApiProperty()
   @Expose()
   @Column({ nullable: false })
   clientId!: number;
@@ -34,8 +37,9 @@ export class StationEntity extends BaseEntity {
     name: 'clientId',
     referencedColumnName: 'id',
   })
-  client!: ClientEntity;
+  client?: ClientEntity;
 
+  @ApiProperty()
   @Expose()
   @Column({ nullable: false })
   districtId!: number;

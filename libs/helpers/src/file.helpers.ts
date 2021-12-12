@@ -18,5 +18,12 @@ export const saveFile = async (
   );
 };
 
+export const deleteFile = async (
+  pathRelativeByProject: string,
+  fileName: string,
+): Promise<void> => {
+  // TODO impl
+};
+
 export const getFileNameForSave = (rawFileName: string): string =>
   Date.now() + path.extname(rawFileName);

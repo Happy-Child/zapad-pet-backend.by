@@ -4,9 +4,11 @@ import { VARCHAR_DEFAULT_LENGTH } from '@app/constants';
 import { Expose } from 'class-transformer';
 import { EngineerEntity } from '@app/entities/engineers.entity';
 import { StationEntity } from '@app/entities/station.entity';
+import { ApiProperty } from '@nestjs/swagger';
 
 @Entity({ name: 'district' })
 export class DistrictEntity extends BaseEntity {
+  @ApiProperty()
   @Column({
     type: 'varchar',
     length: VARCHAR_DEFAULT_LENGTH,
@@ -16,6 +18,7 @@ export class DistrictEntity extends BaseEntity {
   @Expose()
   name!: string;
 
+  @ApiProperty()
   @Column({
     type: 'varchar',
     length: VARCHAR_DEFAULT_LENGTH,
@@ -25,6 +28,7 @@ export class DistrictEntity extends BaseEntity {
   @Expose()
   slug!: string;
 
+  @ApiProperty()
   @Column({ nullable: false })
   @Expose()
   regionSlug!: string;

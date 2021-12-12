@@ -10,7 +10,7 @@ import {
   HttpCode,
   HttpStatus,
 } from '@nestjs/common';
-import { ClientExtendedDTO } from '../dtos';
+import { ClientCreateBodyDTO, ClientExtendedDTO } from '../dtos';
 import {
   ClientsGettingService,
   ClientsCreateService,
@@ -21,10 +21,11 @@ import {
   ClientsGettingRequestQueryDTO,
   ClientsGettingResponseBodyDTO,
 } from '../dtos';
-import { ClientEntity } from '@app/entities';
 import { USER_ROLES } from '@app/constants';
 import { AuthRoles } from '@app/decorators/auth-roles.decorators';
+import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('clients')
 @Controller('clients')
 export class ClientsController {
   constructor(
@@ -33,14 +34,16 @@ export class ClientsController {
     private readonly clientsGettingService: ClientsGettingService,
   ) {}
 
+  @ApiOkResponse({ type: Boolean })
   @HttpCode(HttpStatus.OK)
   @AuthRoles(USER_ROLES.MASTER)
   @Post()
-  async create(@Body() body: ClientEntity): Promise<true> {
+  async create(@Body() body: ClientCreateBodyDTO): Promise<true> {
     await this.clientsCreateService.create(body);
     return true;
   }
 
+  @ApiOkResponse({ type: Boolean })
   @HttpCode(HttpStatus.CREATED)
   @AuthRoles(USER_ROLES.MASTER)
   @Put('/:id')
@@ -52,6 +55,7 @@ export class ClientsController {
     return true;
   }
 
+  @ApiOkResponse({ type: ClientExtendedDTO })
   @HttpCode(HttpStatus.OK)
   @AuthRoles(USER_ROLES.MASTER)
   @Get('/:id')
@@ -61,6 +65,7 @@ export class ClientsController {
     return this.clientsGettingService.getByIdOrFail(id);
   }
 
+  @ApiOkResponse({ type: ClientsGettingResponseBodyDTO })
   @HttpCode(HttpStatus.OK)
   @AuthRoles(USER_ROLES.MASTER)
   @Get()

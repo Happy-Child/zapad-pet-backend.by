@@ -15,26 +15,33 @@ import { ClassTransformOptions } from 'class-transformer/types/interfaces';
 import { valueToBool } from '@app/helpers';
 import { BidsCountByStatusesDTO } from '../../bids/dtos';
 import { ShortStationWorkerMemberDTO } from '../../stations-workers/dtos';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class StationDTO {
+  @ApiProperty()
   @Expose()
   id!: number;
 
+  @ApiProperty()
   @Expose()
-  number!: number;
+  number!: string;
 
+  @ApiProperty({ type: RegionEntity })
   @Expose()
   @Type(() => RegionEntity)
   region!: RegionEntity;
 
+  @ApiProperty({ type: DistrictEntity })
   @Expose()
   @Type(() => DistrictEntity)
   district!: DistrictEntity;
 
+  @ApiProperty({ type: ClientEntity })
   @Expose()
   @Type(() => ClientEntity)
   client!: ClientEntity;
 
+  @ApiProperty({ type: ShortStationWorkerMemberDTO, nullable: true })
   @Expose()
   @Type(() => ShortStationWorkerMemberDTO)
   stationWorker!: ShortStationWorkerMemberDTO | null;
@@ -54,35 +61,42 @@ export class StationDTO {
 }
 
 export class StationsGetListRequestQueryDTO extends PaginationRequestDTO {
+  @ApiPropertyOptional({ enum: STATIONS_LIST_SORT_BY })
   @IsOptional()
   @IsIn(STATIONS_LIST_SORT_BY)
   sortBy?: typeof STATIONS_LIST_SORT_BY[number];
 
+  @ApiPropertyOptional({ enum: SORT_DURATION })
   @IsOptional()
   @IsEnum(SORT_DURATION)
   sortDuration?: SORT_DURATION;
 
+  @ApiPropertyOptional({ type: Number, isArray: true })
   @IsOptional()
   @ArrayUnique()
   @Transform(({ value }) => (Array.isArray(value) ? value : [value]))
   @Type(() => Number)
   districtIds?: number[];
 
+  @ApiPropertyOptional({ type: Number, isArray: true })
   @IsOptional()
   @ArrayUnique()
   @Transform(({ value }) => (Array.isArray(value) ? value : [value]))
   @Type(() => Number)
   clientIds?: number[];
 
+  @ApiPropertyOptional()
   @IsOptional()
   @IsString()
   search?: string;
 
+  @ApiPropertyOptional()
   @IsOptional()
   @Transform(({ value }) => valueToBool(value))
   @IsBoolean()
   withBids?: boolean;
 
+  @ApiPropertyOptional()
   @IsOptional()
   @Transform(({ value }) => valueToBool(value))
   @IsBoolean()
@@ -90,6 +104,10 @@ export class StationsGetListRequestQueryDTO extends PaginationRequestDTO {
 }
 
 export class StationsGetListResponseBodyDTO extends PaginationResponseDTO<StationDTO> {
+  @ApiProperty({ type: StationDTO, isArray: true })
+  @Expose()
+  items!: StationDTO[];
+
   constructor(data: StationsGetListResponseBodyDTO) {
     super();
     Object.assign(this, data);
@@ -98,6 +116,7 @@ export class StationsGetListResponseBodyDTO extends PaginationResponseDTO<Statio
 }
 
 export class StationStatisticDTO {
+  @ApiProperty({ type: BidsCountByStatusesDTO })
   @Expose()
   @Type(() => BidsCountByStatusesDTO)
   bidsCountByStatuses!: BidsCountByStatusesDTO;
@@ -117,6 +136,7 @@ export class StationStatisticDTO {
 }
 
 export class StationWithStatisticsDTO extends StationDTO {
+  @ApiProperty({ type: StationStatisticDTO })
   @Expose()
   @Type(() => StationStatisticDTO)
   statistics!: StationStatisticDTO;

@@ -22,6 +22,7 @@ import { GENERAL_ERRORS, USER_ROLES } from '@app/constants';
 import { NonEmptyArray } from '@app/types';
 import { AddValidateIf } from '@app/decorators/add-validate-if.decorators';
 import { isNull } from '@app/helpers';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class UsersUpdateGeneralUserDTO {
   id!: number;
@@ -54,26 +55,32 @@ export class UsersUpdateEngineerDTO extends UsersUpdateGeneralUserDTO {
 }
 
 export class UsersUpdateItemDTO {
+  @ApiProperty()
   @IsInt()
   id!: number;
 
+  @ApiProperty()
   @IsString()
   @Length(USER_NAME_LENGTH.MIN, USER_NAME_LENGTH.MAX)
   name!: string;
 
+  @ApiProperty()
   @IsEmail()
   email!: string;
 
+  @ApiProperty({ enum: USERS_CREATE_ALLOWED_ROLES })
   @IsString()
   @IsIn(USERS_CREATE_ALLOWED_ROLES, { message: AUTH_ERRORS.INVALID_ROLE })
   role!: USER_ROLES;
 
+  @ApiPropertyOptional({ type: Number, nullable: true })
   @ValidateIf((data) => data.role === USER_ROLES.STATION_WORKER, {
     message: AUTH_ERRORS.CLIENT_ID_IS_REQUIRED,
   })
   @NullOrNumber()
   clientId?: number | null;
 
+  @ApiPropertyOptional({ type: Number, nullable: true })
   @ValidateIf((data) => data.role === USER_ROLES.STATION_WORKER, {
     message: AUTH_ERRORS.STATION_ID_IS_REQUIRED,
   })
@@ -85,12 +92,14 @@ export class UsersUpdateItemDTO {
   @NullOrNumber()
   stationId?: number | null;
 
+  @ApiPropertyOptional({ type: Number, nullable: true })
   @ValidateIf((data) => data.role === USER_ROLES.DISTRICT_LEADER, {
     message: AUTH_ERRORS.DISTRICT_ID_IS_REQUIRED,
   })
   @NullOrNumber()
   leaderDistrictId?: number | null;
 
+  @ApiPropertyOptional({ type: Number, nullable: true })
   @ValidateIf((data) => data.role === USER_ROLES.ENGINEER, {
     message: AUTH_ERRORS.DISTRICT_ID_IS_REQUIRED,
   })
@@ -99,6 +108,7 @@ export class UsersUpdateItemDTO {
 }
 
 export class UsersUpdateRequestBodyDTO {
+  @ApiProperty({ type: UsersUpdateItemDTO, isArray: true })
   @IsArray()
   @ArrayNotEmpty()
   @ArrayWithObjects()

@@ -14,7 +14,7 @@ import {
   DistrictWithStatisticsDTO,
 } from '../../../src/modules/districts/dtos/districts-getting.dtos';
 import { plainToClass } from 'class-transformer';
-import { BidsCountByStatusesDTO } from '../../../src/modules/bids/dtos/bids-general.dtos';
+import { BidsCountByStatusesDTO } from '../../../src/modules/bids/dtos';
 import { BID_STATUS } from '../../../src/modules/bids/constants';
 import { ShortEngineerMemberDTO } from '../../../src/modules/engineers/dtos';
 
@@ -236,10 +236,12 @@ describe('DistrictsModule (e2e)', () => {
         const validResponse: ShortEngineerMemberDTO[] = [
           {
             id: expect.any(Number),
+            email: expect.any(String),
             name: 'engineer_1',
           },
           {
             id: expect.any(Number),
+            email: expect.any(String),
             name: 'engineer_2',
           },
         ];

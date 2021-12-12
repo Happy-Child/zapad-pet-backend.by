@@ -1,31 +1,30 @@
 import { PaginationRequestDTO, PaginationResponseDTO } from '@app/dtos';
 import { ClientEntity } from '@app/entities';
 import { IsEnum, IsIn, IsOptional, IsString } from 'class-validator';
-import { ENTITIES_FIELDS, SORT_DURATION } from '@app/constants';
+import { SORT_DURATION } from '@app/constants';
 import { Expose, plainToClass } from 'class-transformer';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { CLIENTS_SORT_BY } from '../constants';
 
 export class ClientsGettingRequestQueryDTO extends PaginationRequestDTO {
+  @ApiPropertyOptional({ enum: CLIENTS_SORT_BY })
   @IsOptional()
-  @IsIn([
-    ENTITIES_FIELDS.NAME,
-    ENTITIES_FIELDS.CREATED_AT,
-    ENTITIES_FIELDS.STATIONS_COUNT,
-  ])
-  sortBy?:
-    | ENTITIES_FIELDS.NAME
-    | ENTITIES_FIELDS.CREATED_AT
-    | ENTITIES_FIELDS.STATIONS_COUNT;
+  @IsIn(CLIENTS_SORT_BY)
+  sortBy?: typeof CLIENTS_SORT_BY[number];
 
+  @ApiPropertyOptional({ enum: SORT_DURATION })
   @IsOptional()
   @IsEnum(SORT_DURATION)
   sortDuration?: SORT_DURATION;
 
+  @ApiPropertyOptional()
   @IsOptional()
   @IsString()
   searchByName?: string;
 }
 
 export class ClientExtendedDTO extends ClientEntity {
+  @ApiProperty()
   @Expose()
   stationsCount!: number;
 
@@ -39,6 +38,10 @@ export class ClientExtendedDTO extends ClientEntity {
 }
 
 export class ClientsGettingResponseBodyDTO extends PaginationResponseDTO<ClientExtendedDTO> {
+  @ApiProperty({ type: ClientExtendedDTO, isArray: true })
+  @Expose()
+  items!: ClientExtendedDTO[];
+
   constructor(data: ClientsGettingResponseBodyDTO) {
     super();
     Object.assign(this, data);

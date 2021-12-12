@@ -3,24 +3,30 @@ import { DistrictEntity } from '@app/entities';
 import { ShortDistrictLeaderMemberDTO } from '../../districts-leaders/dtos';
 import { ClassTransformOptions } from 'class-transformer/types/interfaces';
 import { BidsCountByStatusesDTO } from '../../bids/dtos';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class DistrictDTO extends DistrictEntity {
+  @ApiProperty({ type: ShortDistrictLeaderMemberDTO, nullable: true })
   @Expose()
   @Type(() => ShortDistrictLeaderMemberDTO)
   districtLeader!: ShortDistrictLeaderMemberDTO | null;
 
+  @ApiProperty()
   @Expose()
   countOfEngineers!: number;
 
+  @ApiProperty()
   @Expose()
   countOfStations!: number;
 }
 
 export class DistrictsGetAllResponseBodyDTO {
+  @ApiProperty({ type: DistrictDTO, isArray: true })
   @Expose()
   @Type(() => DistrictDTO)
   items!: DistrictDTO[];
 
+  @ApiProperty()
   @Expose()
   totalItemsCount!: number;
 
@@ -39,6 +45,7 @@ export class DistrictsGetAllResponseBodyDTO {
 }
 
 export class DistrictStatisticDTO {
+  @ApiProperty({ type: BidsCountByStatusesDTO })
   @Expose()
   @Type(() => BidsCountByStatusesDTO)
   bidsCountByStatuses!: BidsCountByStatusesDTO;
@@ -58,6 +65,7 @@ export class DistrictStatisticDTO {
 }
 
 export class DistrictWithStatisticsDTO extends DistrictDTO {
+  @ApiProperty({ type: DistrictStatisticDTO })
   @Expose()
   @Type(() => DistrictStatisticDTO)
   statistics!: DistrictStatisticDTO;

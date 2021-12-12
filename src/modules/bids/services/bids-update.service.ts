@@ -10,6 +10,7 @@ import { BIDS_ERRORS } from '@app/constants';
 import { BidsGeneralService } from './bids-general.service';
 import { getBidTodosToFirstSave } from '../helpers/bids-todos.helpers';
 import { StationWorkerMemberJWTPayloadDTO } from '../../auth/dtos';
+import { EntityFinderGeneralService } from '../../entity-finder/services';
 
 @Injectable()
 export class BidsUpdateService {
@@ -17,6 +18,7 @@ export class BidsUpdateService {
     private readonly connection: Connection,
     private readonly bidsRepository: BidsRepository,
     private readonly bidsGeneralService: BidsGeneralService,
+    private readonly entityFinderGeneralService: EntityFinderGeneralService,
   ) {}
 
   async executeOrFail(
@@ -25,8 +27,25 @@ export class BidsUpdateService {
     body: BidsUpdateBodyDTO,
   ): Promise<void> {
     const bid = await this.bidsGeneralService.getBidByRoleOrFail(bidId, worker);
+    await this.checkBidBeforeUpdate(bid, body);
 
-    if (bid.status !== BID_STATUS.EDITING) {
+    await this.connection.transaction(async (manager) => {
+      const bidsRepository = manager.getCustomRepository(BidsRepository);
+      await this.updateBid(bid, body, bidsRepository);
+
+      if (!isUndefined(body.todos)) {
+        const bidsTodosRepository =
+          manager.getCustomRepository(BidsTodosRepository);
+        await this.updateBidTodos(bidId, body.todos, bidsTodosRepository);
+      }
+    });
+  }
+
+  private async checkBidBeforeUpdate(
+    { status }: BidEntity,
+    body: BidsUpdateBodyDTO,
+  ): Promise<void> {
+    if (status !== BID_STATUS.EDITING) {
       throw new ExceptionsForbidden([
         {
           field: '',
@@ -35,21 +54,16 @@ export class BidsUpdateService {
       ]);
     }
 
-    await this.connection.transaction(async (manager) => {
-      const bidsRepository = manager.getCustomRepository(BidsRepository);
-      await this.updateBid(bid, body, bidsRepository);
-
-      if (isUndefined(body.todos)) return;
-
-      const bidsTodosRepository =
-        manager.getCustomRepository(BidsTodosRepository);
-      await this.updateBidTodos(bidId, body.todos, bidsTodosRepository);
-    });
+    if (body.imageFileId) {
+      await this.entityFinderGeneralService.getFileStorageOrFail(
+        body.imageFileId,
+      );
+    }
   }
 
   private async updateBid(
     curBid: BidEntity,
-    { priority, deadlineAt, description }: BidsUpdateBodyDTO,
+    { priority, deadlineAt, description, imageFileId }: BidsUpdateBodyDTO,
     repository: BidsRepository,
   ): Promise<void> {
     const bid = Object.assign({}, curBid);
@@ -58,6 +72,9 @@ export class BidsUpdateService {
     if (priority) bid.priority = priority;
     if (deadlineAt) bid.deadlineAt = deadlineAt;
     if (description) bid.description = description;
+    if (!isUndefined(imageFileId) && curBid.imageFileId !== imageFileId) {
+      bid.imageFileId = imageFileId;
+    }
 
     await repository.saveEntity(bid);
   }

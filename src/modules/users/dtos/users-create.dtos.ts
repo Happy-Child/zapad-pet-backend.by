@@ -24,6 +24,7 @@ import {
 } from '@app/decorators';
 import { NonEmptyArray } from '@app/types';
 import { USER_ROLES } from '@app/constants';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class UsersCreateGeneralUserDTO {
   name!: string;
@@ -78,41 +79,49 @@ export class UsersCreateFullEngineerDTO extends UsersCreateGeneralUserDTO {
 }
 
 export class UsersCreateItemDTO {
+  @ApiProperty()
   @IsString()
   @Length(USER_NAME_LENGTH.MIN, USER_NAME_LENGTH.MAX)
   name!: string;
 
+  @ApiProperty()
   @IsEmail()
   email!: string;
 
+  @ApiProperty({ enum: USERS_CREATE_ALLOWED_ROLES })
   @IsString()
   @IsIn(USERS_CREATE_ALLOWED_ROLES, { message: AUTH_ERRORS.INVALID_ROLE })
   role!: USER_ROLES;
 
+  @ApiPropertyOptional({ type: Number, nullable: true })
   @ValidateIf((data) => data.role === USER_ROLES.STATION_WORKER, {
     message: AUTH_ERRORS.CLIENT_ID_IS_REQUIRED,
   })
   @NullOrNumber()
   clientId?: number | null;
 
+  @ApiPropertyOptional({ type: Number, nullable: true })
   @ValidateIf((data) => data.role === USER_ROLES.STATION_WORKER, {
     message: AUTH_ERRORS.STATION_ID_IS_REQUIRED,
   })
   @NullOrNumber()
   stationId?: number | null;
 
+  @ApiPropertyOptional({ type: Number, nullable: true })
   @ValidateIf((data) => data.role === USER_ROLES.DISTRICT_LEADER, {
     message: AUTH_ERRORS.DISTRICT_ID_IS_REQUIRED,
   })
   @NullOrNumber()
   leaderDistrictId?: number | null;
 
+  @ApiPropertyOptional({ type: Number, nullable: true })
   @ValidateIf((data) => data.role === USER_ROLES.ENGINEER, {
     message: AUTH_ERRORS.DISTRICT_ID_IS_REQUIRED,
   })
   @NullOrNumber()
   engineerDistrictId?: number | null;
 
+  @ApiProperty()
   @IsString()
   @Length(PASSWORD_LENGTH.MIN, PASSWORD_LENGTH.MAX)
   @Matches(PASSWORD_REGEX)
@@ -120,6 +129,7 @@ export class UsersCreateItemDTO {
 }
 
 export class UsersCreateRequestBodyDTO {
+  @ApiProperty({ type: UsersCreateItemDTO, isArray: true })
   @IsArray()
   @ArrayNotEmpty()
   @ArrayWithObjects()

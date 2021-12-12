@@ -13,6 +13,7 @@ export enum ENTITIES_FIELDS {
   UPDATED_AT = 'updatedAt',
   TOKEN = 'token',
   USERS = 'users',
+  IMAGE_FILE_ID = 'imageFileId',
   STATUS = 'status',
   PRIORITY = 'priority',
   DEADLINE = 'deadline',

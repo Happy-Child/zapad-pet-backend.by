@@ -1,19 +1,24 @@
-import { PaginationResponseDTO, ShortUserWithEmailDTO } from '@app/dtos';
+import { PaginationResponseDTO, ShortUserDTO } from '@app/dtos';
 import { BID_PRIORITY, BID_STATUS } from '../../constants';
 import { Expose, plainToClass, Type } from 'class-transformer';
 import { StationEntity } from '@app/entities';
 import { ClassTransformOptions } from 'class-transformer/types/interfaces';
+import { ApiProperty } from '@nestjs/swagger';
 
-class GetListBidsGeneralItemDTO {
+export class GetListBidsGeneralItemDTO {
+  @ApiProperty({ type: Number })
   @Expose()
   id!: number;
 
+  @ApiProperty({ enum: BID_STATUS })
   @Expose()
   status!: BID_STATUS;
 
+  @ApiProperty({ enum: BID_PRIORITY })
   @Expose()
   priority!: BID_PRIORITY;
 
+  @ApiProperty({ type: String })
   @Expose()
   deadlineAt!: string;
 
@@ -41,18 +46,22 @@ export class GetListBidsEngineerItemDTO extends GetListBidsGeneralItemDTO {
 }
 
 export class GetListBidsDistrictLeaderItemDTO extends GetListBidsGeneralItemDTO {
+  @ApiProperty({ type: String })
   @Expose()
   createdAt!: string;
 
+  @ApiProperty({ type: String, nullable: true })
   @Expose()
-  startWorkAt!: string;
+  startWorkAt!: string | null;
 
+  @ApiProperty({ type: String, nullable: true })
   @Expose()
-  endWorkAt!: string;
+  endWorkAt!: string | null;
 
-  @Type(() => ShortUserWithEmailDTO)
+  @ApiProperty({ type: ShortUserDTO, nullable: true })
+  @Type(() => ShortUserDTO)
   @Expose()
-  engineer!: ShortUserWithEmailDTO | null;
+  engineer!: ShortUserDTO | null;
 
   constructor(
     data: GetListBidsDistrictLeaderItemDTO,
@@ -63,9 +72,11 @@ export class GetListBidsDistrictLeaderItemDTO extends GetListBidsGeneralItemDTO 
 }
 
 export class GetListBidsStationWorkerItemDTO extends GetListBidsGeneralItemDTO {
+  @ApiProperty({ type: String, nullable: true })
   @Expose()
   confirmSuccessAt!: string | null;
 
+  @ApiProperty({ type: String, nullable: true })
   @Expose()
   createdAt!: string;
 
@@ -78,20 +89,24 @@ export class GetListBidsStationWorkerItemDTO extends GetListBidsGeneralItemDTO {
 }
 
 export class GetListBidsMasterItemDTO extends GetListBidsDistrictLeaderItemDTO {
+  @ApiProperty({ type: String, nullable: true })
   @Expose()
   confirmSuccessAt!: string | null;
 
+  @ApiProperty({ type: StationEntity })
   @Type(() => StationEntity)
   @Expose()
   station!: StationEntity;
 
-  @Type(() => ShortUserWithEmailDTO)
+  @ApiProperty({ type: ShortUserDTO })
+  @Type(() => ShortUserDTO)
   @Expose()
-  stationWorker!: ShortUserWithEmailDTO;
+  stationWorker!: ShortUserDTO;
 
-  @Type(() => ShortUserWithEmailDTO)
+  @ApiProperty({ type: ShortUserDTO, nullable: true })
+  @Type(() => ShortUserDTO)
   @Expose()
-  districtLeader!: ShortUserWithEmailDTO;
+  districtLeader!: ShortUserDTO | null;
 
   constructor(
     data: GetListBidsMasterItemDTO,
@@ -102,6 +117,13 @@ export class GetListBidsMasterItemDTO extends GetListBidsDistrictLeaderItemDTO {
 }
 
 export class GetListBidsEngineerResponseDTO extends PaginationResponseDTO<GetListBidsEngineerItemDTO> {
+  @ApiProperty({
+    type: GetListBidsEngineerItemDTO,
+    isArray: true,
+  })
+  @Expose()
+  items!: GetListBidsEngineerItemDTO[];
+
   constructor(data: GetListBidsEngineerResponseDTO) {
     super();
     Object.assign(this, data);
@@ -110,6 +132,13 @@ export class GetListBidsEngineerResponseDTO extends PaginationResponseDTO<GetLis
 }
 
 export class GetListBidsDistrictLeaderResponseDTO extends PaginationResponseDTO<GetListBidsDistrictLeaderItemDTO> {
+  @ApiProperty({
+    type: GetListBidsDistrictLeaderItemDTO,
+    isArray: true,
+  })
+  @Expose()
+  items!: GetListBidsDistrictLeaderItemDTO[];
+
   constructor(data: GetListBidsDistrictLeaderResponseDTO) {
     super();
     Object.assign(this, data);
@@ -120,6 +149,13 @@ export class GetListBidsDistrictLeaderResponseDTO extends PaginationResponseDTO<
 }
 
 export class GetListBidsStationWorkerResponseDTO extends PaginationResponseDTO<GetListBidsStationWorkerItemDTO> {
+  @ApiProperty({
+    type: GetListBidsStationWorkerItemDTO,
+    isArray: true,
+  })
+  @Expose()
+  items!: GetListBidsStationWorkerItemDTO[];
+
   constructor(data: GetListBidsStationWorkerResponseDTO) {
     super();
     Object.assign(this, data);
@@ -130,6 +166,13 @@ export class GetListBidsStationWorkerResponseDTO extends PaginationResponseDTO<G
 }
 
 export class GetListBidsMasterResponseDTO extends PaginationResponseDTO<GetListBidsMasterItemDTO> {
+  @ApiProperty({
+    type: GetListBidsMasterItemDTO,
+    isArray: true,
+  })
+  @Expose()
+  items!: GetListBidsMasterItemDTO[];
+
   constructor(data: GetListBidsMasterResponseDTO) {
     super();
     Object.assign(this, data);

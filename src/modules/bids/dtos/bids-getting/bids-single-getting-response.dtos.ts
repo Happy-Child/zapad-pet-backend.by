@@ -1,6 +1,6 @@
 import { BidDTO, BidTodoDTO } from '../bids-general.dtos';
 import { Expose, plainToClass, Transform, Type } from 'class-transformer';
-import { ShortUserWithEmailDTO, StorageFileDTO } from '@app/dtos';
+import { ShortUserDTO, StorageFileDTO } from '@app/dtos';
 import { NonEmptyArray } from '@app/types';
 import {
   DropboxStorageEntity,
@@ -9,8 +9,10 @@ import {
 } from '@app/entities';
 import { ClassTransformOptions } from 'class-transformer/types/interfaces';
 import { getStorageFile } from '@app/file-storage/helpers/file-storage-general.helpers';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class GetBidSingleEngineerResponseDTO extends BidDTO {
+  @ApiProperty({ type: StorageFileDTO, nullable: true })
   @Transform(({ value, obj }) =>
     !value
       ? getStorageFile(obj?.finalPhotoLocal, obj?.finalPhotoDropbox)
@@ -24,6 +26,7 @@ export class GetBidSingleEngineerResponseDTO extends BidDTO {
 
   finalPhotoDropbox!: DropboxStorageEntity | null;
 
+  @ApiProperty({ type: BidTodoDTO, isArray: true })
   @Type(() => BidTodoDTO)
   @Expose()
   todos!: NonEmptyArray<BidTodoDTO>;
@@ -45,20 +48,25 @@ export class GetBidSingleEngineerResponseDTO extends BidDTO {
 }
 
 export class GetBidSingleDistrictLeaderResponseDTO extends GetBidSingleEngineerResponseDTO {
-  @Type(() => ShortUserWithEmailDTO)
+  @ApiProperty({ type: ShortUserDTO, nullable: true })
+  @Type(() => ShortUserDTO)
   @Expose()
-  rejectedUser!: ShortUserWithEmailDTO | null;
+  rejectedUser!: ShortUserDTO | null;
 
-  @Type(() => ShortUserWithEmailDTO)
+  @ApiProperty({ type: ShortUserDTO, nullable: true })
+  @Type(() => ShortUserDTO)
   @Expose()
-  engineer!: ShortUserWithEmailDTO | null;
+  engineer!: ShortUserDTO | null;
 
+  @ApiProperty()
   @Expose()
   createdAt!: string;
 
+  @ApiProperty({ type: String, nullable: true })
   @Expose()
   startWorkAt!: string | null;
 
+  @ApiProperty({ type: String, nullable: true })
   @Expose()
   endWorkAt!: string | null;
 
@@ -79,17 +87,21 @@ export class GetBidSingleDistrictLeaderResponseDTO extends GetBidSingleEngineerR
 }
 
 export class GetBidStationWorkerResponseDTO extends BidDTO {
-  @Type(() => ShortUserWithEmailDTO)
+  @ApiProperty({ type: ShortUserDTO, nullable: true })
+  @Type(() => ShortUserDTO)
   @Expose()
-  rejectedUser!: ShortUserWithEmailDTO | null;
+  rejectedUser!: ShortUserDTO | null;
 
-  @Type(() => ShortUserWithEmailDTO)
+  @ApiProperty({ type: ShortUserDTO, nullable: true })
+  @Type(() => ShortUserDTO)
   @Expose()
-  confirmedStationWorker!: ShortUserWithEmailDTO | null;
+  confirmedStationWorker!: ShortUserDTO | null;
 
+  @ApiProperty({ type: String, nullable: true })
   @Expose()
   confirmSuccessAt!: string | null;
 
+  @ApiProperty()
   @Expose()
   createdAt!: string;
 
@@ -110,22 +122,27 @@ export class GetBidStationWorkerResponseDTO extends BidDTO {
 }
 
 export class GetBidSingleMasterResponseDTO extends GetBidSingleDistrictLeaderResponseDTO {
+  @ApiProperty({ type: StationEntity })
   @Type(() => StationEntity)
   @Expose()
   station!: StationEntity;
 
-  @Type(() => ShortUserWithEmailDTO)
+  @ApiProperty({ type: ShortUserDTO })
+  @Type(() => ShortUserDTO)
   @Expose()
-  stationWorker!: ShortUserWithEmailDTO;
+  stationWorker!: ShortUserDTO;
 
-  @Type(() => ShortUserWithEmailDTO)
+  @ApiProperty({ type: ShortUserDTO, nullable: true })
+  @Type(() => ShortUserDTO)
   @Expose()
-  districtLeader!: ShortUserWithEmailDTO;
+  districtLeader!: ShortUserDTO | null;
 
-  @Type(() => ShortUserWithEmailDTO)
+  @ApiProperty({ type: ShortUserDTO, nullable: true })
+  @Type(() => ShortUserDTO)
   @Expose()
-  confirmedStationWorker!: ShortUserWithEmailDTO | null;
+  confirmedStationWorker!: ShortUserDTO | null;
 
+  @ApiProperty({ type: String, nullable: true })
   @Expose()
   confirmSuccessAt!: string | null;
 

@@ -15,23 +15,29 @@ import {
 } from '@app/decorators';
 import { STATION_NUMBER_LENGTH } from '../constants';
 import { STATIONS_ERRORS } from '@app/constants';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class StationsCreateItemDTO {
+  @ApiProperty()
   @IsString()
   @Length(STATION_NUMBER_LENGTH, STATION_NUMBER_LENGTH)
   number!: string;
 
+  @ApiProperty()
   @IsInt()
   clientId!: number;
 
+  @ApiProperty()
   @IsInt()
   districtId!: number;
 
+  @ApiProperty({ type: Number, nullable: true })
   @NullOrNumber()
   stationWorkerId!: number | null;
 }
 
 export class StationsCreateRequestBodyDTO {
+  @ApiProperty({ type: StationsCreateItemDTO, isArray: true })
   @IsArray()
   @ArrayNotEmpty()
   @ArrayWithObjects()

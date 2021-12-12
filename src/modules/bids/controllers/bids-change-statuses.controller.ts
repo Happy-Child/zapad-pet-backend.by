@@ -29,7 +29,9 @@ import {
 } from '../services';
 import { TJwtPayloadDTO } from '../../auth/types';
 import { BidsSetReviewStatusRequestParamsDTO } from '../dtos';
+import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('bids')
 @Controller('bids/:bidId')
 export class BidsChangeStatusesController {
   constructor(
@@ -39,6 +41,7 @@ export class BidsChangeStatusesController {
     private readonly bidsSetReviewStatusService: BidsSetReviewStatusService,
   ) {}
 
+  @ApiOkResponse({ type: Boolean })
   @HttpCode(HttpStatus.OK)
   @AuthRoles(USER_ROLES.ENGINEER)
   @Post('/start-work')
@@ -50,6 +53,7 @@ export class BidsChangeStatusesController {
     return true;
   }
 
+  @ApiOkResponse({ type: Boolean })
   @HttpCode(HttpStatus.OK)
   @AuthRoles(USER_ROLES.ENGINEER)
   @Post('/end-work')
@@ -62,6 +66,7 @@ export class BidsChangeStatusesController {
     return true;
   }
 
+  @ApiOkResponse({ type: Boolean })
   @HttpCode(HttpStatus.OK)
   @AuthRoles(USER_ROLES.DISTRICT_LEADER, USER_ROLES.STATION_WORKER)
   @Post(`/review/accepted`)
@@ -79,6 +84,7 @@ export class BidsChangeStatusesController {
     return this.bidsSetReviewStatusService.setAcceptedStatusOrFail(bidId, user);
   }
 
+  @ApiOkResponse({ type: Boolean })
   @HttpCode(HttpStatus.OK)
   @AuthRoles(USER_ROLES.DISTRICT_LEADER, USER_ROLES.STATION_WORKER)
   @Post(`/review/rejected`)
@@ -93,7 +99,7 @@ export class BidsChangeStatusesController {
     },
     @Param() { bidId }: BidsSetReviewStatusRequestParamsDTO,
     @Body() { text }: BidsSetRejectedReviewStatusRequestBodyDTO,
-  ): Promise<any> {
+  ): Promise<true> {
     return this.bidsSetReviewStatusService.setRejectedStatusOrFail(
       bidId,
       user,
@@ -118,6 +124,7 @@ export class BidsChangeStatusesController {
     return true;
   }
 
+  @ApiOkResponse({ type: Boolean })
   @HttpCode(HttpStatus.OK)
   @AuthRoles(
     USER_ROLES.MASTER,

@@ -5,6 +5,7 @@ import {
   IsDateString,
   IsEnum,
   IsInt,
+  IsNumber,
   IsOptional,
   IsString,
   Length,
@@ -28,26 +29,32 @@ import {
 import moment from 'moment';
 import { BIDS_ERRORS, MAX_INTEGER } from '@app/constants';
 import { NullOrString } from '@app/decorators/null-or-string.decorators';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class BidsUpdateTodoDTO {
+  @ApiProperty()
   @IsString()
   @Length(1, BID_TODO_MAX_LENGTH)
   text!: string;
 }
 
 export class BidsUpdateBodyDTO {
+  @ApiPropertyOptional({ type: Number, nullable: true })
   @IsOptional()
   @NullOrNumber()
   imageFileId?: number | null;
 
+  @ApiPropertyOptional({ enum: BID_PRIORITY, nullable: true })
   @IsOptional()
   @IsEnum(BID_PRIORITY)
   priority?: BID_PRIORITY;
 
+  @ApiPropertyOptional({ type: String, nullable: true })
   @IsOptional()
   @NullOrString()
   description?: string | null;
 
+  @ApiPropertyOptional()
   @IsOptional()
   @IsDateString()
   @MinDateWithFormatter(GET_BID_MIN_DATE_START_OF_DEADLINE, (unknownDate) =>
@@ -55,6 +62,7 @@ export class BidsUpdateBodyDTO {
   )
   deadlineAt?: string;
 
+  @ApiPropertyOptional({ type: BidsUpdateTodoDTO, isArray: true })
   @IsOptional()
   @IsArray()
   @ArrayNotEmpty()
@@ -69,12 +77,14 @@ export class BidsUpdateBodyDTO {
 }
 
 export class BidsChangeEditableStatusParamsDTO {
+  @ApiProperty({ type: Number, maximum: MAX_INTEGER, minimum: 1 })
   @IsInt()
   @Min(1)
   @Max(MAX_INTEGER)
   @Type(() => Number)
   bidId!: number;
 
+  @ApiProperty({ enum: BID_EDITABLE_STATUS })
   @IsBoolean()
   @Transform(
     ({ value }) =>
@@ -84,6 +94,7 @@ export class BidsChangeEditableStatusParamsDTO {
 }
 
 export class BidsEndWorkRequestBodyDTO {
-  @NullOrNumber()
+  @ApiProperty()
+  @IsNumber()
   imageFileId!: number;
 }

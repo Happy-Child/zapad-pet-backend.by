@@ -8,14 +8,16 @@ import {
 } from '@nestjs/common';
 import { AuthRoles } from '@app/decorators/auth-roles.decorators';
 import { USER_ROLES } from '@app/constants';
-import { DistrictStatisticDTO } from '../../districts/dtos/districts-getting.dtos';
 import { RegionsGettingService } from '../services';
-import { RegionsGetAllResponseBodyDTO } from '../dtos';
+import { RegionsGetAllResponseBodyDTO, RegionStatisticDTO } from '../dtos';
+import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('regions')
 @Controller('regions')
 export class RegionsController {
   constructor(private readonly regionsGettingService: RegionsGettingService) {}
 
+  @ApiOkResponse({ type: RegionsGetAllResponseBodyDTO })
   @HttpCode(HttpStatus.OK)
   @AuthRoles(USER_ROLES.MASTER)
   @Get('/all')
@@ -23,12 +25,13 @@ export class RegionsController {
     return this.regionsGettingService.getAll();
   }
 
+  @ApiOkResponse({ type: RegionStatisticDTO })
   @HttpCode(HttpStatus.OK)
   @AuthRoles(USER_ROLES.MASTER)
   @Get('/:id/statistics')
   async getStatisticsById(
     @Param('id', ParseIntPipe) id: number,
-  ): Promise<DistrictStatisticDTO> {
+  ): Promise<RegionStatisticDTO> {
     return this.regionsGettingService.getStatisticsById(id);
   }
 }

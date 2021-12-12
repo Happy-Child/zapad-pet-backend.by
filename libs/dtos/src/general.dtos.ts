@@ -1,22 +1,19 @@
-import { IsInt, Max, Min } from 'class-validator';
-import { Expose, plainToClass, Type } from 'class-transformer';
-import { MAX_INTEGER } from '@app/constants';
+import { Expose, plainToClass } from 'class-transformer';
 import { ClassTransformOptions } from 'class-transformer/types/interfaces';
-
-export class IdParamDTO {
-  @IsInt()
-  @Min(1)
-  @Max(MAX_INTEGER)
-  @Type(() => Number)
-  id!: number;
-}
+import { ApiProperty } from '@nestjs/swagger';
 
 export class ShortUserDTO {
+  @ApiProperty()
   @Expose()
   id!: number;
 
+  @ApiProperty()
   @Expose()
   name!: string;
+
+  @ApiProperty()
+  @Expose()
+  email!: string;
 
   constructor(
     data: Partial<ShortUserDTO>,
@@ -32,22 +29,12 @@ export class ShortUserDTO {
   }
 }
 
-export class ShortUserWithEmailDTO extends ShortUserDTO {
-  @Expose()
-  email!: string;
-
-  constructor(
-    data: Partial<ShortUserWithEmailDTO>,
-    serializeOptions?: ClassTransformOptions,
-  ) {
-    super(data, serializeOptions);
-  }
-}
-
 export class StorageFileDTO {
+  @ApiProperty({ type: Number })
   @Expose()
   id!: number;
 
+  @ApiProperty({ type: String })
   @Expose()
   url!: string;
 }

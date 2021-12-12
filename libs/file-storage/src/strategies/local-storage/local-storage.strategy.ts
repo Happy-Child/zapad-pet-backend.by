@@ -38,8 +38,7 @@ export class LocalStorageStrategy implements IFileStorageStrategy {
     });
   }
 
-  public async deleteFile(storageFileId: number): Promise<true> {
+  public async deleteFile(storageFileId: number): Promise<any> {
     // TODO impl
-    return true;
   }
 }

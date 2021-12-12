@@ -1,6 +1,7 @@
 import { Expose, Type } from 'class-transformer';
 import { ArrayNotEmpty, ArrayUnique } from 'class-validator';
 import { NonEmptyArray } from '@app/types';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class DistrictChangeLeaderRequestBodyDTO {
   @Type(() => Number)
@@ -9,6 +10,7 @@ export class DistrictChangeLeaderRequestBodyDTO {
 }
 
 class DistrictEngineersRequestDTO {
+  @ApiProperty({ type: Number, isArray: true })
   @ArrayNotEmpty()
   @ArrayUnique()
   @Type(() => Number)

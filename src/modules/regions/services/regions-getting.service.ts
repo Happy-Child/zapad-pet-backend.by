@@ -1,8 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { StationStatisticDTO } from '../../stations/dtos/stations-getting.dtos';
 import { RegionsGeneralService } from './regions-general.service';
 import { RegionsRepository } from '../repositories';
-import { RegionsGetAllResponseBodyDTO } from '../dtos';
+import { RegionsGetAllResponseBodyDTO, RegionStatisticDTO } from '../dtos';
 
 @Injectable()
 export class RegionsGettingService {
@@ -15,7 +14,7 @@ export class RegionsGettingService {
     return this.regionsRepository.getAll();
   }
 
-  public async getStatisticsById(id: number): Promise<StationStatisticDTO> {
+  public async getStatisticsById(id: number): Promise<RegionStatisticDTO> {
     await this.regionsGeneralService.getRegionOrFail(id);
     return this.regionsRepository.getRegionStatisticById(id);
   }

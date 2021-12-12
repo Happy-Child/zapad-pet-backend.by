@@ -1,0 +1,7 @@
+import { ENTITIES_FIELDS } from '@app/constants';
+
+export const CLIENTS_SORT_BY = [
+  ENTITIES_FIELDS.NAME,
+  ENTITIES_FIELDS.CREATED_AT,
+  ENTITIES_FIELDS.STATIONS_COUNT,
+];

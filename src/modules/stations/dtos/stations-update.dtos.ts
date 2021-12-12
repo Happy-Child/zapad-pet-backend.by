@@ -1,41 +1,20 @@
 import { Type } from 'class-transformer';
-import {
-  ArrayNotEmpty,
-  IsArray,
-  IsInt,
-  IsString,
-  Length,
-  ValidateNested,
-} from 'class-validator';
+import { ArrayNotEmpty, IsArray, IsInt, ValidateNested } from 'class-validator';
 import { NonEmptyArray } from '@app/types';
-import {
-  ArrayWithObjects,
-  NullOrNumber,
-  UniqueArrayByExistField,
-} from '@app/decorators';
+import { ArrayWithObjects, UniqueArrayByExistField } from '@app/decorators';
 import { GENERAL_ERRORS } from '@app/constants';
 import { STATIONS_ERRORS } from '@app/constants/errors/stations-errors.constants';
-import { STATION_NUMBER_LENGTH } from '../constants';
+import { ApiProperty } from '@nestjs/swagger';
+import { StationsCreateItemDTO } from './stations-create.dtos';
 
-export class StationsUpdateItemDTO {
+export class StationsUpdateItemDTO extends StationsCreateItemDTO {
+  @ApiProperty()
   @IsInt()
   id!: number;
-
-  @IsString()
-  @Length(STATION_NUMBER_LENGTH, STATION_NUMBER_LENGTH)
-  number!: string;
-
-  @IsInt()
-  clientId!: number;
-
-  @IsInt()
-  districtId!: number;
-
-  @NullOrNumber()
-  stationWorkerId!: number | null;
 }
 
 export class StationsUpdateRequestBodyDTO {
+  @ApiProperty({ type: StationsUpdateItemDTO, isArray: true })
   @IsArray()
   @ArrayNotEmpty()
   @ArrayWithObjects()

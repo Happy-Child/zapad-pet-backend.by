@@ -4,6 +4,9 @@
     "API": {
       "PORT": 3001,
       "PREFIX": "api"
+    },
+    "OPEN_API": {
+      "PREFIX": "api"
     }
   },
   "POSTGRES": {

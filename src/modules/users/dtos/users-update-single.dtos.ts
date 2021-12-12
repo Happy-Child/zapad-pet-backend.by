@@ -12,15 +12,19 @@ import {
 } from '../../auth/constants';
 import { GENERAL_ERRORS } from '@app/constants';
 import { isUndefined } from '@app/helpers';
+import { ApiPropertyOptional } from '@nestjs/swagger';
 
 export class UsersUpdateSingleRequestBodyDTO {
+  @ApiPropertyOptional()
   @IsString()
   @Length(USER_NAME_LENGTH.MIN, USER_NAME_LENGTH.MAX)
   name?: string;
 
+  @ApiPropertyOptional()
   @IsEmail()
   email?: string;
 
+  @ApiPropertyOptional()
   @ValidateIf((data) => !isUndefined(data.curPassword), {
     message: GENERAL_ERRORS.REQUIRED_FIELD,
   })
@@ -29,6 +33,7 @@ export class UsersUpdateSingleRequestBodyDTO {
   @Matches(PASSWORD_REGEX)
   newPassword?: string;
 
+  @ApiPropertyOptional()
   @ValidateIf((data) => !isUndefined(data.newPassword), {
     message: GENERAL_ERRORS.REQUIRED_FIELD,
   })

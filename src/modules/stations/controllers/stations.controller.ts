@@ -28,7 +28,9 @@ import {
   StationStatisticDTO,
   StationWithStatisticsDTO,
 } from '../dtos/stations-getting.dtos';
+import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('stations')
 @Controller('stations')
 export class StationsController {
   constructor(
@@ -37,16 +39,17 @@ export class StationsController {
     private readonly stationsGettingService: StationsGettingService,
   ) {}
 
+  @ApiOkResponse({ type: StationsGetListResponseBodyDTO })
   @HttpCode(HttpStatus.OK)
   @AuthRoles(USER_ROLES.MASTER)
   @Get()
   async getList(
     @Query() query: StationsGetListRequestQueryDTO,
   ): Promise<StationsGetListResponseBodyDTO> {
-    console.log(query);
     return this.stationsGettingService.getList(query);
   }
 
+  @ApiOkResponse({ type: StationWithStatisticsDTO })
   @HttpCode(HttpStatus.OK)
   @AuthRoles(USER_ROLES.MASTER)
   @Get('/:id')
@@ -56,6 +59,7 @@ export class StationsController {
     return this.stationsGettingService.getById(id);
   }
 
+  @ApiOkResponse({ type: StationStatisticDTO })
   @HttpCode(HttpStatus.OK)
   @AuthRoles(USER_ROLES.MASTER)
   @Get('/:id/statistics')
@@ -65,6 +69,7 @@ export class StationsController {
     return this.stationsGettingService.getStatisticsById(id);
   }
 
+  @ApiOkResponse({ type: StationExtendedDTO, isArray: true })
   @HttpCode(HttpStatus.OK)
   @AuthRoles(USER_ROLES.MASTER)
   @Post()
@@ -74,6 +79,7 @@ export class StationsController {
     return this.stationsCreateService.execute(body);
   }
 
+  @ApiOkResponse({ type: StationExtendedDTO, isArray: true })
   @HttpCode(HttpStatus.CREATED)
   @AuthRoles(USER_ROLES.MASTER)
   @Put()

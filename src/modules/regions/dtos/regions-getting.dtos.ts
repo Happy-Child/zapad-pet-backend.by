@@ -1,22 +1,27 @@
 import { Expose, plainToClass } from 'class-transformer';
 import { Type } from 'class-transformer';
 import { ClassTransformOptions } from 'class-transformer/types/interfaces';
-import { BidsCountByStatusesDTO } from '../../bids/dtos/bids-general.dtos';
+import { BidsCountByStatusesDTO } from '../../bids/dtos';
 import { RegionEntity } from '@app/entities';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class RegionDTO extends RegionEntity {
+  @ApiProperty()
   @Expose()
   countOfEngineers!: number;
 
+  @ApiProperty()
   @Expose()
   countOfStations!: number;
 }
 
 export class RegionsGetAllResponseBodyDTO {
+  @ApiProperty({ type: RegionDTO, isArray: true })
   @Expose()
   @Type(() => RegionDTO)
   items!: RegionDTO[];
 
+  @ApiProperty()
   @Expose()
   totalItemsCount!: number;
 
@@ -35,6 +40,7 @@ export class RegionsGetAllResponseBodyDTO {
 }
 
 export class RegionStatisticDTO {
+  @ApiProperty({ type: BidsCountByStatusesDTO })
   @Expose()
   @Type(() => BidsCountByStatusesDTO)
   bidsCountByStatuses!: BidsCountByStatusesDTO;

@@ -12,7 +12,12 @@ import {
   ParseIntPipe,
   Request,
 } from '@nestjs/common';
-import { UsersCreateRequestBodyDTO, UsersDeleteRequestQueryDTO } from '../dtos';
+import {
+  AccountantDTO,
+  MasterDTO,
+  UsersCreateRequestBodyDTO,
+  UsersDeleteRequestQueryDTO,
+} from '../dtos';
 import {
   UsersUpdateService,
   UsersGettingService,
@@ -29,7 +34,12 @@ import { AuthRoles } from '@app/decorators/auth-roles.decorators';
 import { TUserDTO } from '../types';
 import { UsersUpdateSingleRequestBodyDTO } from '../dtos/users-update-single.dtos';
 import { TJwtPayloadDTO } from '../../auth/types';
+import { ApiOkResponse, ApiTags, getSchemaPath } from '@nestjs/swagger';
+import { DistrictLeaderMemberDTO } from 'src/modules/districts-leaders/dtos';
+import { EngineerMemberDTO } from '../../engineers/dtos';
+import { StationWorkerMemberDTO } from '../../stations-workers/dtos';
 
+@ApiTags('users')
 @Controller('users')
 export class UsersController {
   constructor(
@@ -39,6 +49,17 @@ export class UsersController {
     private readonly usersGettingService: UsersGettingService,
   ) {}
 
+  @ApiOkResponse({
+    schema: {
+      oneOf: [
+        { $ref: getSchemaPath(MasterDTO) },
+        { $ref: getSchemaPath(AccountantDTO) },
+        { $ref: getSchemaPath(DistrictLeaderMemberDTO) },
+        { $ref: getSchemaPath(EngineerMemberDTO) },
+        { $ref: getSchemaPath(StationWorkerMemberDTO) },
+      ],
+    },
+  })
   @HttpCode(HttpStatus.OK)
   @AuthRoles()
   @Put('/user')
@@ -49,6 +70,7 @@ export class UsersController {
     return this.usersUpdateSingleService.executeOrFail(user.userId, body);
   }
 
+  @ApiOkResponse({ type: Boolean })
   @HttpCode(HttpStatus.OK)
   @AuthRoles(USER_ROLES.MASTER)
   @Post()
@@ -57,6 +79,18 @@ export class UsersController {
     return true;
   }
 
+  @ApiOkResponse({
+    isArray: true,
+    schema: {
+      oneOf: [
+        { $ref: getSchemaPath(MasterDTO) },
+        { $ref: getSchemaPath(AccountantDTO) },
+        { $ref: getSchemaPath(DistrictLeaderMemberDTO) },
+        { $ref: getSchemaPath(EngineerMemberDTO) },
+        { $ref: getSchemaPath(StationWorkerMemberDTO) },
+      ],
+    },
+  })
   @HttpCode(HttpStatus.CREATED)
   @AuthRoles(USER_ROLES.MASTER)
   @Put()
@@ -64,6 +98,17 @@ export class UsersController {
     return this.usersUpdateService.execute(body);
   }
 
+  @ApiOkResponse({
+    schema: {
+      oneOf: [
+        { $ref: getSchemaPath(MasterDTO) },
+        { $ref: getSchemaPath(AccountantDTO) },
+        { $ref: getSchemaPath(DistrictLeaderMemberDTO) },
+        { $ref: getSchemaPath(EngineerMemberDTO) },
+        { $ref: getSchemaPath(StationWorkerMemberDTO) },
+      ],
+    },
+  })
   @HttpCode(HttpStatus.OK)
   @AuthRoles(USER_ROLES.MASTER)
   @Get('/:id')
@@ -71,6 +116,7 @@ export class UsersController {
     return this.usersGettingService.getUserOrFail(id);
   }
 
+  @ApiOkResponse({ type: UsersGetListResponseBodyDTO })
   @HttpCode(HttpStatus.OK)
   @AuthRoles(USER_ROLES.MASTER)
   @Get()
@@ -80,6 +126,7 @@ export class UsersController {
     return this.usersGettingService.getList(query);
   }
 
+  @ApiOkResponse({ type: Number, isArray: true })
   @HttpCode(HttpStatus.OK)
   @AuthRoles(USER_ROLES.MASTER)
   @Delete()

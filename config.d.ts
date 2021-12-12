@@ -9,6 +9,9 @@ declare module 'config' {
       PORT: number;
       PREFIX: string;
     };
+    OPEN_API: {
+      PREFIX: string;
+    };
   };
 
   export const POSTGRES: {

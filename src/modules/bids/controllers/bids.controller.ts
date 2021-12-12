@@ -15,7 +15,16 @@ import {
   BidLastReviewResponseDTO,
   BidsCreateBodyDTO,
   BidsUpdateBodyDTO,
+  GetBidSingleDistrictLeaderResponseDTO,
+  GetBidSingleEngineerResponseDTO,
+  GetBidSingleMasterResponseDTO,
+  GetBidStationWorkerResponseDTO,
+  GetListBidsDistrictLeaderResponseDTO,
+  GetListBidsEngineerResponseDTO,
+  GetListBidsMasterQueryDTO,
+  GetListBidsMasterResponseDTO,
   GetListBidsResponseDTO,
+  GetListBidsStationWorkerResponseDTO,
   TGetBidSingleResponseDTO,
   TGetListBidsQueryDTO,
 } from '../dtos';
@@ -38,7 +47,14 @@ import { TMemberJwtPayloadDTO } from '../../auth/types';
 import { BidsGettingListValidationPipe } from '../pipes/bids-getting-list-validation.pipe';
 import { SetUserToRequestField } from '@app/decorators';
 import { SET_USER_METADATA_TYPE } from '@app/guards/guards.constants';
+import {
+  ApiOkResponse,
+  ApiQuery,
+  ApiTags,
+  getSchemaPath,
+} from '@nestjs/swagger';
 
+@ApiTags('bids')
 @Controller('bids')
 export class BidsController {
   constructor(
@@ -50,6 +66,7 @@ export class BidsController {
     private readonly bidsGettingListService: BidsGettingListService,
   ) {}
 
+  @ApiOkResponse({ type: Boolean })
   @HttpCode(HttpStatus.CREATED)
   @AuthRoles(USER_ROLES.STATION_WORKER)
   @Post()
@@ -61,6 +78,17 @@ export class BidsController {
     return true;
   }
 
+  @ApiOkResponse({
+    schema: {
+      oneOf: [
+        { $ref: getSchemaPath(GetListBidsMasterResponseDTO) },
+        { $ref: getSchemaPath(GetListBidsDistrictLeaderResponseDTO) },
+        { $ref: getSchemaPath(GetListBidsStationWorkerResponseDTO) },
+        { $ref: getSchemaPath(GetListBidsEngineerResponseDTO) },
+      ],
+    },
+  })
+  @ApiQuery({ type: GetListBidsMasterQueryDTO })
   @HttpCode(HttpStatus.OK)
   @AuthRoles(
     USER_ROLES.MASTER,
@@ -77,6 +105,16 @@ export class BidsController {
     return this.bidsGettingListService.getListByPagination(query, user);
   }
 
+  @ApiOkResponse({
+    schema: {
+      oneOf: [
+        { $ref: getSchemaPath(GetBidSingleEngineerResponseDTO) },
+        { $ref: getSchemaPath(GetBidSingleDistrictLeaderResponseDTO) },
+        { $ref: getSchemaPath(GetBidStationWorkerResponseDTO) },
+        { $ref: getSchemaPath(GetBidSingleMasterResponseDTO) },
+      ],
+    },
+  })
   @HttpCode(HttpStatus.OK)
   @AuthRoles(
     USER_ROLES.MASTER,
@@ -92,6 +130,7 @@ export class BidsController {
     return this.bidsGettingSingleService.getByIdOrFail(bidId, user);
   }
 
+  @ApiOkResponse({ type: BidLastReviewResponseDTO })
   @HttpCode(HttpStatus.OK)
   @AuthRoles(
     USER_ROLES.MASTER,
@@ -114,6 +153,7 @@ export class BidsController {
     return this.bidsGettingGeneralService.getLastReviewOrFail(bidId, user);
   }
 
+  @ApiOkResponse({ type: Boolean })
   @HttpCode(HttpStatus.CREATED)
   @AuthRoles(USER_ROLES.STATION_WORKER)
   @Put('/:bidId')
@@ -126,6 +166,7 @@ export class BidsController {
     return true;
   }
 
+  @ApiOkResponse({ type: Boolean })
   @HttpCode(HttpStatus.OK)
   @AuthRoles(USER_ROLES.DISTRICT_LEADER)
   @Post('/:bidId/assignment-engineer/:engineerId')

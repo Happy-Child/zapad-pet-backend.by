@@ -1,7 +1,11 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { BidRejectReviewRepository, BidsRepository } from './repositories';
-import { BidsTodosRepository } from './repositories';
+import {
+  BidRejectReviewRepository,
+  BidsTodosRepository,
+  BidsRepository,
+  BidsGettingListRepository,
+} from './repositories';
 import { EntityFinderModule } from '../entity-finder';
 import {
   BidsController,
@@ -23,7 +27,6 @@ import {
   BidsCancelService,
   BidsSetReviewStatusService,
 } from './services';
-import { BidsGettingListRepository } from './repositories/bids-getting-list.repository';
 
 @Module({
   imports: [

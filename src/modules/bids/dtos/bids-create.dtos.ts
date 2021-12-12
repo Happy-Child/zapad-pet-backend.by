@@ -23,29 +23,58 @@ import {
 } from '../constants';
 import moment from 'moment';
 import { NullOrString } from '@app/decorators/null-or-string.decorators';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class BidsCreateTodoDTO {
+  @ApiProperty({
+    type: String,
+    required: true,
+  })
   @IsString()
   @Length(1, BID_TODO_MAX_LENGTH)
   text!: string;
 }
 
 export class BidsCreateBodyDTO {
+  @ApiProperty({
+    required: true,
+    enum: BID_PRIORITY,
+  })
   @IsEnum(BID_PRIORITY)
   priority!: BID_PRIORITY;
 
+  @ApiProperty({
+    type: String,
+    required: true,
+    nullable: true,
+  })
   @NullOrString()
   description!: string | null;
 
+  @ApiProperty({
+    type: Number,
+    required: true,
+    nullable: true,
+  })
   @NullOrNumber()
   imageFileId!: number | null;
 
+  @ApiProperty({
+    type: String,
+    required: true,
+    example: '2021-12-30 15:00:00.000',
+  })
   @IsDateString()
   @MinDateWithFormatter(GET_BID_MIN_DATE_START_OF_DEADLINE, (unknownDate) =>
     moment(unknownDate).toDate(),
   )
   deadlineAt!: string;
 
+  @ApiProperty({
+    type: BidsCreateTodoDTO,
+    required: true,
+    isArray: true,
+  })
   @IsArray()
   @ArrayNotEmpty()
   @ArrayWithObjects()

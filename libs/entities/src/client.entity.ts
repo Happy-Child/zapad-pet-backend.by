@@ -6,9 +6,11 @@ import { StationWorkerEntity } from '@app/entities/stations-workers.entity';
 import { StationEntity } from '@app/entities/station.entity';
 import { IsString, Length } from 'class-validator';
 import { CLIENT_NAME_LENGTH } from '../../../src/modules/clients/constants';
+import { ApiProperty } from '@nestjs/swagger';
 
 @Entity({ name: 'client' })
 export class ClientEntity extends BaseEntity {
+  @ApiProperty()
   @Column({
     type: 'varchar',
     length: VARCHAR_DEFAULT_LENGTH,
