@@ -11,7 +11,7 @@ export class StationWorkerEntity extends BaseEntity {
   @Expose()
   userId!: number;
 
-  @OneToOne(() => UserEntity)
+  @OneToOne(() => UserEntity, { onDelete: 'CASCADE' })
   @JoinColumn({
     name: 'userId',
     referencedColumnName: 'id',

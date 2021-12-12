@@ -23,6 +23,7 @@ import {
   UsersGettingService,
   UsersCreateService,
   UsersUpdateSingleService,
+  UsersDeleteService,
 } from '../services';
 import {
   UsersGetListRequestQueryDTO,
@@ -47,6 +48,7 @@ export class UsersController {
     private readonly usersUpdateService: UsersUpdateService,
     private readonly usersUpdateSingleService: UsersUpdateSingleService,
     private readonly usersGettingService: UsersGettingService,
+    private readonly usersDeleteService: UsersDeleteService,
   ) {}
 
   @ApiOkResponse({
@@ -126,11 +128,11 @@ export class UsersController {
     return this.usersGettingService.getList(query);
   }
 
-  @ApiOkResponse({ type: Number, isArray: true })
+  @ApiOkResponse({ type: Boolean })
   @HttpCode(HttpStatus.OK)
   @AuthRoles(USER_ROLES.MASTER)
   @Delete()
-  async delete(@Query() query: UsersDeleteRequestQueryDTO): Promise<number[]> {
-    return query.ids;
+  async delete(@Query() { ids }: UsersDeleteRequestQueryDTO): Promise<true> {
+    return this.usersDeleteService.execute(ids);
   }
 }

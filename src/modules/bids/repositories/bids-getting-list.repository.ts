@@ -9,13 +9,16 @@ import {
 } from '@app/entities';
 import { GeneralRepository } from '@app/repositories';
 import {
+  GetListBidsDistrictLeaderItemDTO,
   GetListBidsDistrictLeaderQueryDTO,
   GetListBidsDistrictLeaderResponseDTO,
+  GetListBidsEngineerItemDTO,
   GetListBidsEngineerQueryDTO,
   GetListBidsEngineerResponseDTO,
   GetListBidsMasterItemDTO,
   GetListBidsMasterQueryDTO,
   GetListBidsMasterResponseDTO,
+  GetListBidsStationWorkerItemDTO,
   GetListBidsStationWorkerQueryDTO,
   GetListBidsStationWorkerResponseDTO,
   TGetListBidsQueryDTO,
@@ -56,11 +59,17 @@ export class BidsGettingListRepository extends GeneralRepository<BidEntity> {
     this.bindGeneralConditions(builder, data);
     this.bindPaginationAndSort(builder, data);
 
+    const [items, totalItemsCount] =
+      (await builder.getManyAndCount()) as unknown as [
+        GetListBidsEngineerItemDTO[],
+        number,
+      ];
+
     return new GetListBidsEngineerResponseDTO({
-      totalItemsCount: 0,
-      items: [],
-      take: 0,
-      skip: 0,
+      totalItemsCount,
+      items,
+      take: data.take,
+      skip: data.skip || 0,
     });
   }
 
@@ -73,11 +82,17 @@ export class BidsGettingListRepository extends GeneralRepository<BidEntity> {
     this.bindDistrictLeaderFilters(builder, data);
     this.bindPaginationAndSort(builder, data);
 
+    const [items, totalItemsCount] =
+      (await builder.getManyAndCount()) as unknown as [
+        GetListBidsDistrictLeaderItemDTO[],
+        number,
+      ];
+
     return new GetListBidsDistrictLeaderResponseDTO({
-      totalItemsCount: 0,
-      items: [],
-      take: 0,
-      skip: 0,
+      totalItemsCount,
+      items,
+      take: data.take,
+      skip: data.skip || 0,
     });
   }
 
@@ -110,11 +125,17 @@ export class BidsGettingListRepository extends GeneralRepository<BidEntity> {
     this.bindGeneralConditions(builder, data);
     this.bindPaginationAndSort(builder, data);
 
+    const [items, totalItemsCount] =
+      (await builder.getManyAndCount()) as unknown as [
+        GetListBidsStationWorkerItemDTO[],
+        number,
+      ];
+
     return new GetListBidsStationWorkerResponseDTO({
-      totalItemsCount: 0,
-      items: [],
-      take: 0,
-      skip: 0,
+      totalItemsCount,
+      items,
+      take: data.take,
+      skip: data.skip || 0,
     });
   }
 

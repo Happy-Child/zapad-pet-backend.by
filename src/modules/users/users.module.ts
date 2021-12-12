@@ -10,6 +10,7 @@ import {
   UsersGettingService,
   UsersCheckBeforeUpdateService,
   UsersUpdateSingleService,
+  UsersDeleteService,
 } from './services';
 import { MailSenderModule } from '@app/mail-sender';
 import { PugModule } from '@app/pug';
@@ -37,6 +38,7 @@ import { EntityFinderModule } from '../entity-finder';
     UsersUpdateService,
     UsersCheckBeforeUpdateService,
     UsersUpdateSingleService,
+    UsersDeleteService,
   ],
   exports: [UsersGettingService],
 })

@@ -42,6 +42,14 @@ export class GetListBidsEngineerItemDTO extends GetListBidsGeneralItemDTO {
     serializeOptions?: ClassTransformOptions,
   ) {
     super(data, serializeOptions);
+
+    Object.assign(
+      this,
+      plainToClass(GetListBidsEngineerItemDTO, data, {
+        ...serializeOptions,
+        excludeExtraneousValues: true,
+      }),
+    );
   }
 }
 
@@ -68,6 +76,14 @@ export class GetListBidsDistrictLeaderItemDTO extends GetListBidsGeneralItemDTO 
     serializeOptions?: ClassTransformOptions,
   ) {
     super(data, serializeOptions);
+
+    Object.assign(
+      this,
+      plainToClass(GetListBidsDistrictLeaderItemDTO, data, {
+        ...serializeOptions,
+        excludeExtraneousValues: true,
+      }),
+    );
   }
 }
 
@@ -85,6 +101,14 @@ export class GetListBidsStationWorkerItemDTO extends GetListBidsGeneralItemDTO {
     serializeOptions?: ClassTransformOptions,
   ) {
     super(data, serializeOptions);
+
+    Object.assign(
+      this,
+      plainToClass(GetListBidsStationWorkerItemDTO, data, {
+        ...serializeOptions,
+        excludeExtraneousValues: true,
+      }),
+    );
   }
 }
 
@@ -113,6 +137,14 @@ export class GetListBidsMasterItemDTO extends GetListBidsDistrictLeaderItemDTO {
     serializeOptions?: ClassTransformOptions,
   ) {
     super(data, serializeOptions);
+
+    Object.assign(
+      this,
+      plainToClass(GetListBidsMasterItemDTO, data, {
+        ...serializeOptions,
+        excludeExtraneousValues: true,
+      }),
+    );
   }
 }
 

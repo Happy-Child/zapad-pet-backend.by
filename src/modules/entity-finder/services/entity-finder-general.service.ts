@@ -151,6 +151,7 @@ export class EntityFinderGeneralService {
 
   public async allUsersExistingOrFail(
     users: NonEmptyArray<{ id: number; index: number }>,
+    exceptionField = 'users',
   ): Promise<TUserDTO[]> {
     const ids = users.map(({ id }) => id) as NonEmptyArray<number>;
     const foundUsers = await this.usersRepository.getUsersByIds(ids);
@@ -165,7 +166,7 @@ export class EntityFinderGeneralService {
     );
 
     const preparedErrors = getPreparedChildrenErrors(usersForException, {
-      field: 'id',
+      field: exceptionField,
       messages: [USERS_ERRORS.USER_NOT_EXISTS],
     });
     throw new ExceptionsNotFound(preparedErrors);

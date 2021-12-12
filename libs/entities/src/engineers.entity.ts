@@ -10,7 +10,7 @@ export class EngineerEntity extends BaseEntity {
   @Expose()
   userId!: number;
 
-  @OneToOne(() => UserEntity, { onDelete: 'CASCADE' })
+  @OneToOne(() => UserEntity, { onDelete: 'CASCADE', eager: true })
   @JoinColumn({
     name: 'userId',
     referencedColumnName: 'id',
