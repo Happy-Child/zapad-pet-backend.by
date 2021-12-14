@@ -4,7 +4,7 @@ services:
 
   postgres:
     image: postgres:11.5-alpine
-    container_name: first_pet_project_test
+    container_name: pet_project_db_test
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_DB=pet_project

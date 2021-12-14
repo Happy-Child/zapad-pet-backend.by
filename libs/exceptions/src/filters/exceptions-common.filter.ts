@@ -13,7 +13,7 @@ export class ExceptionsCommonFilter implements ExceptionFilter {
   catch(exception: any, host: ArgumentsHost) {
     const contextType = host.getType();
 
-    console.log('exception', exception);
+    // console.log('exception', exception);
 
     if (contextType === APP_CONTEXT.HTTP) {
       const ctx = host.switchToHttp();
@@ -38,9 +38,8 @@ export class ExceptionsCommonFilter implements ExceptionFilter {
           ? (exception as any).details
           : [{ field: ENTITIES_FIELDS.UNKNOWN, message: exception.message }];
 
-        // console.log(JSON.stringify(errors, null, 2));
-
         response.status(status).json({ errors });
+
         return true;
       }
 

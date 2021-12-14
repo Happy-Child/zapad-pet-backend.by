@@ -36,9 +36,9 @@ import { TUserDTO } from '../types';
 import { UsersUpdateSingleRequestBodyDTO } from '../dtos/users-update-single.dtos';
 import { TJwtPayloadDTO } from '../../auth/types';
 import { ApiOkResponse, ApiTags, getSchemaPath } from '@nestjs/swagger';
-import { DistrictLeaderMemberDTO } from 'src/modules/districts-leaders/dtos';
 import { EngineerMemberDTO } from '../../engineers/dtos';
 import { StationWorkerMemberDTO } from '../../stations-workers/dtos';
+import { DistrictLeaderMemberDTO } from '../../districts-leaders/dtos';
 
 @ApiTags('users')
 @Controller('users')

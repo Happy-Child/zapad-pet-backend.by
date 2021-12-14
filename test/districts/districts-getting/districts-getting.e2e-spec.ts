@@ -31,32 +31,6 @@ describe('DistrictsModule (e2e)', () => {
     const API_URL = '/districts/all';
 
     it(
-      'should be forbidden all roles except master',
-      () => {
-        const server = app.getHttpServer();
-
-        const requests = Object.keys(accessTokensByRoles)
-          .filter((role) => role !== USER_ROLES.MASTER)
-          .map((role) =>
-            request(server)
-              .get(API_URL)
-              .set(
-                'Cookie',
-                `${COOKIE.ACCESS_TOKEN}=${
-                  accessTokensByRoles[role as USER_ROLES]
-                };`,
-              )
-              .expect(({ status }) => {
-                expect(status).toBe(HttpStatus.FORBIDDEN);
-              }),
-          );
-
-        return Promise.all(requests);
-      },
-      TEST_TIMEOUT,
-    );
-
-    it(
       'should be valid response',
       () => {
         const server = app.getHttpServer();

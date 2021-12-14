@@ -10,7 +10,7 @@
     }
   },
   "POSTGRES": {
-    "HOST": "localhost",
+    "HOST": "postgres",
     "USERNAME": "postgres",
     "PASSWORD": "",
     "PORT": 5432,
