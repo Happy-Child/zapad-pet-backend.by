@@ -28,6 +28,13 @@ export = {
   synchronize: false,
   logging: false,
   logger: 'simple-console',
+  ...(POSTGRES.SSL
+    ? {
+        ssl: {
+          rejectUnauthorized: false,
+        },
+      }
+    : null),
   cli: {
     migrationsDir: './migration',
   },

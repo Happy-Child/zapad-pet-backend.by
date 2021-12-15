@@ -16,7 +16,8 @@
     "PORT": 5432,
     "DB": "pet_project",
     "RETRY_ATTEMPTS": 15,
-    "RETRY_DELAY": 10000
+    "RETRY_DELAY": 10000,
+    "SSL": true
   },
   "MAIL_SENDER": {
     "HOST": "smtp.gmail.com",

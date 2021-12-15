@@ -22,6 +22,7 @@ declare module 'config' {
     readonly DB: string;
     readonly RETRY_ATTEMPTS: number;
     readonly RETRY_DELAY: number;
+    readonly SSL: boolean;
   };
 
   export const MAIL_SENDER: {
