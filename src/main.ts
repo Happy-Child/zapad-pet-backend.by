@@ -12,7 +12,8 @@ import {
 } from '@app/constants';
 import { swaggerBootstrap } from './swagger.bootstrap';
 
-const port = config.APPS.API.PORT || DEFAULT_APP_API_PORT;
+const port = process.env.PORT || DEFAULT_APP_API_PORT;
+
 const appPrefix = `${config.APPS.API.PREFIX}/v1`;
 
 async function bootstrap() {
