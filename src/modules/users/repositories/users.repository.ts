@@ -19,6 +19,7 @@ import {
 } from '../constants';
 import { NonEmptyArray } from '@app/types';
 import { getSerializedMemberUser } from '../helpers';
+import { isNull, isUndefined } from '@app/helpers';
 
 @EntityRepository(UserEntity)
 export class UsersRepository extends GeneralRepository<UserEntity> {
@@ -86,20 +87,30 @@ export class UsersRepository extends GeneralRepository<UserEntity> {
     const filterStationsWorkers =
       data.role?.includes(USER_ROLES.STATION_WORKER) && data.clientId;
     const filterDistrictLeaders =
-      data.role?.includes(USER_ROLES.DISTRICT_LEADER) && data.leaderDistrictId;
+      data.role?.includes(USER_ROLES.DISTRICT_LEADER) &&
+      !isUndefined(data.leaderDistrictId);
     const filterEngineers =
-      data.role?.includes(USER_ROLES.ENGINEER) && data.engineerDistrictId;
+      data.role?.includes(USER_ROLES.ENGINEER) &&
+      !isUndefined(data.engineerDistrictId);
 
     if (filterStationsWorkers) {
       builder.andWhere(`"sw"."clientId" = :id`, { id: data.clientId });
     } else if (filterDistrictLeaders) {
-      builder.andWhere(`"dl"."leaderDistrictId" = :id`, {
-        id: data.leaderDistrictId,
-      });
+      if (isNull(data.leaderDistrictId)) {
+        builder.andWhere(`"dl"."leaderDistrictId" IS NULL`);
+      } else {
+        builder.andWhere(`"dl"."leaderDistrictId" = :id`, {
+          id: data.leaderDistrictId,
+        });
+      }
     } else if (filterEngineers) {
-      builder.andWhere(`"e"."engineerDistrictId" = :id`, {
-        id: data.engineerDistrictId,
-      });
+      if (isNull(data.engineerDistrictId)) {
+        builder.andWhere(`"e"."engineerDistrictId" IS NULL`);
+      } else {
+        builder.andWhere(`"e"."engineerDistrictId" = :id`, {
+          id: data.engineerDistrictId,
+        });
+      }
     }
   }
 

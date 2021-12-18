@@ -156,8 +156,7 @@ export class GeneralRepository<E extends BaseEntity> extends Repository<E> {
   public async deleteEntitiesByIds(
     conditions: RepositoryDeleteByIdsConditions,
   ): Promise<void> {
-    const res = await this.delete(conditions);
-    console.log('res delete', res);
+    await this.delete(conditions);
   }
 
   public serialize<T extends E>(

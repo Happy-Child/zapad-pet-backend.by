@@ -84,15 +84,15 @@ export class DistrictsController {
     return true;
   }
 
-  @ApiOkResponse({ type: ShortEngineerMemberDTO, isArray: true })
-  @HttpCode(HttpStatus.OK)
-  @AuthRoles(USER_ROLES.MASTER)
-  @Get('/:id/engineers')
-  async getEngineersById(
-    @Param('id', ParseIntPipe) id: number,
-  ): Promise<ShortEngineerMemberDTO[]> {
-    return this.districtsGettingService.getEngineersById(id);
-  }
+  // @ApiOkResponse({ type: ShortEngineerMemberDTO, isArray: true })
+  // @HttpCode(HttpStatus.OK)
+  // @AuthRoles(USER_ROLES.MASTER)
+  // @Get('/:id/engineers')
+  // async getEngineersById(
+  //   @Param('id', ParseIntPipe) id: number,
+  // ): Promise<ShortEngineerMemberDTO[]> {
+  //   return this.districtsGettingService.getEngineersById(id);
+  // }
 
   @ApiOkResponse({ type: Boolean })
   @HttpCode(HttpStatus.OK)

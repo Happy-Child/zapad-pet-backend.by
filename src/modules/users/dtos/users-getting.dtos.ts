@@ -22,6 +22,8 @@ import { AccountantDTO, MasterDTO } from './users-members.dtos';
 import { DistrictLeaderMemberDTO } from '../../districts-leaders/dtos';
 import { EngineerMemberDTO } from '../../engineers/dtos';
 import { StationWorkerMemberDTO } from '../../stations-workers/dtos';
+import { NullOrNumber } from '@app/decorators';
+import { isNull } from '@app/helpers';
 
 export class UsersGetListRequestQueryDTO extends PaginationRequestDTO {
   @ApiPropertyOptional({ enum: USERS_SORT_BY })
@@ -54,15 +56,15 @@ export class UsersGetListRequestQueryDTO extends PaginationRequestDTO {
 
   @ApiPropertyOptional()
   @IsOptional()
-  @Type(() => Number)
-  @IsInt()
-  leaderDistrictId?: number;
+  @Transform(({ value }) => (isNull(JSON.parse(value)) ? null : Number(value)))
+  @NullOrNumber()
+  leaderDistrictId?: number | null;
 
   @ApiPropertyOptional()
   @IsOptional()
-  @Type(() => Number)
-  @IsInt()
-  engineerDistrictId?: number;
+  @Transform(({ value }) => (isNull(JSON.parse(value)) ? null : Number(value)))
+  @NullOrNumber()
+  engineerDistrictId?: number | null;
 }
 
 export class UsersGetListResponseBodyDTO extends PaginationResponseDTO<TUserDTO> {
