@@ -37,6 +37,14 @@ export class GetListBidsGeneralItemDTO {
 }
 
 export class GetListBidsEngineerItemDTO extends GetListBidsGeneralItemDTO {
+  @ApiProperty({ type: String, nullable: true })
+  @Expose()
+  startWorkAt!: string | null;
+
+  @ApiProperty({ type: String, nullable: true })
+  @Expose()
+  endWorkAt!: string | null;
+
   constructor(
     data: GetListBidsEngineerItemDTO,
     serializeOptions?: ClassTransformOptions,

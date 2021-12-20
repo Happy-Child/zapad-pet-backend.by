@@ -14,10 +14,17 @@ import {
   GetBidStationWorkerResponseDTO,
   GetBidSingleMasterResponseDTO,
   BidDTO,
+  GetListBidsEngineerQueryDTO,
+  GetListBidsDistrictLeaderQueryDTO,
+  GetListBidsStationWorkerQueryDTO,
+  GetListBidsMasterQueryDTO,
 } from './modules/bids/dtos';
 import { DistrictLeaderMemberDTO } from './modules/districts-leaders/dtos';
 import { EngineerMemberDTO } from './modules/engineers/dtos';
 import { StationWorkerMemberDTO } from './modules/stations-workers/dtos';
+import { StationsGetListRequestQueryDTO } from './modules/stations/dtos/stations-getting.dtos';
+import { UsersGetListRequestQueryDTO } from './modules/users/dtos/users-getting.dtos';
+import { ClientsGettingRequestQueryDTO } from './modules/clients/dtos';
 
 export const swaggerBootstrap = (app: INestApplication): void => {
   const config = new DocumentBuilder()
@@ -41,6 +48,13 @@ export const swaggerBootstrap = (app: INestApplication): void => {
       GetBidStationWorkerResponseDTO,
       GetBidSingleMasterResponseDTO,
       BidDTO,
+      GetListBidsEngineerQueryDTO,
+      GetListBidsDistrictLeaderQueryDTO,
+      GetListBidsStationWorkerQueryDTO,
+      GetListBidsMasterQueryDTO,
+      StationsGetListRequestQueryDTO,
+      UsersGetListRequestQueryDTO,
+      ClientsGettingRequestQueryDTO,
     ],
   });
   SwaggerModule.setup(APPS.OPEN_API.PREFIX, app, document);

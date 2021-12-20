@@ -197,6 +197,7 @@ export class BidsGettingListRepository extends GeneralRepository<BidEntity> {
       stationsWorkersIds,
       districtsLeadersIds,
       stationsIds,
+      search,
     }: Pick<
       GetListBidsMasterQueryDTO,
       | 'clientIds'
@@ -204,8 +205,13 @@ export class BidsGettingListRepository extends GeneralRepository<BidEntity> {
       | 'stationsWorkersIds'
       | 'districtsLeadersIds'
       | 'stationsIds'
+      | 'search'
     >,
   ): void {
+    if (search) {
+      builder.andWhere(`st.number LIKE '%${search}%'`);
+    }
+
     if (clientIds) {
       builder.andWhere('cl.id IN (:...ids)', {
         ids: clientIds,

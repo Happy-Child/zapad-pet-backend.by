@@ -136,6 +136,7 @@ export class BidsController {
     USER_ROLES.MASTER,
     USER_ROLES.STATION_WORKER,
     USER_ROLES.DISTRICT_LEADER,
+    USER_ROLES.ENGINEER,
   )
   @Get('/:bidId/last-review')
   async getLastReview(

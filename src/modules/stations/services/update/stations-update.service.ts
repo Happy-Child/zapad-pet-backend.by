@@ -39,11 +39,12 @@ export class StationsUpdateService {
         indexedStations,
       );
 
+    await this.stationsCheckBeforeUpdateService.executeOrFail(
+      indexedStations,
+      foundStations,
+    );
+
     await this.connection.transaction(async (manager) => {
-      await this.stationsCheckBeforeUpdateService.executeOrFail(
-        indexedStations,
-        foundStations,
-      );
       await this.update(data.stations, foundStations, manager);
     });
 

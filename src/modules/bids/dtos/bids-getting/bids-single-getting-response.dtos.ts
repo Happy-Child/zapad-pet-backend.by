@@ -26,6 +26,14 @@ export class GetBidSingleEngineerResponseDTO extends BidDTO {
 
   finalPhotoDropbox!: DropboxStorageEntity | null;
 
+  @ApiProperty({ type: String, nullable: true })
+  @Expose()
+  startWorkAt!: string | null;
+
+  @ApiProperty({ type: String, nullable: true })
+  @Expose()
+  endWorkAt!: string | null;
+
   @ApiProperty({ type: BidTodoDTO, isArray: true })
   @Type(() => BidTodoDTO)
   @Expose()
