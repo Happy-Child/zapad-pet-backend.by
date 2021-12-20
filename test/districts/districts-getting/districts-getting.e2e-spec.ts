@@ -173,7 +173,8 @@ describe('DistrictsModule (e2e)', () => {
     );
   });
 
-  describe('GET /districts/:id/engineers', () => {
+  // route no use
+  describe.skip('GET /districts/:id/engineers', () => {
     const API_URL = '/districts/1/engineers';
 
     it(
@@ -192,7 +193,9 @@ describe('DistrictsModule (e2e)', () => {
                   accessTokensByRoles[role as USER_ROLES]
                 };`,
               )
-              .expect(({ status }) => {
+              .expect(({ status, body, error }) => {
+                console.log(body);
+                console.log(error);
                 expect(status).toBe(HttpStatus.FORBIDDEN);
               }),
           );

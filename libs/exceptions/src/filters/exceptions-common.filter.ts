@@ -5,15 +5,18 @@ import {
   HttpException,
   HttpStatus,
 } from '@nestjs/common';
-import { APP_CONTEXT, ENTITIES_FIELDS } from '@app/constants';
+import { APP_CONTEXT, ENTITIES_FIELDS, ENVIRONMENTS } from '@app/constants';
 import { isValidException } from '@app/exceptions/helpers';
+import { NODE_ENV } from 'config';
 
 @Catch()
 export class ExceptionsCommonFilter implements ExceptionFilter {
   catch(exception: any, host: ArgumentsHost) {
     const contextType = host.getType();
 
-    console.log('EXCEPTION', exception);
+    if (NODE_ENV === ENVIRONMENTS.PROD) {
+      console.log('EXCEPTION', exception);
+    }
 
     if (contextType === APP_CONTEXT.HTTP) {
       const ctx = host.switchToHttp();
@@ -38,7 +41,9 @@ export class ExceptionsCommonFilter implements ExceptionFilter {
           ? (exception as any).details
           : [{ field: ENTITIES_FIELDS.UNKNOWN, message: exception.message }];
 
-        console.log('ERRORS', errors);
+        if (NODE_ENV === ENVIRONMENTS.PROD) {
+          console.log('ERRORS', errors);
+        }
 
         response.status(status).json({ errors });
 

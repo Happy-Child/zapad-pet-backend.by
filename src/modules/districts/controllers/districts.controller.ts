@@ -84,6 +84,7 @@ export class DistrictsController {
     return true;
   }
 
+  // route no use
   // @ApiOkResponse({ type: ShortEngineerMemberDTO, isArray: true })
   // @HttpCode(HttpStatus.OK)
   // @AuthRoles(USER_ROLES.MASTER)
