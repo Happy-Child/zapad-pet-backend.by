@@ -8,3 +8,4 @@ export * from './object.helpers';
 export * from './transforms.helpers';
 export * from './bids.helpers';
 export * from './filters.helpers';
+export * from './http.helpers';

@@ -1,16 +1,17 @@
 import {
-  Controller,
-  Post,
   Body,
+  Controller,
   Delete,
   Get,
-  Query,
-  Put,
   HttpCode,
   HttpStatus,
   Param,
   ParseIntPipe,
+  Post,
+  Put,
+  Query,
   Request,
+  Res,
 } from '@nestjs/common';
 import {
   AccountantDTO,
@@ -19,11 +20,11 @@ import {
   UsersDeleteRequestQueryDTO,
 } from '../dtos';
 import {
-  UsersUpdateService,
-  UsersGettingService,
   UsersCreateService,
-  UsersUpdateSingleService,
   UsersDeleteService,
+  UsersGettingService,
+  UsersUpdateService,
+  UsersUpdateSingleService,
 } from '../services';
 import {
   UsersGetListRequestQueryDTO,
@@ -39,6 +40,7 @@ import { ApiOkResponse, ApiTags, getSchemaPath } from '@nestjs/swagger';
 import { EngineerMemberDTO } from '../../engineers/dtos';
 import { StationWorkerMemberDTO } from '../../stations-workers/dtos';
 import { DistrictLeaderMemberDTO } from '../../districts-leaders/dtos';
+import { logoutByResponse } from '@app/helpers';
 
 @ApiTags('users')
 @Controller('users')
@@ -68,8 +70,17 @@ export class UsersController {
   async updateById(
     @Request() { user }: { user: TJwtPayloadDTO },
     @Body() body: UsersUpdateSingleRequestBodyDTO,
-  ): Promise<TUserDTO> {
-    return this.usersUpdateSingleService.executeOrFail(user.userId, body);
+    @Res() res: any,
+  ): Promise<void> {
+    const { user: updatedUser, canBeLogout } =
+      await this.usersUpdateSingleService.executeOrFail(user.userId, body);
+
+    if (canBeLogout) {
+      logoutByResponse(res, updatedUser);
+      return;
+    }
+
+    res.send(updatedUser);
   }
 
   @ApiOkResponse({ type: Boolean })

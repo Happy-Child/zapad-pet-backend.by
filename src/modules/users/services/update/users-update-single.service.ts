@@ -17,6 +17,11 @@ import { UserEntity } from '@app/entities';
 import { getHashByPassword } from '../../../auth/helpers';
 import { UsersSendingMailService } from '../users-sending-mail.service';
 
+interface IExecuteOrFailReturn {
+  user: TUserDTO;
+  canBeLogout: boolean;
+}
+
 @Injectable()
 export class UsersUpdateSingleService {
   constructor(
@@ -29,7 +34,7 @@ export class UsersUpdateSingleService {
   public async executeOrFail(
     userId: number,
     body: UsersUpdateSingleRequestBodyDTO,
-  ): Promise<TUserDTO> {
+  ): Promise<IExecuteOrFailReturn> {
     const curUser = await this.checkUserBeforeUpdate(userId, body);
     return this.updateUser(curUser, body);
   }
@@ -87,8 +92,9 @@ export class UsersUpdateSingleService {
   private async updateUser(
     curUser: UserEntity,
     body: UsersUpdateSingleRequestBodyDTO,
-  ): Promise<TUserDTO> {
+  ): Promise<IExecuteOrFailReturn> {
     const newUser: Partial<UserEntity> = {};
+    let canBeLogout = false;
 
     if (body.name) {
       newUser.name = body.name;
@@ -98,10 +104,12 @@ export class UsersUpdateSingleService {
     if (isNewEmail) {
       newUser.email = body.email;
       newUser.emailConfirmed = false;
+      canBeLogout = true;
     }
 
     if (body.newPassword) {
       newUser.password = await getHashByPassword(body.newPassword);
+      canBeLogout = true;
     }
 
     await this.connection.transaction(async (manager) => {
@@ -116,9 +124,14 @@ export class UsersUpdateSingleService {
       }
     });
 
-    return await this.entityFinderGeneralService.getFullUserOrFail({
+    const user = await this.entityFinderGeneralService.getFullUserOrFail({
       id: curUser.id,
     });
+
+    return {
+      user,
+      canBeLogout,
+    };
   }
 
   private async sendMailAfterUpdateUser(

@@ -33,6 +33,7 @@ import { StationWorkerMemberDTO } from '../../stations-workers/dtos';
 import { AccountantDTO, MasterDTO } from '../../users/dtos';
 import { DistrictLeaderMemberDTO } from '../../districts-leaders/dtos';
 import { EngineerMemberDTO } from '../../engineers/dtos';
+import { logoutByResponse } from '@app/helpers';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -78,6 +79,14 @@ export class AuthController {
       expires: getCookieExpiration(),
     });
     res.send(response);
+  }
+
+  @ApiOkResponse({ type: Boolean })
+  @AuthRoles()
+  @HttpCode(HttpStatus.OK)
+  @Post('/logout')
+  logout(@Res() res: any): void {
+    logoutByResponse(res, true);
   }
 
   @ApiOkResponse({ type: Boolean })
