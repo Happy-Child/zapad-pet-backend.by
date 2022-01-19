@@ -11,6 +11,8 @@ import {
   DEFAULT_APP_API_PORT,
 } from '@app/constants';
 import { swaggerBootstrap } from './swagger.bootstrap';
+import cors from 'cors';
+import { APP_CORS_CONFIG } from './config';
 
 const port = process.env.PORT || DEFAULT_APP_API_PORT;
 
@@ -20,6 +22,7 @@ async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
   app.setGlobalPrefix(appPrefix);
+  if (config.CORS) app.use(cors(APP_CORS_CONFIG));
   app.use(cookieParser());
   app.use(helmet());
   app.useGlobalPipes(new ValidationPipe(APP_VALIDATION_PIPE_OPTIONS));

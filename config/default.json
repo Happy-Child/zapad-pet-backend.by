@@ -1,4 +1,5 @@
 {
+  "CORS": true,
   "NODE_ENV": "local",
   "APPS": {
     "API": {
