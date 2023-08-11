@@ -21,6 +21,6 @@ FROM base
 COPY --from=builder /app/dist /app/dist
 COPY . .
 
-EXPOSE 3001
+EXPOSE 80
 
 CMD yarn start:prod

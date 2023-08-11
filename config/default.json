@@ -3,7 +3,7 @@
   "NODE_ENV": "local",
   "APPS": {
     "API": {
-      "PORT": 3001,
+      "PORT": 80,
       "PREFIX": "api"
     },
     "OPEN_API": {
