@@ -34,4 +34,6 @@ async function bootstrap() {
   await app.listen(port);
 }
 
-bootstrap();
+if (require.main === module) {
+  bootstrap();
+}

@@ -11,14 +11,14 @@
     }
   },
   "POSTGRES": {
-    "HOST": "postgres",
+    "HOST": "127.0.0.1",
     "USERNAME": "postgres",
-    "PASSWORD": "",
-    "PORT": 5432,
+    "PASSWORD": "root",
+    "PORT": 24012,
     "DB": "pet_project",
     "RETRY_ATTEMPTS": 15,
     "RETRY_DELAY": 10000,
-    "SSL": true
+    "SSL": false
   },
   "MAIL_SENDER": {
     "HOST": "smtp.gmail.com",
@@ -38,11 +38,11 @@
   "JWT": {
     "ALGORITHM": "RS256",
     "EXPIRATION": "1d",
-    "SECRET_KEY": "some-fucking-pet-project"
+    "SECRET_KEY": "some-pet-project"
   },
   "RSA": {
-    "PRIVATE_KEY_PATH": "",
-    "PUBLIC_KEY_PATH": ""
+    "PRIVATE_KEY_PATH": "./private.pem",
+    "PUBLIC_KEY_PATH": "./public.pem"
   },
   "FILE_STORAGE": {
     "LOCAL_STORAGE_PATH": "uploads/files"

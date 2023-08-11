@@ -3,11 +3,11 @@ version: '3.3'
 services:
 
   postgres:
-    image: postgres:11.5-alpine
+    image: postgres:12
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_DB=pet_project
-      - POSTGRES_PASSWORD=
+      - POSTGRES_PASSWORD=root
     ports:
       - "127.0.0.1:24012:5432"
     volumes:
