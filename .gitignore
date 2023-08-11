@@ -39,5 +39,3 @@ config/local*
 .example.env
 config/keys
 uploads/files
-private.pem
-public.pem
