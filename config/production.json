@@ -1,3 +1,12 @@
 {
+  "APPS": {
+    "API": {
+      "PORT": 80
+    }
+  },
+  "POSTGRES": {
+    "HOST": "db",
+    "PORT": 5432
+  },
   "NODE_ENV": "production"
 }

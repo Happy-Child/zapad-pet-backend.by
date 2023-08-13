@@ -2,16 +2,29 @@ version: '3.3'
 
 services:
 
-  postgres:
-    image: postgres:12
-    environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_DB=pet_project
-      - POSTGRES_PASSWORD=root
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
     ports:
-      - "127.0.0.1:24012:5432"
+      - "80:80"
+    depends_on:
+      - db
+    networks:
+      - zapad-pet
+
+  db:
+    image: postgres:12
+    env_file:
+      - ./docker/general.env
     volumes:
       - db_local_data:/var/lib/postgresql/data/
+    networks:
+      - zapad-pet
+
+networks:
+  zapad-pet:
+    driver: bridge
 
 volumes:
   db_local_data:

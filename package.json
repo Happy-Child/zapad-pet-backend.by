@@ -14,7 +14,7 @@
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\" \"libs/**/*.ts\"",
     "start": "nest start",
     "start:dev": "rimraf dist && nest start --watch",
-    "first-start:dev": "rimraf dist && yarn docker:local up -d && yarn schema:sync && yarn migrate:run && nest start --watch",
+    "prepare-db": "yarn schema:sync && yarn migrate:run",
     "start:debug": "nest start --debug --watch",
     "start:prod": "export NODE_ENV=production && node dist/main",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
