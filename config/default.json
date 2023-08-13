@@ -32,6 +32,7 @@
     "CREATE_NEW_PASSWORD": "http://localhost:3000/create-new-password"
   },
   "COOKIES_OPTIONS": {
+    "TOKEN_NAME": "PET_PROJECT_TOKEN",
     "SECURE": true,
     "SAME_SITE": "none"
   },

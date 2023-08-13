@@ -42,6 +42,7 @@ declare module 'config' {
   };
 
   export const COOKIES_OPTIONS: {
+    readonly TOKEN_NAME: string;
     readonly SECURE: boolean;
     readonly SAME_SITE: boolean | 'lax' | 'strict' | 'none';
   };
