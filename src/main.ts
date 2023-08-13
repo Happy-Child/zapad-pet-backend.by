@@ -14,7 +14,7 @@ import { swaggerBootstrap } from './swagger.bootstrap';
 import cors from 'cors';
 import { APP_CORS_CONFIG } from './config';
 
-const port = process.env.PORT || DEFAULT_APP_API_PORT;
+const port = config.APPS.API.PORT || DEFAULT_APP_API_PORT;
 
 const appPrefix = `${config.APPS.API.PREFIX}/v1`;
 
