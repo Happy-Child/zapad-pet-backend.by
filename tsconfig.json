@@ -16,6 +16,9 @@
     "baseUrl": "./",
     "incremental": true,
     "skipLibCheck": true,
+    "lib": [
+      "es2019"
+    ],
     "paths": {
       "@app/exceptions": [
         "libs/exceptions/src"

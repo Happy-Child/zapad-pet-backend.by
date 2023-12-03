@@ -1,10 +1,9 @@
 import fs from 'fs';
 import path from 'path';
 
-export const readFile = (path: fs.PathOrFileDescriptor): string => {
+export const readFile = (path: string): string => {
   return fs.readFileSync(path).toString();
 };
-
 export const saveFile = async (
   pathRelativeByProject: string,
   fileName: string,
